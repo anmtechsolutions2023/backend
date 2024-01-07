@@ -102,7 +102,10 @@ exports.authorization = async (req, res, next) => {
 
   // console.log(`User detail: ${JSON.stringify(user)}`)
 
-  allowedRoles = user.attributes.scopes[0].split(',').map((role) => role.trim())
+  allowedRoles =
+    user.attributes &&
+    user.attributes.scopes &&
+    user.attributes.scopes[0].split(',').map((role) => role.trim())
 
   // console.log(`Allowed roles: ${JSON.stringify(allowedRoles)}`)
 
@@ -132,12 +135,13 @@ exports.authorization = async (req, res, next) => {
   let found = false
 
   clientRoles.forEach((cr) => {
-    allowedRoles.forEach((ar) => {
-      if (cr === ar) {
-        // console.log(`${cr}`)
-        found = true
-      }
-    })
+    allowedRoles &&
+      allowedRoles.forEach((ar) => {
+        if (cr === ar) {
+          // console.log(`${cr}`)
+          found = true
+        }
+      })
   })
   // console.log(`Is client allowed : ${found}`)
 
