@@ -102,9 +102,9 @@ exports.authorization = async (req, res, next) => {
 
   // console.log(`User detail: ${JSON.stringify(user)}`)
 
-  // allowedRoles = user.attributes.scopes[0].split(',').map((role) => role.trim())
+  allowedRoles = user.attributes.scopes[0].split(',').map((role) => role.trim())
 
-  console.log(`Allowed roles: ${JSON.stringify(allowedRoles)}`)
+  // console.log(`Allowed roles: ${JSON.stringify(allowedRoles)}`)
 
   const clientDetail =
     req.kauth.grant.access_token.content.resource_access[kcConfig.client_id]
