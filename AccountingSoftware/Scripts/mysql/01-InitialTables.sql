@@ -45,7 +45,7 @@ create table categorydetail
     UpdatedOn datetime,
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
-    UNIQUE (Name)
+    UNIQUE (Name, TenantId)
 )
 
 -- TransactionTypeConfig table
@@ -63,7 +63,7 @@ create table transactiontypeconfig
     UpdatedOn datetime,
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
-    UNIQUE (StartCounterNo, Prefix, Format)
+    UNIQUE (StartCounterNo, Prefix, Format, TenantId)
 )
 
 -- Organization Detail table

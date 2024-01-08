@@ -24,13 +24,6 @@ exports.update = async (req, res) => {
     )
 
     if (ttcFindById == '404') {
-      logger.loggerHelper(
-        tenantId,
-        username,
-        'TransactionTypeDetail_update',
-        logger.logType.error,
-        `Record not found for Id: ${req.params.id}`
-      )
       return res.status(404).send({
         message: 'TransactionTypeDetail not found.',
       })
@@ -50,33 +43,17 @@ exports.update = async (req, res) => {
       Active: helper.isEmpty(req.body.Active)
         ? ttcFindById[0].Active
         : req.body.Active,
-      TenantId: helper.isEmpty(req.body.TenantId)
-        ? ttcFindById[0].TenantId
-        : req.body.TenantId,
+      TenantId: tenantId,
       UpdatedOn: new Date(),
-      UpdatedBy: 'from_token', // Get ths value from Bearer Token
+      UpdatedBy: tenantId,
     }
 
     await transactiontypeconfig
       .update(updatedttc, username)
       .then(() => {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          'TransactionTypeDetail_update',
-          logger.logType.debug,
-          `Record updated for Id: ${updatedttc.Id}`
-        )
         return res.status(200).send()
       })
       .catch((err) => {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          'TransactionTypeDetail_update',
-          logger.logType.error,
-          `Record not updated for Id: ${updatedttc.Id}, Error: ${err} `
-        )
         return res.status(500).send()
       })
   }
@@ -92,17 +69,10 @@ exports.delete = async (req, res) => {
     req.params.id,
     tenantId,
     username,
-    'TransactionTypeDetail_delete'
+    moduleNames.transactiontypeconfig.application.delete
   )
 
   if (ttcFindById == '404') {
-    logger.loggerHelper(
-      tenantId,
-      username,
-      'TransactionTypeDetail_delete',
-      logger.logType.error,
-      `Record not found for Id: ${req.params.id}`
-    )
     return res.status(404).send({
       message: 'TransactionTypeDetail not found.',
     })
@@ -111,23 +81,9 @@ exports.delete = async (req, res) => {
   transactiontypeconfig
     .delete(req.params.id, tenantId, username)
     .then(() => {
-      logger.loggerHelper(
-        tenantId,
-        username,
-        'TransactionTypeDetail_delete',
-        logger.logType.debug,
-        `Record deleted for Id: ${req.params.id}`
-      )
       res.status(204).send()
     })
     .catch((err) => {
-      logger.loggerHelper(
-        tenantId,
-        username,
-        'TransactionTypeDetail_delete',
-        logger.logType.error,
-        `Error occurred for Id: ${req.params.id}`
-      )
       res.sendStatus(500).send()
     })
 }
@@ -141,23 +97,9 @@ exports.fetchAll = (req, res) => {
   transactiontypeconfig
     .getAll(tenantId, username)
     .then((ttc) => {
-      logger.loggerHelper(
-        tenantId,
-        username,
-        'TransactionTypeConfig_fetchAll',
-        logger.logType.debug,
-        'Success'
-      )
       res.send(ttc)
     })
     .catch((err) => {
-      logger.loggerHelper(
-        tenantId,
-        username,
-        'TransactionTypeConfig_fetchAll',
-        logger.logType.error,
-        `Error: ${err}`
-      )
       res.sendStatus(500).send()
     })
 }
@@ -173,36 +115,18 @@ exports.fetchById = (req, res) => {
       req.params.id,
       tenantId,
       username,
-      'TransactionTypeConfig_fetchById'
+      moduleNames.transactiontypeconfig.application.fetchById
     )
     .then((cd) => {
-      if (cd === 404) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          'TransactionTypeConfig_fetchById',
-          logger.logType.debug,
-          `Record not found for Id: ${req.params.id}`
-        )
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          'TransactionTypeConfig_fetchById',
-          logger.logType.debug,
-          `Record found for Id: ${req.params.id}`
-        )
+      if (cd == '404') {
+        return res.status(404).send({
+          message: 'Transaction Type Config not found.',
+        })
       }
-      res.send(cd)
+
+      res.status(200).send(cd)
     })
     .catch((err) => {
-      logger.loggerHelper(
-        tenantId,
-        username,
-        'TransactionTypeConfig_fetchById',
-        logger.logType.error,
-        `Error occurred for Id: ${req.params.id}, Error: ${err}`
-      )
       res.sendStatus(500).send()
     })
 }
@@ -215,13 +139,6 @@ exports.create = (req, res) => {
 
   // Validate request
   if (!Object.keys(req.body).length) {
-    logger.loggerHelper(
-      tenantId,
-      username,
-      'TransactionTypeConfig_create',
-      logger.logType.error,
-      'Empty Content'
-    )
     res.status(400).send({
       message: 'Content can not be empty!',
     })
@@ -234,39 +151,20 @@ exports.create = (req, res) => {
       Active: req.body.Active,
       TenantId: req.body.TenantId,
       CreatedOn: new Date(),
-      CreatedBy: 'from_token', // Get ths value from Bearer Token
+      CreatedBy: tenantId,
     }
 
     transactiontypeconfig
       .create(ttc, username)
       .then((ttcResp) => {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          'TransactionTypeConfig_create',
-          logger.logType.debug,
-          `Record created for Id: ${ttcResp.Id}`
-        )
         res.send(ttcResp)
       })
       .catch((err) => {
-        if (err.includes('Duplicate entry')) {
-          logger.loggerHelper(
-            tenantId,
-            username,
-            'TransactionTypeConfig_create',
-            logger.logType.error,
-            `Duplicate record found for counter: ${ttc.StartCounterNo}, Error: ${err}`
-          )
-          return res.sendStatus(409)
+        switch (err) {
+          case 'ER_DUP_ENTRY': {
+            return res.sendStatus(409).send()
+          }
         }
-        logger.loggerHelper(
-          tenantId,
-          username,
-          'TransactionTypeConfig_create',
-          logger.logType.error,
-          `Error for record counter: ${ttc.StartCounterNo}, Error: ${err}`
-        )
         res.sendStatus(500).send()
       })
   }
