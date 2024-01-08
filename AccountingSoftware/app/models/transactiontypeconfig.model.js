@@ -186,9 +186,7 @@ exports.create = (ttc, username) => {
             logger.logType.error,
             `Error occurred for transaction type config counter: ${ttc.StartCounterNo}, Error Code: ${err.code}, Error: ${err}`
           )
-          return reject(
-            'DB TransactionTypeConfig Error, for operation:  create.' + err
-          )
+          return reject(err.code)
         }
 
         logger.loggerHelper(
