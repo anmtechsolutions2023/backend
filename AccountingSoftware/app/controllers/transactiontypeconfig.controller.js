@@ -54,7 +54,12 @@ exports.update = async (req, res) => {
         return res.status(200).send()
       })
       .catch((err) => {
-        return res.status(500).send()
+        switch (err) {
+          case 'ER_DUP_ENTRY': {
+            return res.sendStatus(409).send()
+          }
+        }
+        return res.sendStatus(500).send()
       })
   }
 }

@@ -66,7 +66,7 @@ module.exports = (app) => {
   router.put('/ttc/:id', transactiontypeconfig.update)
 
   // Organization Detail Operations
-  router.get('/od', organizationdetail.fetchAll)
+  router.get('/ods', organizationdetail.fetchAll)
   router.get('/od/:id', organizationdetail.fetchById)
   router.post('/od', organizationdetail.create)
   router.delete('/od/:id', organizationdetail.delete)
