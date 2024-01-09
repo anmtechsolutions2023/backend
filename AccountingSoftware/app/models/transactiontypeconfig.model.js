@@ -101,9 +101,7 @@ exports.update = (ttc, username) => {
             logger.logType.error,
             `Error occurred for Id: ${ttc.Id}, Error Code: ${err.code}, Error: ${err}`
           )
-          return reject(
-            'DB TransactionTypeConfig Error, for operation:  update.' + err
-          )
+          return reject(err.code)
         }
 
         logger.loggerHelper(

@@ -36,4 +36,13 @@ module.exports = {
     update:
       'UPDATE transactiontypeconfig SET StartCounterNo = ?, Prefix = ?, Format = ?, Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  organizationdetail: {
+    fetchAll: 'SELECT * FROM organizationdetail WHERE TenantId = ?',
+    fetchById: 'SELECT * FROM organizationdetail WHERE Id = ? and TenantId = ?',
+    create:
+      'insert into organizationdetail (Id, Name, Active, TenantId, CreatedOn, CreatedBy) values(?,?,?,?,?,?)',
+    delete: 'DELETE FROM organizationdetail WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE organizationdetail SET Name = ?, Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
 }

@@ -63,4 +63,20 @@ module.exports = {
       update: 'DB_TransactionTypeConfig_updateTaxType',
     },
   },
+  organizationdetail: {
+    application: {
+      fetchAll: 'OrganizationDetail_getAll',
+      fetchById: 'OrganizationDetail_fetchTaxTypeById',
+      create: 'OrganizationDetail_createTaxType',
+      delete: 'OrganizationDetail_deleteTaxType',
+      update: 'OrganizationDetail_updateTaxType',
+    },
+    db: {
+      fetchAll: 'DB_OrganizationDetail_getAll',
+      fetchById: 'DB_OrganizationDetail_fetchTaxTypeById',
+      create: 'DB_OrganizationDetail_createTaxType',
+      delete: 'DB_OrganizationDetail_deleteTaxType',
+      update: 'DB_OrganizationDetail_updateTaxType',
+    },
+  },
 }
