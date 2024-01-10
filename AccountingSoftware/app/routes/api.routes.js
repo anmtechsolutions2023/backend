@@ -73,7 +73,7 @@ module.exports = (app) => {
   router.put('/od/:id', organizationdetail.update)
 
   // UOMFactor Operations
-  router.get('/uomf', uomfactor.fetchAll)
+  router.get('/uomfs', uomfactor.fetchAll)
   router.get('/uomf/:id', uomfactor.fetchById)
   router.post('/uomf', uomfactor.create)
   router.delete('/uomf/:id', uomfactor.delete)
