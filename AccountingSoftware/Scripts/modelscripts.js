@@ -45,4 +45,44 @@ module.exports = {
     update:
       'UPDATE organizationdetail SET Name = ?, Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  uomfactor: {
+    fetchAll: `select 
+        uomf.Id,
+        uomf.PrimaryUOMId,
+        uomp.UnitName as "PrimaryUnitName",
+        uomp.Active as "PrimaryUnitNameActive",
+        uomf.SecondaryUOMId,
+        uoms.UnitName as "SecondayUnitName",
+        uoms.Active as "SecondayUnitActive",
+        uomf.Factor,
+        uomf.TenantId,
+        uomf.Active
+        from uomfactor as uomf join UOM as uomp on uomf.PrimaryUOMId = uomp.Id 
+        join UOM as uoms on uomf.SecondaryUOMId = uoms.Id WHERE uomf.TenantId = ?`,
+    fetchById: `select 
+        uomf.Id,
+        uomf.PrimaryUOMId,
+        uomp.UnitName as "PrimaryUnitName",
+        uomp.Active as "PrimaryUnitNameActive",
+        uomf.SecondaryUOMId,
+        uoms.UnitName as "SecondayUnitName",
+        uoms.Active as "SecondayUnitActive",
+        uomf.Factor,
+        uomf.TenantId,
+        uomf.Active 
+        from uomfactor as uomf join UOM as uomp on uomf.PrimaryUOMId = uomp.Id 
+        join UOM as uoms on uomf.SecondaryUOMId = uoms.Id WHERE uomf.Id = ? and uomf.TenantId = ?`,
+    create:
+      'insert into uomfactor (Id, PrimaryUOMId, SecondaryUOMId, Factor, Active, TenantId, CreatedOn, CreatedBy) values(?,?,?,?,?,?,?,?)',
+    delete: 'DELETE FROM uomfactor WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE uomfactor SET PrimaryUOMId = ?, SecondaryUOMId = ?, Factor = ?, Active = ? , UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
+  generalmodule: {
+    fetchAll: '',
+    fetchById: '',
+    create: '',
+    delete: '',
+    update: '',
+  },
 }

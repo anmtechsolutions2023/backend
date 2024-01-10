@@ -98,7 +98,7 @@ create table uomfactor
     PRIMARY KEY (Id),
     FOREIGN KEY (PrimaryUOMId) REFERENCES UOM(Id),
     FOREIGN KEY (SecondaryUOMId) REFERENCES UOM(Id),
-    UNIQUE (PrimaryUOMId, SecondaryUOMId, Factor)
+    UNIQUE (PrimaryUOMId, SecondaryUOMId, Factor, TenantId)
 )
 
 -- TransactionType table

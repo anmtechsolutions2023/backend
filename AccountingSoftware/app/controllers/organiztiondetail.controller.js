@@ -36,7 +36,7 @@ exports.update = async (req, res) => {
         : req.body.Active,
       TenantId: tenantId,
       UpdatedOn: new Date(),
-      UpdatedBy: tenantId,
+      UpdatedBy: username,
     }
 
     await organizationdetail

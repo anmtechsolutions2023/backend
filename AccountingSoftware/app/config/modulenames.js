@@ -79,4 +79,20 @@ module.exports = {
       update: 'DB_OrganizationDetail_updateTaxType',
     },
   },
+  uomfactor: {
+    application: {
+      fetchAll: 'UOMFactor_getAll',
+      fetchById: 'UOMFactor_fetchTaxTypeById',
+      create: 'UOMFactor_createTaxType',
+      delete: 'UOMFactor_deleteTaxType',
+      update: 'UOMFactor_updateTaxType',
+    },
+    db: {
+      fetchAll: 'DB_UOMFactor_getAll',
+      fetchById: 'DB_UOMFactor_fetchTaxTypeById',
+      create: 'DB_UOMFactor_createTaxType',
+      delete: 'DB_UOMFactor_deleteTaxType',
+      update: 'DB_UOMFactor_updateTaxType',
+    },
+  },
 }
