@@ -95,4 +95,20 @@ module.exports = {
       update: 'DB_UOMFactor_updateTaxType',
     },
   },
+  transactiontypes: {
+    application: {
+      fetchAll: 'TransactionType_getAll',
+      fetchById: 'TransactionType_fetchTaxTypeById',
+      create: 'TransactionType_createTaxType',
+      delete: 'TransactionType_deleteTaxType',
+      update: 'TransactionType_updateTaxType',
+    },
+    db: {
+      fetchAll: 'DB_TransactionType_getAll',
+      fetchById: 'DB_TransactionType_fetchTaxTypeById',
+      create: 'DB_TransactionType_createTaxType',
+      delete: 'DB_TransactionType_deleteTaxType',
+      update: 'DB_TransactionType_updateTaxType',
+    },
+  },
 }

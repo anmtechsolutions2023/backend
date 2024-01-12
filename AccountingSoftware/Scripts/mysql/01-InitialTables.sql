@@ -115,7 +115,7 @@ create table transactiontype
     UpdatedOn datetime,
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
-    UNIQUE (Name),
+    UNIQUE (Name, TenantId),
     FOREIGN KEY (TransactionTypeConfigId) REFERENCES transactiontypeconfig(Id)
 )
 

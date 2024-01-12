@@ -80,7 +80,7 @@ module.exports = (app) => {
   router.put('/uomf/:id', uomfactor.update)
 
   // Transaction Type Operations
-  router.get('/transactiontype', transactiontype.fetchAll)
+  router.get('/transactiontypes', transactiontype.fetchAll)
   router.get('/transactiontype/:id', transactiontype.fetchById)
   router.post('/transactiontype', transactiontype.create)
   router.delete('/transactiontype/:id', transactiontype.delete)
