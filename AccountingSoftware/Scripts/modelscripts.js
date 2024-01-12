@@ -78,6 +78,37 @@ module.exports = {
     update:
       'UPDATE uomfactor SET PrimaryUOMId = ?, SecondaryUOMId = ?, Factor = ?, Active = ? , UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  transactiontypes: {
+    fetchAll: `select 
+        tt.Id,
+        tt.Name,
+        tt.Active,
+        tt.TenantId,
+        ttc.Id as "TTCId",
+        ttc.StartCounterNo as "TTCStartCounterNo",
+        ttc.Prefix as "TTCPrefix",
+        ttc.Format as "TTCFormat",
+        ttc.Active as "TTCActive",
+        ttc.TenantId as "TTCTenantId"
+        from transactiontype as tt join transactiontypeconfig as ttc on tt.TransactionTypeConfigId = ttc.Id WHERE tt.TenantId = ?`,
+    fetchById: `select 
+        tt.Id,
+        tt.Name,
+        tt.Active,
+        tt.TenantId,
+        ttc.Id as "TTCId",
+        ttc.StartCounterNo as "TTCStartCounterNo",
+        ttc.Prefix as "TTCPrefix",
+        ttc.Format as "TTCFormat",
+        ttc.Active as "TTCActive",
+        ttc.TenantId as "TTCTenantId"
+        from transactiontype as tt join transactiontypeconfig as ttc on tt.TransactionTypeConfigId = ttc.Id where tt.Id = ? and tt.TenantId = ?`,
+    create:
+      'insert into transactiontype (Id, Name, TransactionTypeConfigId, Active, TenantId, CreatedOn, CreatedBy) values(?,?,?,?,?,?,?)',
+    delete: 'DELETE FROM transactiontype WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE transactiontype SET Name = ?, TransactionTypeConfigId = ?, Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
