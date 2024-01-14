@@ -133,7 +133,7 @@ create table accounttypebase
     UpdatedOn datetime,
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
-    UNIQUE (Name)
+    UNIQUE (Name, TenantId)
 )
 
 -- TransactionTypeStatus table

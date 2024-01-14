@@ -111,4 +111,20 @@ module.exports = {
       update: 'DB_TransactionType_updateTaxType',
     },
   },
+  accounttypebase: {
+    application: {
+      fetchAll: 'AccountTypeBase_getAll',
+      fetchById: 'AccountTypeBase_fetchTaxTypeById',
+      create: 'AccountTypeBase_createTaxType',
+      delete: 'AccountTypeBase_deleteTaxType',
+      update: 'AccountTypeBase_updateTaxType',
+    },
+    db: {
+      fetchAll: 'DB_AccountTypeBase_getAll',
+      fetchById: 'DB_AccountTypeBase_fetchTaxTypeById',
+      create: 'DB_AccountTypeBase_createTaxType',
+      delete: 'DB_AccountTypeBase_deleteTaxType',
+      update: 'DB_AccountTypeBase_updateTaxType',
+    },
+  },
 }
