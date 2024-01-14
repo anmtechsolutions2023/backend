@@ -109,6 +109,15 @@ module.exports = {
     update:
       'UPDATE transactiontype SET Name = ?, TransactionTypeConfigId = ?, Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  accounttypebase: {
+    fetchAll: 'SELECT * FROM accounttypebase WHERE TenantId = ?',
+    fetchById: 'SELECT * FROM accounttypebase WHERE Id = ? and TenantId = ?',
+    create:
+      'insert into accounttypebase (Id, Name, Active, TenantId, CreatedOn, CreatedBy) values(?,?,?,?,?,?)',
+    delete: 'DELETE FROM accounttypebase WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE accounttypebase SET Name = ?, Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',

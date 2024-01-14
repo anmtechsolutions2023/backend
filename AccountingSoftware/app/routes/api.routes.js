@@ -87,7 +87,7 @@ module.exports = (app) => {
   router.put('/transactiontype/:id', transactiontype.update)
 
   // Account Type Base Operations
-  router.get('/atb', accounttypebase.fetchAll)
+  router.get('/atbs', accounttypebase.fetchAll)
   router.get('/atb/:id', accounttypebase.fetchById)
   router.post('/atb', accounttypebase.create)
   router.delete('/atb/:id', accounttypebase.delete)
