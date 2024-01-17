@@ -94,7 +94,7 @@ module.exports = (app) => {
   router.put('/atb/:id', accounttypebase.update)
 
   // Transaction Type Status Operations
-  router.get('/tts', transactiontypestatus.fetchAll)
+  router.get('/ttss', transactiontypestatus.fetchAll)
   router.get('/tts/:id', transactiontypestatus.fetchById)
   router.post('/tts', transactiontypestatus.create)
   router.delete('/tts/:id', transactiontypestatus.delete)

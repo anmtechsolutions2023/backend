@@ -149,7 +149,7 @@ create table transactiontypestatus
     UpdatedOn datetime,
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
-    UNIQUE (Name)
+    UNIQUE (Name, TenantId)
 )
 
 -- ContactAddressType table

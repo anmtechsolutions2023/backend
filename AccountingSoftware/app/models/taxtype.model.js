@@ -81,7 +81,7 @@ exports.findById = (id, tenantId, username, callerModule) => {
         logger.loggerHelper(
           tenantId,
           username,
-          `${callerModule}-${moduleNames.taxtypes.db.fetchById}`,
+          `${callerModule}--${moduleNames.taxtypes.db.fetchById}`,
           logger.logType.error,
           `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
         )
