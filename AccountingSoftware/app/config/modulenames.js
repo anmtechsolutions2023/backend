@@ -143,4 +143,20 @@ module.exports = {
       update: 'DB_TransactionTypeStatus_updateTaxType',
     },
   },
+  contactaddresstype: {
+    application: {
+      fetchAll: 'ContactAddressType_getAll',
+      fetchById: 'ContactAddressType_fetchTaxTypeById',
+      create: 'ContactAddressType_createTaxType',
+      delete: 'ContactAddressType_deleteTaxType',
+      update: 'ContactAddressType_updateTaxType',
+    },
+    db: {
+      fetchAll: 'DB_ContactAddressType_getAll',
+      fetchById: 'DB_ContactAddressType_fetchTaxTypeById',
+      create: 'DB_ContactAddressType_createTaxType',
+      delete: 'DB_ContactAddressType_deleteTaxType',
+      update: 'DB_ContactAddressType_updateTaxType',
+    },
+  },
 }
