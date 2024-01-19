@@ -1,99 +1,189 @@
-const { v4: uuidv4 } = require('uuid');
-const sql = require("./db.js");
-const statuses = require("./statuses.js")
-const logger = require("../utils/loggerHelper");
+const { v4: uuidv4 } = require('uuid')
+const sql = require('./db.js')
+const statuses = require('./statuses.js')
+const logger = require('../utils/loggerHelper')
+const moduleNames = require('../config/modulenames')
+const moduleScripts = require('../../Scripts/modelscripts.js')
 
 exports.delete = (id, tenantId, username) => {
-    return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
+    let query = moduleScripts.contactaddresstype.delete
 
-        let query = 'DELETE FROM contactaddresstype WHERE Id = ? and TenantId = ?';
+    sql.query(query, [id, tenantId], (err, res) => {
+      if (err) {
+        logger.loggerHelper(
+          tenantId,
+          username,
+          moduleNames.contactaddresstype.db.delete,
+          logger.logType.error,
+          `Error occurred for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
+        )
+        return reject(
+          'DB contactaddresstype Error, for operation:  delete contactaddresstype.' +
+            err
+        )
+      }
 
-        sql.query(query, [id, tenantId], (err, res) => {
-            if (err) {
-                logger.loggerHelper(tenantId, username, "DB_contactaddresstype_delete", logger.logType.error, `Error occurred for Id: ${id}, Error: ${err}`);
-                return reject("DB contactaddresstype Error, for operation:  delete contactaddresstype." + err);
-            }
-
-            if (JSON.stringify(res.affectedRows)) {
-                logger.loggerHelper(tenantId, username, "DB_contactaddresstype_delete", logger.logType.debug, `Record deleted for Id: ${id}`);
-                resolve(res);
-            } else {
-                logger.loggerHelper(tenantId, username, "DB_contactaddresstype_delete", logger.logType.error, `Record not found for Id: ${id}`);
-                resolve(statuses.Statuses.NotFound);
-            }
-        })
-    });
+      if (JSON.stringify(res.affectedRows)) {
+        logger.loggerHelper(
+          tenantId,
+          username,
+          moduleNames.contactaddresstype.db.delete,
+          logger.logType.debug,
+          `Record deleted for Id: ${id}`
+        )
+        resolve(res)
+      } else {
+        logger.loggerHelper(
+          tenantId,
+          username,
+          moduleNames.contactaddresstype.db.delete,
+          logger.logType.error,
+          `Record not found for Id: ${id}`
+        )
+        resolve(statuses.Statuses.NotFound)
+      }
+    })
+  })
 }
 
 exports.getAll = (tenantId, username) => {
-    return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
+    let query = moduleScripts.contactaddresstype.fetchAll
 
-        let query = "SELECT * FROM contactaddresstype WHERE TenantId = ?";
+    sql.query(query, [tenantId], (err, res) => {
+      if (err) {
+        logger.loggerHelper(
+          tenantId,
+          username,
+          moduleNames.contactaddresstype.db.fetchAll,
+          logger.logType.error,
+          `Error Code: ${err.code}, Error occurred, ${err}`
+        )
+        return reject(
+          'DB ContactAddressType Error, for operation:  getAll.' + err
+        )
+      }
 
-        sql.query(query, [tenantId], (err, res) => {
-            if (err) {
-                logger.loggerHelper(tenantId, username, "DB_ContactAddressType_getAll", logger.logType.error, `Error occurred, ${err}`);
-                return reject("DB ContactAddressType Error, for operation:  getAll." + err);
-            }
-            resolve(res);
-        });
-    });
+      logger.loggerHelper(
+        tenantId,
+        username,
+        moduleNames.contactaddresstype.db.fetchAll,
+        logger.logType.debug,
+        'Success'
+      )
+      resolve(res)
+    })
+  })
 }
 
 exports.findById = (id, tenantId, username, callerModule) => {
+  return new Promise((resolve, reject) => {
+    let query = moduleScripts.contactaddresstype.fetchById
 
-    return new Promise((resolve, reject) => {
-        let query = 'SELECT * FROM contactaddresstype WHERE Id = ? and TenantId = ?';
+    sql.query(query, [id, tenantId], (err, res) => {
+      if (err) {
+        logger.loggerHelper(
+          tenantId,
+          username,
+          `${callerModule}--${moduleNames.contactaddresstype.db.fetchById}`,
+          logger.logType.error,
+          `Error occurred for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
+        )
+        return reject(
+          'DB ContactAddressType Error, for operation:  findById.' + err
+        )
+      }
 
-        sql.query(query, [id, tenantId], (err, res) => {
-            if (err) {
-                logger.loggerHelper(tenantId, username, `${callerModule}-DB_ContactAddressType_findById`, logger.logType.error, `Error occurred for Id: ${id}, Error: ${err}`);
-                return reject("DB ContactAddressType Error, for operation:  findById." + err);
-            }
-
-            if (res.length) {
-                logger.loggerHelper(tenantId, username, `${callerModule}-DB_ContactAddressType_findById`, logger.logType.debug, `Record found for Id: ${id}`);
-                resolve(res);
-            } else {
-                logger.loggerHelper(tenantId, username, `${callerModule}-DB_ContactAddressType_findById`, logger.logType.error, `No Record found for Id: ${id}`);
-                resolve(statuses.Statuses.NotFound);
-            }
-
-        });
-
-    });
+      if (res.length) {
+        logger.loggerHelper(
+          tenantId,
+          username,
+          `${callerModule}--${moduleNames.contactaddresstype.db.fetchById}`,
+          logger.logType.debug,
+          `Record found for Id: ${id}`
+        )
+        resolve(res)
+      } else {
+        logger.loggerHelper(
+          tenantId,
+          username,
+          `${callerModule}--${moduleNames.contactaddresstype.db.fetchById}`,
+          logger.logType.error,
+          `No Record found for Id: ${id}`
+        )
+        resolve(statuses.Statuses.NotFound)
+      }
+    })
+  })
 }
 
 exports.update = (cat, username) => {
-    return new Promise((resolve, reject) => {
-        let query = "UPDATE contactaddresstype SET Name = ?, Active = ?, TenantId =?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?";
+  return new Promise((resolve, reject) => {
+    let query = moduleScripts.contactaddresstype.update
 
-        sql.query(query, [cat.Name, cat.Active, cat.TenantId, cat.UpdatedOn, cat.UpdatedBy, cat.Id, tenantId], (err, res) => {
-            if (err) {
-                logger.loggerHelper(cat.TenantId, username, "DB_ContactAddressType_update", logger.logType.error, `Error occurred for Id: ${cat.TenantId}, Error: ${err}`);
-                return reject("DB DB_ContactAddressType Error, for operation:  update." + err);
-            }
-            logger.loggerHelper(cat.TenantId, username, "DB_ContactAddressType_update", logger.logType.debug, `Record updated for Id: ${cat.TenantId}`);
-            resolve(res);
-        });
-
-    });
+    sql.query(
+      query,
+      [
+        cat.Name,
+        cat.Active,
+        cat.UpdatedOn,
+        cat.UpdatedBy,
+        cat.Id,
+        cat.TenantId,
+      ],
+      (err, res) => {
+        if (err) {
+          logger.loggerHelper(
+            cat.TenantId,
+            username,
+            moduleNames.contactaddresstype.db.update,
+            logger.logType.error,
+            `Error occurred for Id: ${cat.TenantId}, Error Code: ${err.code}, Error: ${err}`
+          )
+          return reject(err.code)
+        }
+        logger.loggerHelper(
+          cat.TenantId,
+          username,
+          moduleNames.contactaddresstype.db.update,
+          logger.logType.debug,
+          `Record updated for Id: ${cat.TenantId}`
+        )
+        resolve(res)
+      }
+    )
+  })
 }
 
 exports.create = (cat, username) => {
-    return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
+    let query = moduleScripts.contactaddresstype.create
+    let catId = uuidv4()
 
-        let query = "insert into contactaddresstype (Id, Name, Active, TenantId, CreatedOn, CreatedBy) values(?,?,?,?,?,?)";
-        let catId = uuidv4();
-
-        sql.query(query, [catId, cat.Name, cat.Active, cat.TenantId, cat.CreatedOn, cat.CreatedBy], (err, res) => {
-            if (err) {
-                logger.loggerHelper(cat.TenantId, username, "DB_ContactAddressType_create", logger.logType.error, `Error occurred for cat Name: ${cat.Name}, Error: ${err}`);
-                return reject("DB ContactAddressType Error, for operation:  create." + err);
-            }
-            logger.loggerHelper(cat.TenantId, username, "DB_ContactAddressType_create", logger.logType.debug, `Record created for cat Name: ${cat.Name} with Id: ${catId}`);
-            resolve(catId);
-        });
-
-    });
+    sql.query(
+      query,
+      [catId, cat.Name, cat.Active, cat.TenantId, cat.CreatedOn, cat.CreatedBy],
+      (err, res) => {
+        if (err) {
+          logger.loggerHelper(
+            cat.TenantId,
+            username,
+            moduleNames.contactaddresstype.db.create,
+            logger.logType.error,
+            `Error occurred for cat Name: ${cat.Name}, Error Code: ${err.code}, Error: ${err}`
+          )
+          return reject(err.code)
+        }
+        logger.loggerHelper(
+          cat.TenantId,
+          username,
+          moduleNames.contactaddresstype.db.create,
+          logger.logType.debug,
+          `Record created for cat Name: ${cat.Name} with Id: ${catId}`
+        )
+        resolve(catId)
+      }
+    )
+  })
 }

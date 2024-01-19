@@ -101,7 +101,7 @@ module.exports = (app) => {
   router.put('/tts/:id', transactiontypestatus.update)
 
   // Contact Address Type Operations
-  router.get('/cat', contactaddresstype.fetchAll)
+  router.get('/cats', contactaddresstype.fetchAll)
   router.get('/cat/:id', contactaddresstype.fetchById)
   router.post('/cat', contactaddresstype.create)
   router.delete('/cat/:id', contactaddresstype.delete)

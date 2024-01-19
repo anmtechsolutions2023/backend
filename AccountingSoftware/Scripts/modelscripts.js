@@ -128,6 +128,15 @@ module.exports = {
     update:
       'UPDATE transactiontypestatus SET Name = ?, Active = ? , UpdatedOn = ?, UpdatedBy = ? WHERE Id = ?',
   },
+  contactaddresstype: {
+    fetchAll: 'SELECT * FROM contactaddresstype WHERE TenantId = ?',
+    fetchById: 'SELECT * FROM contactaddresstype WHERE Id = ? and TenantId = ?',
+    create:
+      'insert into contactaddresstype (Id, Name, Active, TenantId, CreatedOn, CreatedBy) values(?,?,?,?,?,?)',
+    delete: 'DELETE FROM contactaddresstype WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE contactaddresstype SET Name = ?, Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',

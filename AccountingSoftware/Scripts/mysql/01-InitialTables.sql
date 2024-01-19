@@ -165,7 +165,7 @@ create table contactaddresstype
     UpdatedOn datetime,
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
-    UNIQUE (Name)
+    UNIQUE (Name, TenantId)
 )
 
 -- TaxGroup table
