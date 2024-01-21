@@ -11,6 +11,7 @@ module.exports = (app) => {
   const accounttypebase = require('../controllers/accounttypebase.controller')
   const transactiontypestatus = require('../controllers/transactiontypestatus.controller.js')
   const contactaddresstype = require('../controllers/contactaddresstype.controller.js')
+  const taxgroup = require('../controllers/taxgroup.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -106,6 +107,36 @@ module.exports = (app) => {
   router.post('/cat', contactaddresstype.create)
   router.delete('/cat/:id', contactaddresstype.delete)
   router.put('/cat/:id', contactaddresstype.update)
+
+  // Tax Group Opertaions
+  router.get('/taxgs', taxgroup.fetchAll)
+  router.get('/taxg/:id', taxgroup.fetchById)
+  router.post('/taxg', taxgroup.create)
+  router.delete('/taxg/:id', taxgroup.delete)
+  router.put('/taxg/:id', taxgroup.update)
+
+  // Address Detail Operations
+  // Contact Detail Operations
+  // Location Detail Operation
+  // Map Provider Detail Operations
+  // Map Provider Location Mapper Operations
+
+  // Cost Info Operations
+  // Batch Detail Operations
+  // Item Operations
+  // Branch Detail Operations
+
+  // Transaction Type Base Conversion Opertions
+  // Transaction Type Counter Operations -- Need to see for this usage
+  // Transaction Detail log Operations
+  // Transaction Item Detail Operations
+
+  // Payment Received Type Operations
+  // Payment Mode Operations
+  // Payment Mode Transaction Detail Operations
+  // Payment Detail Operations
+  // Payment Breakup Operations
+  // Account Type Base Profile Operations
 
   // // Create a new Tutorial
   // router.post("/", tutorials.create);

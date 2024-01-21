@@ -137,6 +137,15 @@ module.exports = {
     update:
       'UPDATE contactaddresstype SET Name = ?, Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  taxgroup: {
+    fetchAll: 'SELECT * FROM taxgroup WHERE TenantId = ?',
+    fetchById: 'SELECT * FROM taxgroup WHERE Id = ? and TenantId = ?',
+    create:
+      'insert into taxgroup (Id, Name, Active, TenantId, CreatedOn, CreatedBy) values(?,?,?,?,?,?)',
+    delete: 'DELETE FROM taxgroup WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE taxgroup SET Name = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
