@@ -170,13 +170,18 @@ create table contactaddresstype
 
 -- TaxGroup table
 
-create table TaxGroup
+create table taxgroup
 (
 	Id varchar(50) not null,
     Name varchar(50) not null,
-    TaxTypeId varchar(50) not null,
+    TenantId varchar(50) not null,
     Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
     PRIMARY KEY (Id),
-    UNIQUE (Name, TaxTypeId),
-    FOREIGN KEY (TaxTypeId) REFERENCES TaxTypes(Id)
+    UNIQUE (Name, TenantId)
 )
+
+-- Tax Group Tax Type Mapper table
