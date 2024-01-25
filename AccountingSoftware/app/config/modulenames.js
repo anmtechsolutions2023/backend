@@ -175,4 +175,22 @@ module.exports = {
       update: 'DB_TaxGroup_update',
     },
   },
+  taxgrouptaxtypemapper: {
+    application: {
+      fetchAll: 'TaxGroupTaxTypeMapper_fetchAll',
+      fetchById: 'TaxGroupTaxTypeMapper_fetchById',
+      create: 'TaxGroupTaxTypeMapper_create',
+      delete: 'TaxGroupTaxTypeMapper_delete',
+      update: 'TaxGroupTaxTypeMapper_update',
+      searchbyname: 'TaxGroupTaxTypeMapper_searchbyname',
+    },
+    db: {
+      fetchAll: 'DB_TaxGroupTaxTypeMapper_fetchAll',
+      fetchById: 'DB_TaxGroupTaxTypeMapper_fetchById',
+      create: 'DB_TaxGroupTaxTypeMapper_create',
+      delete: 'DB_TaxGroupTaxTypeMapper_delete',
+      update: 'DB_TaxGroupTaxTypeMapper_update',
+      searchbyname: 'DB_TaxGroupTaxTypeMapper_searchbyname',
+    },
+  },
 }

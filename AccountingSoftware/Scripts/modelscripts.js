@@ -146,6 +146,56 @@ module.exports = {
     update:
       'UPDATE taxgroup SET Name = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  taxgrouptaxtypemapper: {
+    fetchAll: `Select
+        tgttm.Id as "TaxGroupTaxTypeMapperId",
+        tgttm.Active as "TaxGroupTaxTypeMapperActive",
+        tg.Id as "TaxGroupId",
+        tg.Name as "TaxGroupName",
+        tg.Active as "TaxGroupActive",
+        tt.Id as "TaxTypeId",
+        tt.Name as "TaxTypeName",
+        tt.Value as "TaxTypeValue",
+        tt.Active as "TaxTypeActive"
+        FROM taxgrouptaxtypemapper as tgttm 
+        JOIN taxgroup as tg ON tgttm.TaxGroupId = tg.Id
+        JOIN TaxTypes as tt ON tgttm.TaxTypeId = tt.Id
+        WHERE tgttm.TenantId = ?`,
+    fetchById: `Select
+        tgttm.Id as "TaxGroupTaxTypeMapperId",
+        tgttm.Active as "TaxGroupTaxTypeMapperActive",
+        tg.Id as "TaxGroupId",
+        tg.Name as "TaxGroupName",
+        tg.Active as "TaxGroupActive",
+        tt.Id as "TaxTypeId",
+        tt.Name as "TaxTypeName",
+        tt.Value as "TaxTypeValue",
+        tt.Active as "TaxTypeActive"
+        FROM taxgrouptaxtypemapper as tgttm 
+        JOIN taxgroup as tg ON tgttm.TaxGroupId = tg.Id
+        JOIN TaxTypes as tt ON tgttm.TaxTypeId = tt.Id
+        WHERE tgttm.TenantId = ? and tgttm.Id = ?`,
+    create:
+      'insert into taxgrouptaxtypemapper (Id, TaxGroupId, TaxTypeId, TenantId, Active, CreatedOn, CreatedBy) values (?,?,?,?,?,?,?)',
+    delete: 'DELETE FROM taxgrouptaxtypemapper WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE taxgrouptaxtypemapper SET TaxGroupId = ?, TaxTypeId = ? , Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+    searchbyname: `Select
+        tgttm.Id as "TaxGroupTaxTypeMapperId",
+        tgttm.Active as "TaxGroupTaxTypeMapperActive",
+        tg.Id as "TaxGroupId",
+        tg.Name as "TaxGroupName",
+        tg.Active as "TaxGroupActive",
+        tt.Id as "TaxTypeId",
+        tt.Name as "TaxTypeName",
+        tt.Value as "TaxTypeValue",
+        tt.Active as "TaxTypeActive"
+        FROM taxgrouptaxtypemapper as tgttm 
+        JOIN taxgroup as tg ON tgttm.TaxGroupId = tg.Id
+        JOIN TaxTypes as tt ON tgttm.TaxTypeId = tt.Id
+        WHERE tgttm.TenantId = ?
+        AND tg.Name = ?`,
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',

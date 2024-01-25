@@ -12,6 +12,7 @@ module.exports = (app) => {
   const transactiontypestatus = require('../controllers/transactiontypestatus.controller.js')
   const contactaddresstype = require('../controllers/contactaddresstype.controller.js')
   const taxgroup = require('../controllers/taxgroup.controller.js')
+  const taxgrouptaxtypemapper = require('../controllers/taxgrouptaxtypemapper.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -114,6 +115,14 @@ module.exports = (app) => {
   router.post('/taxg', taxgroup.create)
   router.delete('/taxg/:id', taxgroup.delete)
   router.put('/taxg/:id', taxgroup.update)
+
+  // Tax Group Tax Type Mapper Opertaions
+  router.get('/tgtyms', taxgrouptaxtypemapper.fetchAll)
+  router.get('/tgtym/search', taxgrouptaxtypemapper.search)
+  router.get('/tgtym/:id', taxgrouptaxtypemapper.fetchById)
+  router.post('/tgtym', taxgrouptaxtypemapper.create)
+  router.delete('/tgtym/:id', taxgrouptaxtypemapper.delete)
+  router.put('/tgtym/:id', taxgrouptaxtypemapper.update)
 
   // Address Detail Operations
   // Contact Detail Operations

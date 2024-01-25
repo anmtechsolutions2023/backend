@@ -16,7 +16,7 @@ exports.deleteUOM = (id, tenantId, username) => {
           username,
           moduleNames.uom.db.delete,
           logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${er.code}, Error: ${err}`
+          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
         )
         return reject('DB UOM Error, for operation:  deleteUOM.' + err)
       }
