@@ -184,4 +184,20 @@ create table taxgroup
     UNIQUE (Name, TenantId)
 )
 
--- Tax Group Tax Type Mapper table
+ -- Tax Group Tax Type Mapper table
+create table taxgrouptaxtypemapper
+(
+	Id varchar(50) not null,
+    TaxGroupId varchar(50) not null,
+    TaxTypeId varchar(50) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (TaxGroupId, TaxTypeId, TenantId),
+    FOREIGN KEY (TaxGroupId) REFERENCES taxgroup(Id),
+    FOREIGN KEY (TaxTypeId) REFERENCES TaxTypes(Id)
+)

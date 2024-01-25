@@ -63,9 +63,36 @@ exports.authorization = async (req, res, next) => {
   var groupuserapimapper = `${req.method.toLowerCase()}-${
     req.url.slice(1).toLowerCase().split('/')[0]
   }` // final solution to get Method-APIUrl
+
+  // Get the URL Params
+  // Get Param2, which is imp, which may have query params.
+  // If Param2 not exists then, no issue,
+  // If Param2 exists then, check, it has params (which starts with ?), if yes, then get the substring.
+  // once get the substring from param2, append it to main string.
+  var param2 = req.url.slice(1).toLowerCase().split('/')[1]
+
+  var charToFind = '?'
+  var param2substring
+  if (param2 && param2.includes(charToFind)) {
+    const indexOfChar = param2.indexOf(charToFind)
+
+    // Check if the character was found
+    if (indexOfChar !== -1) {
+      // Use substring to get the substring from the start to the specified character
+      const substring = param2.substring(0, indexOfChar)
+      param2substring = substring
+      // console.log(substring)
+    }
+  }
+
+  if (param2substring) {
+    groupuserapimapper = `${groupuserapimapper}-${param2substring}`
+  }
+
   // console.log(`groupuserapimapper: ${groupuserapimapper}`)
 
   var apiMapperforTenant = `${tokenDetail.tenant}_${groupuserapimapper}`
+
   // console.log(`apiMapperforTenant: ${apiMapperforTenant}`)
   // console.log(`tokenDetail.tenantscope: ${tokenDetail.tenantscope}`)
 
