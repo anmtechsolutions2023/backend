@@ -196,6 +196,15 @@ module.exports = {
         WHERE tgttm.TenantId = ?
         AND tg.Name = ?`,
   },
+  mapprovider: {
+    fetchAll: 'SELECT * FROM mapprovider WHERE TenantId = ?',
+    fetchById: 'SELECT * FROM mapprovider WHERE Id = ? and TenantId = ?',
+    create:
+      'insert into mapprovider (Id, ProviderName, Active, TenantId, CreatedOn, CreatedBy) values(?,?,?,?,?,?)',
+    delete: 'DELETE FROM mapprovider WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE mapprovider SET ProviderName = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
