@@ -13,6 +13,7 @@ module.exports = (app) => {
   const contactaddresstype = require('../controllers/contactaddresstype.controller.js')
   const taxgroup = require('../controllers/taxgroup.controller.js')
   const taxgrouptaxtypemapper = require('../controllers/taxgrouptaxtypemapper.controller.js')
+  const mapprovider = require('../controllers/mapprovider.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -124,11 +125,18 @@ module.exports = (app) => {
   router.delete('/tgtym/:id', taxgrouptaxtypemapper.delete)
   router.put('/tgtym/:id', taxgrouptaxtypemapper.update)
 
+  // Map Provider Detail Operations
+  router.get('/mapps', mapprovider.fetchAll)
+  router.get('/mapp/:id', mapprovider.fetchById)
+  router.post('/mapp', mapprovider.create)
+  router.delete('/mapp/:id', mapprovider.delete)
+  router.put('/mapp/:id', mapprovider.update)
+
+  // Location Detail Operation
+  // Map Provider Location Mapper Operations
+
   // Address Detail Operations
   // Contact Detail Operations
-  // Location Detail Operation
-  // Map Provider Detail Operations
-  // Map Provider Location Mapper Operations
 
   // Cost Info Operations
   // Batch Detail Operations

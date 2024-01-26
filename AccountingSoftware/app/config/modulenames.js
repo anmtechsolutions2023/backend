@@ -193,4 +193,20 @@ module.exports = {
       searchbyname: 'DB_TaxGroupTaxTypeMapper_searchbyname',
     },
   },
+  mapprovider: {
+    application: {
+      fetchAll: 'MapProvider_fetchAll',
+      fetchById: 'MapProvider_fetchById',
+      create: 'MapProvider_create',
+      delete: 'MapProvider_delete',
+      update: 'MapProvider_update',
+    },
+    db: {
+      fetchAll: 'DB_MapProvider_fetchAll',
+      fetchById: 'DB_MapProvider_fetchById',
+      create: 'DB_MapProvider_create',
+      delete: 'DB_MapProvider_delete',
+      update: 'DB_MapProvider_update',
+    },
+  },
 }
