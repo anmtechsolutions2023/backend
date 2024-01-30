@@ -217,3 +217,24 @@ create table mapprovider
     PRIMARY KEY (Id),
     UNIQUE (ProviderName, TenantId)
 )
+
+-- Location Detail table
+
+create table locationdetail
+(
+    Id varchar(50) not null,
+    Lat varchar(50) not null,
+    Lng varchar(50) not null,
+    CF1 varchar(50),
+    CF2 varchar(50),
+    CF3 varchar(50),
+    CF4 varchar(50),
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (Lat, Lng, TenantId)
+)

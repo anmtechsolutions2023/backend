@@ -14,6 +14,7 @@ module.exports = (app) => {
   const taxgroup = require('../controllers/taxgroup.controller.js')
   const taxgrouptaxtypemapper = require('../controllers/taxgrouptaxtypemapper.controller.js')
   const mapprovider = require('../controllers/mapprovider.controller.js')
+  const locationdetail = require('../controllers/locationdetail.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -133,7 +134,18 @@ module.exports = (app) => {
   router.put('/mapp/:id', mapprovider.update)
 
   // Location Detail Operation
+  router.get('/locds', locationdetail.fetchAll)
+  router.get('/locd/:id', locationdetail.fetchById)
+  router.post('/locd', locationdetail.create)
+  router.delete('/locd/:id', locationdetail.delete)
+  router.put('/locd/:id', locationdetail.update)
+
   // Map Provider Location Mapper Operations
+  // router.get('/mplms', locationdetail.fetchAll)
+  // router.get('/mplm/:id', locationdetail.fetchById)
+  // router.post('/mplm', locationdetail.create)
+  // router.delete('/mplm/:id', locationdetail.delete)
+  // router.put('/mplm/:id', locationdetail.update)
 
   // Address Detail Operations
   // Contact Detail Operations
