@@ -209,4 +209,20 @@ module.exports = {
       update: 'DB_MapProvider_update',
     },
   },
+  locationdetail: {
+    application: {
+      fetchAll: 'LocationDetail_fetchAll',
+      fetchById: 'LocationDetail_fetchById',
+      create: 'LocationDetail_create',
+      delete: 'LocationDetail_delete',
+      update: 'LocationDetail_update',
+    },
+    db: {
+      fetchAll: 'DB_LocationDetail_fetchAll',
+      fetchById: 'DB_LocationDetail_fetchById',
+      create: 'DB_LocationDetail_create',
+      delete: 'DB_LocationDetail_delete',
+      update: 'DB_LocationDetail_update',
+    },
+  },
 }

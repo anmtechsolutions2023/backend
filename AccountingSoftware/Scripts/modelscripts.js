@@ -205,6 +205,15 @@ module.exports = {
     update:
       'UPDATE mapprovider SET ProviderName = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  locationdetail: {
+    fetchAll: 'SELECT * FROM locationdetail WHERE TenantId = ?',
+    fetchById: 'SELECT * FROM locationdetail WHERE Id = ? and TenantId = ?',
+    create:
+      'insert into locationdetail (Id, Lat, Lng, CF1, CF2, CF3, CF4, Active, TenantId, CreatedOn, CreatedBy) values(?,?,?,?,?,?,?,?,?,?,?)',
+    delete: 'DELETE FROM locationdetail WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE locationdetail SET Lat = ?, Lng = ?, CF1 = ?, CF2 = ?, CF3 = ?, CF4 = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
