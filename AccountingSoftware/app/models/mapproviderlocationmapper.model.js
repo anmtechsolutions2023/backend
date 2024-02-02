@@ -7,14 +7,14 @@ const moduleNames = require('../config/modulenames')
 
 exports.delete = (id, tenantId, username) => {
   return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.delete
+    let query = moduleScripts.mapproviderlocationmapper.delete
 
     sql.query(query, [id, tenantId], (err, res) => {
       if (err) {
         logger.loggerHelper(
           tenantId,
           username,
-          moduleNames.taxgrouptaxtypemapper.db.delete,
+          moduleNames.mapproviderlocationmapper.db.delete,
           logger.logType.error,
           `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
         )
@@ -25,7 +25,7 @@ exports.delete = (id, tenantId, username) => {
         logger.loggerHelper(
           tenantId,
           username,
-          moduleNames.taxgrouptaxtypemapper.db.delete,
+          moduleNames.mapproviderlocationmapper.db.delete,
           logger.logType.debug,
           `Deleted record Id: ${id}, affected Rows are: ${res.affectedRows} `
         )
@@ -46,14 +46,14 @@ exports.delete = (id, tenantId, username) => {
 
 exports.getAll = (tenantId, username) => {
   return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.fetchAll
+    let query = moduleScripts.mapproviderlocationmapper.fetchAll
 
     sql.query(query, [tenantId], (err, res) => {
       if (err) {
         logger.loggerHelper(
           tenantId,
           username,
-          moduleNames.taxgrouptaxtypemapper.db.fetchAll,
+          moduleNames.mapproviderlocationmapper.db.fetchAll,
           logger.logType.error,
           `Error Code: ${err.code}, Error: ${err}`
         )
@@ -63,7 +63,7 @@ exports.getAll = (tenantId, username) => {
       logger.loggerHelper(
         tenantId,
         username,
-        moduleNames.taxgrouptaxtypemapper.db.fetchAll,
+        moduleNames.mapproviderlocationmapper.db.fetchAll,
         logger.logType.debug,
         `Success`
       )
@@ -72,67 +72,39 @@ exports.getAll = (tenantId, username) => {
   })
 }
 
-exports.searchByName = (tenantId, username, TaxGroupName) => {
+exports.update = (mplmReq, username) => {
   return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.searchbyname
-
-    sql.query(query, [tenantId, TaxGroupName], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.taxgrouptaxtypemapper.db.searchbyname,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  searchbyname.' + err)
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.taxgrouptaxtypemapper.db.searchbyname,
-        logger.logType.debug,
-        `Success`
-      )
-      resolve(res)
-    })
-  })
-}
-
-exports.update = (tgttmReq, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.update
+    let query = moduleScripts.mapproviderlocationmapper.update
 
     sql.query(
       query,
       [
-        tgttmReq.TaxGroupId,
-        tgttmReq.TaxTypeId,
-        tgttmReq.Active,
-        tgttmReq.UpdatedOn,
-        tgttmReq.UpdatedBy,
-        tgttmReq.Id,
-        tgttmReq.TenantId,
+        mplmReq.MapProviderId,
+        mplmReq.LocationDetailId,
+        mplmReq.Active,
+        mplmReq.UpdatedOn,
+        mplmReq.UpdatedBy,
+        mplmReq.Id,
+        mplmReq.TenantId,
       ],
       (err, res) => {
         if (err) {
           logger.loggerHelper(
-            tgttmReq.TenantId,
+            mplmReq.TenantId,
             username,
-            moduleNames.taxgrouptaxtypemapper.db.update,
+            moduleNames.mapproviderlocationmapper.db.update,
             logger.logType.error,
-            `Error for Id: ${tgttmReq.Id}, Error code: ${err.code}, Error: ${err}`
+            `Error for Id: ${mplmReq.Id}, Error code: ${err.code}, Error: ${err}`
           )
           return reject('DB Error, for operation:  update.' + err)
         }
 
         logger.loggerHelper(
-          tgttmReq.TenantId,
+          mplmReq.TenantId,
           username,
-          moduleNames.taxgrouptaxtypemapper.db.update,
+          moduleNames.mapproviderlocationmapper.db.update,
           logger.logType.debug,
-          `Successfully updated UOM Id: ${tgttmReq.Id}`
+          `Successfully updated UOM Id: ${mplmReq.Id}`
         )
         resolve(res)
       }
@@ -142,14 +114,14 @@ exports.update = (tgttmReq, username) => {
 
 exports.findById = (id, tenantId, username, callerModule) => {
   return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.fetchById
+    let query = moduleScripts.mapproviderlocationmapper.fetchById
 
     sql.query(query, [tenantId, id], (err, res) => {
       if (err) {
         logger.loggerHelper(
           tenantId,
           username,
-          `${callerModule}--${moduleNames.taxgrouptaxtypemapper.db.fetchById}`,
+          `${callerModule}--${moduleNames.mapproviderlocationmapper.db.fetchById}`,
           logger.logType.error,
           `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
         )
@@ -160,7 +132,7 @@ exports.findById = (id, tenantId, username, callerModule) => {
         logger.loggerHelper(
           tenantId,
           username,
-          `${callerModule}--${moduleNames.taxgrouptaxtypemapper.db.fetchById}`,
+          `${callerModule}--${moduleNames.mapproviderlocationmapper.db.fetchById}`,
           logger.logType.debug,
           `Record found for Id: ${id}`
         )
@@ -169,7 +141,7 @@ exports.findById = (id, tenantId, username, callerModule) => {
         logger.loggerHelper(
           tenantId,
           username,
-          `${callerModule}--${moduleNames.taxgrouptaxtypemapper.db.fetchById}`,
+          `${callerModule}--${moduleNames.mapproviderlocationmapper.db.fetchById}`,
           logger.logType.error,
           `Record not found for Id: ${id}`
         )
@@ -179,42 +151,42 @@ exports.findById = (id, tenantId, username, callerModule) => {
   })
 }
 
-exports.create = (tgttmReq, username) => {
+exports.create = (mplmReq, username) => {
   return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.create
-    let tgttmId = uuidv4()
+    let query = moduleScripts.mapproviderlocationmapper.create
+    let mplmId = uuidv4()
 
     sql.query(
       query,
       [
-        tgttmId,
-        tgttmReq.TaxGroupId,
-        tgttmReq.TaxTypeId,
-        tgttmReq.TenantId,
-        tgttmReq.Active,
-        tgttmReq.CreatedOn,
-        tgttmReq.CreatedBy,
+        mplmId,
+        mplmReq.MapProviderId,
+        mplmReq.LocationDetailId,
+        mplmReq.TenantId,
+        mplmReq.Active,
+        mplmReq.CreatedOn,
+        mplmReq.CreatedBy,
       ],
       (err, res) => {
         if (err) {
           logger.loggerHelper(
-            tgttmReq.TenantId,
+            mplmReq.TenantId,
             username,
-            moduleNames.taxgrouptaxtypemapper.db.create,
+            moduleNames.mapproviderlocationmapper.db.create,
             logger.logType.error,
-            `Error while creating record for ${tgttmReq.TaxGroupId}-${tgttmReq.TaxTypeId}, Error Code: ${err.code} , Error: ${err}`
+            `Error while creating record for ${mplmReq.MapProviderId}-${mplmReq.LocationDetailId}, Error Code: ${err.code} , Error: ${err}`
           )
           return reject(err.code)
         }
 
         logger.loggerHelper(
-          tgttmReq.TenantId,
+          mplmReq.TenantId,
           username,
-          moduleNames.taxgrouptaxtypemapper.db.create,
+          moduleNames.mapproviderlocationmapper.db.create,
           logger.logType.debug,
-          `Successfully created with Id: ${tgttmId}`
+          `Successfully created with Id: ${mplmId}`
         )
-        resolve(tgttmId)
+        resolve(mplmId)
       }
     )
   })

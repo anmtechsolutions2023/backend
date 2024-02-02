@@ -238,3 +238,21 @@ create table locationdetail
     PRIMARY KEY (Id),
     UNIQUE (Lat, Lng, TenantId)
 )
+
+-- Map Provider Location Mapper table
+create table mapproviderlocationmapper
+(
+	Id varchar(50) not null,
+    MapProviderId varchar(50) not null,
+    LocationDetailId varchar(50) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (MapProviderId, LocationDetailId, TenantId),
+    FOREIGN KEY (MapProviderId) REFERENCES mapprovider(Id),
+    FOREIGN KEY (LocationDetailId) REFERENCES locationdetail(Id)
+)

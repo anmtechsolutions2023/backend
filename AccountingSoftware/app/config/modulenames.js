@@ -225,4 +225,20 @@ module.exports = {
       update: 'DB_LocationDetail_update',
     },
   },
+  mapproviderlocationmapper: {
+    application: {
+      fetchAll: 'MapProviderLocationMapper_fetchAll',
+      fetchById: 'MapProviderLocationMapper_fetchById',
+      create: 'MapProviderLocationMapper_create',
+      delete: 'MapProviderLocationMapper_delete',
+      update: 'MapProviderLocationMapper_update',
+    },
+    db: {
+      fetchAll: 'DB_MapProviderLocationMapper_fetchAll',
+      fetchById: 'DB_MapProviderLocationMapper_fetchById',
+      create: 'DB_MapProviderLocationMapper_create',
+      delete: 'DB_MapProviderLocationMapper_delete',
+      update: 'DB_MapProviderLocationMapper_update',
+    },
+  },
 }

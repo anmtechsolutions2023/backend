@@ -214,6 +214,58 @@ module.exports = {
     update:
       'UPDATE locationdetail SET Lat = ?, Lng = ?, CF1 = ?, CF2 = ?, CF3 = ?, CF4 = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  mapproviderlocationmapper: {
+    fetchAll: `SELECT 
+    mplm.Id as "MapProviderLocationDetailId",
+    mplm.Active as "MapProviderLocationDetailActive",
+    mplm.CreatedOn as "MapProviderLocationDetailCreatedOn",
+    mplm.CreatedBy as "MapProviderLocationDetailCreatedBy",
+    mplm.UpdatedOn as "MapProviderLocationDetailUpdatedOn",
+    mplm.UpdatedBy as "MapProviderLocationDetailUpdatedBy",
+    mp.Id as "MapProviderId",
+    mp.ProviderName as "MapProviderName",
+    mp.Active as "MapProviderActive",
+    ld.Id as "LocationDetailId",
+    ld.Lat as "LocationDetailLat",
+    ld.Lng as "LocationDetailLng",
+    ld.CF1 as "LocationDetailCF1",
+    ld.CF2 as "LocationDetailCF2",
+    ld.CF3 as "LocationDetailCF3",
+    ld.CF4 as "LocationDetailCF4",
+    ld.Active as "LocationDetailActive"
+    FROM mapproviderlocationmapper as mplm 
+    JOIN mapprovider as mp ON mplm.MapProviderId = mp.Id
+    JOIN locationdetail as ld ON mplm.LocationDetailId = ld.Id
+    WHERE mplm.TenantId = ?`,
+    fetchById: `SELECT 
+    mplm.Id as "MapProviderLocationDetailId",
+    mplm.Active as "MapProviderLocationDetailActive",
+    mplm.CreatedOn as "MapProviderLocationDetailCreatedOn",
+    mplm.CreatedBy as "MapProviderLocationDetailCreatedBy",
+    mplm.UpdatedOn as "MapProviderLocationDetailUpdatedOn",
+    mplm.UpdatedBy as "MapProviderLocationDetailUpdatedBy",
+    mp.Id as "MapProviderId",
+    mp.ProviderName as "MapProviderName",
+    mp.Active as "MapProviderActive",
+    ld.Id as "LocationDetailId",
+    ld.Lat as "LocationDetailLat",
+    ld.Lng as "LocationDetailLng",
+    ld.CF1 as "LocationDetailCF1",
+    ld.CF2 as "LocationDetailCF2",
+    ld.CF3 as "LocationDetailCF3",
+    ld.CF4 as "LocationDetailCF4",
+    ld.Active as "LocationDetailActive"
+    FROM mapproviderlocationmapper as mplm 
+    JOIN mapprovider as mp ON mplm.MapProviderId = mp.Id
+    JOIN locationdetail as ld ON mplm.LocationDetailId = ld.Id
+    WHERE mplm.TenantId = ? AND mplm.Id = ?`,
+    create:
+      'insert into mapproviderlocationmapper (Id, MapProviderId, LocationDetailId, TenantId, Active, CreatedOn, CreatedBy) values(?,?,?,?,?,?,?)',
+    delete:
+      'DELETE FROM mapproviderlocationmapper WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE mapproviderlocationmapper SET MapProviderId = ?, LocationDetailId = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
