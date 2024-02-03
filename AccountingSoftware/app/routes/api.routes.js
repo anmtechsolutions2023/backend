@@ -16,6 +16,7 @@ module.exports = (app) => {
   const mapprovider = require('../controllers/mapprovider.controller.js')
   const locationdetail = require('../controllers/locationdetail.controller.js')
   const mapproviderlocationmapper = require('../controllers/mapproviderlocationmapper.controller.js')
+  const contactdetail = require('../controllers/contactdetail.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -148,8 +149,15 @@ module.exports = (app) => {
   router.delete('/mplm/:id', mapproviderlocationmapper.delete)
   router.put('/mplm/:id', mapproviderlocationmapper.update)
 
-  // Address Detail Operations
   // Contact Detail Operations
+  router.get('/contactds', contactdetail.fetchAll)
+  router.get('/contactd/:id', contactdetail.fetchById)
+  router.post('/contactd', contactdetail.create)
+  router.delete('/contactd/:id', contactdetail.delete)
+  router.put('/contactd/:id', contactdetail.update)
+  // router.get('/contactd/search', contactdetail.search)
+
+  // Address Detail Operations
 
   // Cost Info Operations
   // Batch Detail Operations
