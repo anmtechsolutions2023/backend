@@ -266,6 +266,29 @@ module.exports = {
     update:
       'UPDATE mapproviderlocationmapper SET MapProviderId = ?, LocationDetailId = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  contactdetail: {
+    fetchAll: `SELECT 
+    cd.*,
+    cat.Id as "ContactAddressTypeId",
+    cat.Name as "ContactAddressName",
+    cat.Active as "ContactAddressActive"
+    FROM contactdetail as cd 
+    JOIN contactaddresstype as cat ON cd.ContactAddressTypeId = cat.Id
+    WHERE cd.TenantId = ?`,
+    fetchById: `SELECT 
+    cd.*,
+    cat.Id as "ContactAddressTypeId",
+    cat.Name as "ContactAddressName",
+    cat.Active as "ContactAddressActive"
+    FROM contactdetail as cd 
+    JOIN contactaddresstype as cat ON cd.ContactAddressTypeId = cat.Id
+    WHERE cd.TenantId = ? AND cd.Id =?`,
+    create:
+      'INSERT INTO contactdetail (Id, FirstName, LastName, MobileNo, AltMobileNo, Landline1, LandLine2, Ext1, Ext2, ContactAddressTypeId, TenantId, Active, CreatedOn, CreatedBy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    delete: 'DELETE FROM contactdetail WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE contactdetail SET FirstName = ?, LastName = ?, MobileNo = ?, AltMobileNo = ?, Landline1 = ?, LandLine2 = ?, Ext1 = ?, Ext2 = ?, ContactAddressTypeId = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',

@@ -256,3 +256,27 @@ create table mapproviderlocationmapper
     FOREIGN KEY (MapProviderId) REFERENCES mapprovider(Id),
     FOREIGN KEY (LocationDetailId) REFERENCES locationdetail(Id)
 )
+
+-- Contact Detail table
+create table contactdetail
+(
+	Id varchar(50) not null,
+    FirstName varchar(50) not null,
+    LastName varchar(50) not null,
+    MobileNo varchar(50),
+    AltMobileNo varchar(50),
+    Landline1 varchar(50),
+    Landline2 varchar(50),
+    Ext1 varchar(50),
+    Ext2 varchar(50),
+    ContactAddressTypeId varchar(50) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (FirstName, LastName, ContactAddressTypeId, TenantId),
+    FOREIGN KEY (ContactAddressTypeId) REFERENCES contactaddresstype(Id)
+) 

@@ -241,4 +241,20 @@ module.exports = {
       update: 'DB_MapProviderLocationMapper_update',
     },
   },
+  contactdetail: {
+    application: {
+      fetchAll: 'ContactDetail_fetchAll',
+      fetchById: 'ContactDetail_fetchById',
+      create: 'ContactDetail_create',
+      delete: 'ContactDetail_delete',
+      update: 'ContactDetail_update',
+    },
+    db: {
+      fetchAll: 'DB_ContactDetail_fetchAll',
+      fetchById: 'DB_ContactDetail_fetchById',
+      create: 'DB_ContactDetail_create',
+      delete: 'DB_ContactDetail_delete',
+      update: 'DB_ContactDetail_update',
+    },
+  },
 }
