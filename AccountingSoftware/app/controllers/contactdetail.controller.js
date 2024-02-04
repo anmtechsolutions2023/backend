@@ -102,29 +102,38 @@ exports.delete = async (req, res) => {
     })
 }
 
-// /// This API is used to search Tax Group Detail by Group name
-// exports.search = (req, res) => {
-//   var decodedToken = decodeToken.decodeToken(req)
+/// This API is used to search Tax Group Detail by Group name
+exports.search = (req, res) => {
+  var decodedToken = decodeToken.decodeToken(req)
 
-//   let tenantId = decodedToken.tenantId
-//   let username = decodedToken.username
+  let tenantId = decodedToken.tenantId
+  let username = decodedToken.username
 
-//   var queryParamName = queryParams.getQueryParams(req.query)['Name']
-//   if (queryParamName === undefined) {
-//     return res.status(400).send({
-//       message: 'query param not supported!',
-//     })
-//   }
+  var params = queryParams.getQueryParams(req.query)
 
-//   taxgrouptaxtypemapper
-//     .searchByName(tenantId, username, queryParamName)
-//     .then((tgttmresp) => {
-//       res.status(200).send(tgttmresp)
-//     })
-//     .catch((err) => {
-//       res.sendStatus(500).send()
-//     })
-// }
+  var queryParamName = params['QueryParamName']
+  var queryParamValue = params['QueryParamValue']
+
+  if (helper.isEmpty(queryParamName) || helper.isEmpty(queryParamValue)) {
+    return res.status(400).send({
+      message: 'query param not supported!',
+    })
+  }
+
+  contactdetail
+    .searchByParam(tenantId, username, params)
+    .then((cdResp) => {
+      res.status(200).send(cdResp)
+    })
+    .catch((errCode) => {
+      if (errCode === 400) {
+        return res.status(400).send({
+          message: 'query param not supported!',
+        })
+      }
+      res.sendStatus(500).send()
+    })
+}
 
 exports.fetchAll = (req, res) => {
   var decodedToken = decodeToken.decodeToken(req)

@@ -72,33 +72,52 @@ exports.getAll = (tenantId, username) => {
   })
 }
 
-// exports.searchByName = (tenantId, username, TaxGroupName) => {
-//   return new Promise((resolve, reject) => {
-//     let query = moduleScripts.taxgrouptaxtypemapper.searchbyname
+exports.searchByParam = (tenantId, username, queryParams) => {
+  let query = null
 
-//     sql.query(query, [tenantId, TaxGroupName], (err, res) => {
-//       if (err) {
-//         logger.loggerHelper(
-//           tenantId,
-//           username,
-//           moduleNames.taxgrouptaxtypemapper.db.searchbyname,
-//           logger.logType.error,
-//           `Error Code: ${err.code}, Error: ${err}`
-//         )
-//         return reject('DB Error, for operation:  searchbyname.' + err)
-//       }
+  return new Promise((resolve, reject) => {
+    switch (queryParams.QueryParamName) {
+      case 'FirstName':
+        query = moduleScripts.contactdetail.searchbyfirstname
+        break
+      case 'LastName':
+        query = moduleScripts.contactdetail.searchbylastname
+        break
+      default: {
+        logger.loggerHelper(
+          tenantId,
+          username,
+          moduleNames.contactdetail.db.searchbyname,
+          logger.logType.error,
+          `Not supported query param.`
+        )
+        return reject(statuses.Statuses.BadRequest)
+      }
+    }
 
-//       logger.loggerHelper(
-//         tenantId,
-//         username,
-//         moduleNames.taxgrouptaxtypemapper.db.searchbyname,
-//         logger.logType.debug,
-//         `Success`
-//       )
-//       resolve(res)
-//     })
-//   })
-// }
+    sql.query(query, [tenantId, queryParams.QueryParamValue], (err, res) => {
+      if (err) {
+        logger.loggerHelper(
+          tenantId,
+          username,
+          moduleNames.contactdetail.db.searchbyname,
+          logger.logType.error,
+          `Error Code: ${err.code}, Error: ${err}`
+        )
+        return reject('DB Error, for operation:  searchbyname.' + err)
+      }
+
+      logger.loggerHelper(
+        tenantId,
+        username,
+        moduleNames.contactdetail.db.searchbyname,
+        logger.logType.debug,
+        `Success`
+      )
+      resolve(res)
+    })
+  })
+}
 
 exports.update = (cdReq, username) => {
   return new Promise((resolve, reject) => {

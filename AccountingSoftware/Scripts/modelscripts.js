@@ -288,6 +288,24 @@ module.exports = {
     delete: 'DELETE FROM contactdetail WHERE Id = ? and TenantId = ?',
     update:
       'UPDATE contactdetail SET FirstName = ?, LastName = ?, MobileNo = ?, AltMobileNo = ?, Landline1 = ?, LandLine2 = ?, Ext1 = ?, Ext2 = ?, ContactAddressTypeId = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+    searchbyfirstname: `SELECT 
+    cd.*,
+    cat.Id as "ContactAddressTypeId",
+    cat.Name as "ContactAddressName",
+    cat.Active as "ContactAddressActive"
+    FROM contactdetail as cd 
+    JOIN contactaddresstype as cat ON cd.ContactAddressTypeId = cat.Id
+    WHERE cd.TenantId = ?
+    AND cd.FirstName = ?`,
+    searchbylastname: `SELECT 
+    cd.*,
+    cat.Id as "ContactAddressTypeId",
+    cat.Name as "ContactAddressName",
+    cat.Active as "ContactAddressActive"
+    FROM contactdetail as cd 
+    JOIN contactaddresstype as cat ON cd.ContactAddressTypeId = cat.Id
+    WHERE cd.TenantId = ?
+    AND cd.LastName = ?`,
   },
   generalmodule: {
     fetchAll: '',
