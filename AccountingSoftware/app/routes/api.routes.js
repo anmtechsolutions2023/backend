@@ -151,11 +151,11 @@ module.exports = (app) => {
 
   // Contact Detail Operations
   router.get('/contactds', contactdetail.fetchAll)
+  router.get('/contactd/search', contactdetail.search)
   router.get('/contactd/:id', contactdetail.fetchById)
   router.post('/contactd', contactdetail.create)
   router.delete('/contactd/:id', contactdetail.delete)
   router.put('/contactd/:id', contactdetail.update)
-  // router.get('/contactd/search', contactdetail.search)
 
   // Address Detail Operations
 

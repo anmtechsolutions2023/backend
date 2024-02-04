@@ -248,6 +248,7 @@ module.exports = {
       create: 'ContactDetail_create',
       delete: 'ContactDetail_delete',
       update: 'ContactDetail_update',
+      searchbyname: 'ContactDetail_searchbyname',
     },
     db: {
       fetchAll: 'DB_ContactDetail_fetchAll',
@@ -255,6 +256,7 @@ module.exports = {
       create: 'DB_ContactDetail_create',
       delete: 'DB_ContactDetail_delete',
       update: 'DB_ContactDetail_update',
+      searchbyname: 'DB_ContactDetail_searchbyname',
     },
   },
 }
