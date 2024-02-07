@@ -17,6 +17,7 @@ module.exports = (app) => {
   const locationdetail = require('../controllers/locationdetail.controller.js')
   const mapproviderlocationmapper = require('../controllers/mapproviderlocationmapper.controller.js')
   const contactdetail = require('../controllers/contactdetail.controller.js')
+  const addressdetail = require('../controllers/addressdetail.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -158,6 +159,11 @@ module.exports = (app) => {
   router.put('/contactd/:id', contactdetail.update)
 
   // Address Detail Operations
+  router.get('/addressds', addressdetail.fetchAll)
+  // router.get('/addressd/:id', addressdetail.fetchById)
+  // router.post('/addressd', addressdetail.create)
+  // router.delete('/addressd/:id', addressdetail.delete)
+  // router.put('/addressd/:id', addressdetail.update)
 
   // Cost Info Operations
   // Batch Detail Operations

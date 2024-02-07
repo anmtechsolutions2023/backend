@@ -94,11 +94,53 @@ exports.fetchAll = (req, res) => {
   mapproviderlocationmapper
     .getAll(tenantId, username)
     .then((mplmResp) => {
-      res.status(200).send(mplmResp)
+      res.status(200).send(translateResp(mplmResp))
     })
     .catch((err) => {
       res.sendStatus(500).send()
     })
+}
+
+function translateResp(mplmResp) {
+  let mappersDetail = []
+
+  mplmResp.map((resp) => {
+    var mapper = {
+      Id: resp.Id,
+      MapProviderId: resp.MapProviderId,
+      LocationDetailId: resp.LocationDetailId,
+      TenantId: resp.TenantId,
+      Active: resp.Active,
+      CreatedOn: resp.CreatedOn,
+      CreatedBy: resp.CreatedBy,
+      UpdatedOn: resp.UpdatedOn,
+      UpdatedBy: resp.UpdatedBy,
+    }
+
+    var mapprovider = {
+      Id: resp.MapProviderId,
+      ProviderName: resp.MapProviderName,
+      Active: resp.MapProviderActive,
+    }
+
+    var locationdetail = {
+      Id: resp.LocationDetailId,
+      Lat: resp.LocationDetailLat,
+      Lng: resp.LocationDetailLng,
+      CF1: resp.LocationDetailCF1,
+      CF2: resp.LocationDetailCF2,
+      CF3: resp.LocationDetailCF3,
+      CF4: resp.LocationDetailCF4,
+      Active: resp.LocationDetailActive,
+    }
+
+    mapper.mapprovider = mapprovider
+    mapper.locationdetail = locationdetail
+
+    mappersDetail.push(mapper)
+  })
+
+  return mappersDetail
 }
 
 exports.fetchById = (req, res) => {
@@ -120,7 +162,7 @@ exports.fetchById = (req, res) => {
           message: 'Record not found.',
         })
       }
-      res.send(mplmResp)
+      res.status(200).send(translateResp(mplmResp))
     })
     .catch((err) => {
       res.sendStatus(500).send()

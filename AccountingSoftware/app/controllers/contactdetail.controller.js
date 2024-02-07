@@ -123,7 +123,7 @@ exports.search = (req, res) => {
   contactdetail
     .searchByParam(tenantId, username, params)
     .then((cdResp) => {
-      res.status(200).send(cdResp)
+      res.status(200).send(translateResponse(cdResp))
     })
     .catch((errCode) => {
       if (errCode === 400) {
@@ -144,11 +144,46 @@ exports.fetchAll = (req, res) => {
   contactdetail
     .getAll(tenantId, username)
     .then((cdResp) => {
-      res.status(200).send(cdResp)
+      res.status(200).send(translateResponse(cdResp))
     })
     .catch((err) => {
       res.sendStatus(500).send()
     })
+}
+
+function translateResponse(cdResp) {
+  var contactDetailsResp = []
+  cdResp.map((resp) => {
+    var contactDetailResp = {
+      Id: resp.Id,
+      FirstName: resp.FirstName,
+      LastName: resp.LastName,
+      MobileNo: resp.MobileNo,
+      AltMobileNo: resp.AltMobileNo,
+      Landline1: resp.Landline1,
+      Landline2: resp.Landline2,
+      Ext1: resp.Ext1,
+      Ext2: resp.Ext2,
+      ContactAddressTypeId: resp.ContactAddressTypeId,
+      TenantId: resp.TenantId,
+      Active: resp.Active,
+      CreatedOn: resp.CreatedOn,
+      CreatedBy: resp.CreatedBy,
+      UpdatedOn: resp.UpdatedOn,
+      UpdatedBy: resp.UpdatedBy,
+    }
+
+    var contactaddresstype = {
+      Id: resp.ContactAddressTypeId,
+      Name: resp.ContactAddressName,
+      Active: resp.ContactAddressActive,
+    }
+
+    contactDetailResp.contactaddresstype = contactaddresstype
+    contactDetailsResp.push(contactDetailResp)
+  })
+
+  return contactDetailsResp
 }
 
 exports.fetchById = (req, res) => {
@@ -170,7 +205,7 @@ exports.fetchById = (req, res) => {
           message: 'Record not found.',
         })
       }
-      res.send(cdResp)
+      res.status(200).send(translateResponse(cdResp))
     })
     .catch((err) => {
       res.sendStatus(500).send()

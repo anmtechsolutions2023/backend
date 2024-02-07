@@ -259,4 +259,21 @@ module.exports = {
       searchbyname: 'DB_ContactDetail_searchbyname',
     },
   },
+  addressdetail: {
+    application: {
+      fetchAll: 'AddressDetail_fetchAll',
+      fetchById: 'AddressDetail_fetchById',
+      create: 'AddressDetail_create',
+      delete: 'AddressDetail_delete',
+      update: 'AddressDetail_update',
+    },
+    db: {
+      fetchAll: 'DB_AddressDetail_fetchAll',
+      fetchById: 'DB_AddressDetail_fetchById',
+      create: 'DB_AddressDetail_create',
+      delete: 'DB_AddressDetail_delete',
+      update: 'DB_AddressDetail_update',
+      searchbyname: 'DB_AddressDetail_searchbyname',
+    },
+  },
 }

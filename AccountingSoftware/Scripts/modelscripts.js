@@ -148,8 +148,7 @@ module.exports = {
   },
   taxgrouptaxtypemapper: {
     fetchAll: `Select
-        tgttm.Id as "TaxGroupTaxTypeMapperId",
-        tgttm.Active as "TaxGroupTaxTypeMapperActive",
+        tgttm.*,
         tg.Id as "TaxGroupId",
         tg.Name as "TaxGroupName",
         tg.Active as "TaxGroupActive",
@@ -162,8 +161,7 @@ module.exports = {
         JOIN TaxTypes as tt ON tgttm.TaxTypeId = tt.Id
         WHERE tgttm.TenantId = ?`,
     fetchById: `Select
-        tgttm.Id as "TaxGroupTaxTypeMapperId",
-        tgttm.Active as "TaxGroupTaxTypeMapperActive",
+        tgttm.*,
         tg.Id as "TaxGroupId",
         tg.Name as "TaxGroupName",
         tg.Active as "TaxGroupActive",
@@ -181,8 +179,7 @@ module.exports = {
     update:
       'UPDATE taxgrouptaxtypemapper SET TaxGroupId = ?, TaxTypeId = ? , Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
     searchbyname: `Select
-        tgttm.Id as "TaxGroupTaxTypeMapperId",
-        tgttm.Active as "TaxGroupTaxTypeMapperActive",
+        tgttm.*,
         tg.Id as "TaxGroupId",
         tg.Name as "TaxGroupName",
         tg.Active as "TaxGroupActive",
@@ -216,12 +213,7 @@ module.exports = {
   },
   mapproviderlocationmapper: {
     fetchAll: `SELECT 
-    mplm.Id as "MapProviderLocationDetailId",
-    mplm.Active as "MapProviderLocationDetailActive",
-    mplm.CreatedOn as "MapProviderLocationDetailCreatedOn",
-    mplm.CreatedBy as "MapProviderLocationDetailCreatedBy",
-    mplm.UpdatedOn as "MapProviderLocationDetailUpdatedOn",
-    mplm.UpdatedBy as "MapProviderLocationDetailUpdatedBy",
+    mplm.*,
     mp.Id as "MapProviderId",
     mp.ProviderName as "MapProviderName",
     mp.Active as "MapProviderActive",
@@ -238,12 +230,7 @@ module.exports = {
     JOIN locationdetail as ld ON mplm.LocationDetailId = ld.Id
     WHERE mplm.TenantId = ?`,
     fetchById: `SELECT 
-    mplm.Id as "MapProviderLocationDetailId",
-    mplm.Active as "MapProviderLocationDetailActive",
-    mplm.CreatedOn as "MapProviderLocationDetailCreatedOn",
-    mplm.CreatedBy as "MapProviderLocationDetailCreatedBy",
-    mplm.UpdatedOn as "MapProviderLocationDetailUpdatedOn",
-    mplm.UpdatedBy as "MapProviderLocationDetailUpdatedBy",
+    mplm.*,
     mp.Id as "MapProviderId",
     mp.ProviderName as "MapProviderName",
     mp.Active as "MapProviderActive",
@@ -306,6 +293,37 @@ module.exports = {
     JOIN contactaddresstype as cat ON cd.ContactAddressTypeId = cat.Id
     WHERE cd.TenantId = ?
     AND cd.LastName = ?`,
+  },
+  addressdetail: {
+    fetchAll: `
+    SELECT
+    ad.*,
+    cat.Id as "ContactAddressTypeId",
+    cat.Name as "ContactAddressName",
+    cat.Active as "ContactAddressActive",
+    mplm.Id as "MapProviderLocationDetailId",
+    mplm.Active as "MapProviderLocationDetailActive",
+    mp.Id as "MapProviderId",
+    mp.ProviderName as "MapProviderName",
+    mp.Active as "MapProviderActive",
+    ld.Id as "LocationDetailId",
+    ld.Lat as "LocationDetailLat",
+    ld.Lng as "LocationDetailLng",
+    ld.CF1 as "LocationDetailCF1",
+    ld.CF2 as "LocationDetailCF2",
+    ld.CF3 as "LocationDetailCF3",
+    ld.CF4 as "LocationDetailCF4",
+    ld.Active as "LocationDetailActive"
+    FROM addressdetail as ad
+    JOIN contactaddresstype as cat ON ad.ContactAddressTypeId = cat.Id
+    JOIN mapproviderlocationmapper as mplm ON ad.MapProviderLocationMapperId = mplm.id
+    JOIN mapprovider as mp ON mplm.MapProviderId = mp.Id
+    JOIN locationdetail as ld ON mplm.LocationDetailId = ld.Id
+    WHERE ad.TenantId = ?`,
+    fetchById: '',
+    create: '',
+    delete: '',
+    update: '',
   },
   generalmodule: {
     fetchAll: '',
