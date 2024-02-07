@@ -280,3 +280,27 @@ create table contactdetail
     UNIQUE (FirstName, LastName, ContactAddressTypeId, TenantId),
     FOREIGN KEY (ContactAddressTypeId) REFERENCES contactaddresstype(Id)
 ) 
+
+-- Address Detail table
+create table addressdetail
+(
+	Id varchar(50) not null,
+    AddressLine1 varchar(50),
+    AddressLine2 varchar(50),
+    City varchar(50),
+    State varchar(50),
+    Pincode varchar(50),
+    MapProviderLocationMapperId varchar(50) not null,
+    Landmark varchar(50),
+    ContactAddressTypeId varchar(50) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (AddressLine1, City, ContactAddressTypeId, TenantId),
+    FOREIGN KEY (ContactAddressTypeId) REFERENCES contactaddresstype(Id),
+    FOREIGN KEY (MapProviderLocationMapperId) REFERENCES mapproviderlocationmapper(Id)
+) 

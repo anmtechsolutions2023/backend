@@ -108,12 +108,12 @@ exports.fetchAll = (req, res) => {
       let ttDetail = []
       tt.map((t) => {
         let ttc = {
-          TTCId: t.TTCId,
-          TTCStartCounterNo: t.TTCStartCounterNo,
-          TTCPrefix: t.TTCPrefix,
-          TTCFormat: t.TTCFormat,
-          TTCActive: t.TTCActive,
-          TTCTenantId: t.TTCTenantId,
+          Id: t.TTCId,
+          StartCounterNo: t.TTCStartCounterNo,
+          Prefix: t.TTCPrefix,
+          Format: t.TTCFormat,
+          Active: t.TTCActive,
+          TenantId: t.TTCTenantId,
         }
 
         let transactiontype = {
@@ -156,12 +156,12 @@ exports.fetchById = (req, res) => {
       let ttDetail = []
       ttResp.map((t) => {
         let ttc = {
-          TTCId: t.TTCId,
-          TTCStartCounterNo: t.TTCStartCounterNo,
-          TTCPrefix: t.TTCPrefix,
-          TTCFormat: t.TTCFormat,
-          TTCActive: t.TTCActive,
-          TTCTenantId: t.TTCTenantId,
+          Id: t.TTCId,
+          StartCounterNo: t.TTCStartCounterNo,
+          Prefix: t.TTCPrefix,
+          Format: t.TTCFormat,
+          Active: t.TTCActive,
+          TenantId: t.TTCTenantId,
         }
 
         let transactiontype = {

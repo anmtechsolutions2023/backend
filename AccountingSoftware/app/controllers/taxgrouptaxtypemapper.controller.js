@@ -102,7 +102,7 @@ exports.search = (req, res) => {
   taxgrouptaxtypemapper
     .searchByName(tenantId, username, queryParamName)
     .then((tgttmresp) => {
-      res.status(200).send(tgttmresp)
+      res.status(200).send(translateResponse(tgttmresp))
     })
     .catch((err) => {
       res.sendStatus(500).send()
@@ -118,11 +118,47 @@ exports.fetchAll = (req, res) => {
   taxgrouptaxtypemapper
     .getAll(tenantId, username)
     .then((tgttmresp) => {
-      res.status(200).send(tgttmresp)
+      res.status(200).send(translateResponse(tgttmresp))
     })
     .catch((err) => {
       res.sendStatus(500).send()
     })
+}
+
+function translateResponse(tgttmresp) {
+  let tgttmDetails = []
+  tgttmresp.map((resp) => {
+    let mapper = {
+      Id: resp.Id,
+      TaxGroupId: resp.TaxGroupId,
+      TaxTypeId: resp.TaxTypeId,
+      TenantId: resp.TenantId,
+      Active: resp.Active,
+      CreatedOn: resp.CreatedOn,
+      CreatedBy: resp.CreatedBy,
+      UpdatedOn: resp.UpdatedOn,
+      UpdatedBy: resp.UpdatedBy,
+    }
+
+    let taxgroup = {
+      Id: resp.TaxGroupId,
+      Name: resp.TaxGroupName,
+      Active: resp.TaxGroupActive,
+    }
+
+    let taxtype = {
+      Id: resp.TaxTypeId,
+      Name: resp.TaxTypeName,
+      Value: resp.TaxTypeValue,
+      Active: resp.TaxTypeActive,
+    }
+
+    mapper.taxgroup = taxgroup
+    mapper.taxtype = taxtype
+
+    tgttmDetails.push(mapper)
+  })
+  return tgttmDetails
 }
 
 exports.fetchById = (req, res) => {
@@ -144,7 +180,8 @@ exports.fetchById = (req, res) => {
           message: 'Record not found.',
         })
       }
-      res.send(tgttmresp)
+
+      res.send(translateResponse(tgttmresp))
     })
     .catch((err) => {
       res.sendStatus(500).send()
