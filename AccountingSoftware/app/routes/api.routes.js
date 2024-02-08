@@ -160,10 +160,10 @@ module.exports = (app) => {
 
   // Address Detail Operations
   router.get('/addressds', addressdetail.fetchAll)
-  // router.get('/addressd/:id', addressdetail.fetchById)
-  // router.post('/addressd', addressdetail.create)
-  // router.delete('/addressd/:id', addressdetail.delete)
-  // router.put('/addressd/:id', addressdetail.update)
+  router.get('/addressd/:id', addressdetail.fetchById)
+  router.post('/addressd', addressdetail.create)
+  router.delete('/addressd/:id', addressdetail.delete)
+  router.put('/addressd/:id', addressdetail.update)
 
   // Cost Info Operations
   // Batch Detail Operations

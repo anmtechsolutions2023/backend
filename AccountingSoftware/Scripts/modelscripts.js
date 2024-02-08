@@ -320,10 +320,35 @@ module.exports = {
     JOIN mapprovider as mp ON mplm.MapProviderId = mp.Id
     JOIN locationdetail as ld ON mplm.LocationDetailId = ld.Id
     WHERE ad.TenantId = ?`,
-    fetchById: '',
-    create: '',
-    delete: '',
-    update: '',
+    fetchById: `SELECT
+    ad.*,
+    cat.Id as "ContactAddressTypeId",
+    cat.Name as "ContactAddressName",
+    cat.Active as "ContactAddressActive",
+    mplm.Id as "MapProviderLocationDetailId",
+    mplm.Active as "MapProviderLocationDetailActive",
+    mp.Id as "MapProviderId",
+    mp.ProviderName as "MapProviderName",
+    mp.Active as "MapProviderActive",
+    ld.Id as "LocationDetailId",
+    ld.Lat as "LocationDetailLat",
+    ld.Lng as "LocationDetailLng",
+    ld.CF1 as "LocationDetailCF1",
+    ld.CF2 as "LocationDetailCF2",
+    ld.CF3 as "LocationDetailCF3",
+    ld.CF4 as "LocationDetailCF4",
+    ld.Active as "LocationDetailActive"
+    FROM addressdetail as ad
+    JOIN contactaddresstype as cat ON ad.ContactAddressTypeId = cat.Id
+    JOIN mapproviderlocationmapper as mplm ON ad.MapProviderLocationMapperId = mplm.id
+    JOIN mapprovider as mp ON mplm.MapProviderId = mp.Id
+    JOIN locationdetail as ld ON mplm.LocationDetailId = ld.Id
+    WHERE ad.TenantId = ? AND ad.Id = ?`,
+    create:
+      'INSERT INTO addressdetail (Id, AddressLine1, AddressLine2, City, State, Pincode, MapProviderLocationMapperId, Landmark, ContactAddressTypeId, TenantId, Active, CreatedOn, CreatedBy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    delete: 'DELETE FROM addressdetail WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE addressdetail SET AddressLine1 = ?, AddressLine2 = ?, City = ?, State = ?, Pincode = ?, MapProviderLocationMapperId = ?, Landmark = ?, ContactAddressTypeId = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
   generalmodule: {
     fetchAll: '',
