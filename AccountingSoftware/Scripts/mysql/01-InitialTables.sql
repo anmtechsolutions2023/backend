@@ -304,3 +304,21 @@ create table addressdetail
     FOREIGN KEY (ContactAddressTypeId) REFERENCES contactaddresstype(Id),
     FOREIGN KEY (MapProviderLocationMapperId) REFERENCES mapproviderlocationmapper(Id)
 ) 
+
+-- Cost Info table
+create table costinfo
+(
+	Id varchar(50) not null,
+    Amount varchar(50) not null,
+    TaxGroupId varchar(50) not null,
+    IsTaxIncluded tinyint(1) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (Id, TenantId),
+    FOREIGN KEY (TaxGroupId) REFERENCES taxgroup(Id)
+)

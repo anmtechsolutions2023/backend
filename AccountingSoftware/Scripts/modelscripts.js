@@ -350,6 +350,34 @@ module.exports = {
     update:
       'UPDATE addressdetail SET AddressLine1 = ?, AddressLine2 = ?, City = ?, State = ?, Pincode = ?, MapProviderLocationMapperId = ?, Landmark = ?, ContactAddressTypeId = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  costinfo: {
+    fetchAll: `SELECT 
+    ci.*,
+    tg.Id as "TaxGroupId",
+    tg.Name "TaxGroupName",
+    tg.Active "TaxGroupActive"
+    FROM costinfo as ci JOIN taxgroup as tg ON ci.TaxGroupId = tg.Id
+    WHERE ci.TenantId = ?`,
+    fetchById: `SELECT 
+    ci.*,
+    tg.Id as "TaxGroupId",
+    tg.Name "TaxGroupName",
+    tg.Active "TaxGroupActive"
+    FROM costinfo as ci JOIN taxgroup as tg ON ci.TaxGroupId = tg.Id
+    WHERE ci.TenantId = ? AND ci.Id = ?`,
+    create:
+      'INSERT INTO costinfo (Id, Amount, TaxGroupId, IsTaxIncluded, TenantId, Active, CreatedOn, CreatedBy) VALUES (?,?,?,?,?,?,?,?)',
+    delete: 'DELETE FROM costinfo WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE costinfo SET Amount = ?, TaxGroupId = ?, IsTaxIncluded = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+    searchbytaxgroupname: `SELECT 
+    ci.*,
+    tg.Id as "TaxGroupId",
+    tg.Name "TaxGroupName",
+    tg.Active "TaxGroupActive"
+    FROM costinfo as ci JOIN taxgroup as tg ON ci.TaxGroupId = tg.Id
+    WHERE ci.TenantId = ? AND tg.Name = ?`,
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
