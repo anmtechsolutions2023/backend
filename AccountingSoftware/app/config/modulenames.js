@@ -276,4 +276,21 @@ module.exports = {
       searchbyname: 'DB_AddressDetail_searchbyname',
     },
   },
+  costinfo: {
+    application: {
+      fetchAll: 'CostInfo_fetchAll',
+      fetchById: 'CostInfo_fetchById',
+      create: 'CostInfo_create',
+      delete: 'CostInfo_delete',
+      update: 'CostInfo_update',
+    },
+    db: {
+      fetchAll: 'DB_CostInfo_fetchAll',
+      fetchById: 'DB_CostInfo_fetchById',
+      create: 'DB_CostInfo_create',
+      delete: 'DB_CostInfo_delete',
+      update: 'DB_CostInfo_update',
+      searchbyname: 'DB_ConstInfo_searchbyname',
+    },
+  },
 }
