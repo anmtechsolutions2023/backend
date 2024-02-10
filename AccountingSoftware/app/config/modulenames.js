@@ -293,4 +293,21 @@ module.exports = {
       searchbyname: 'DB_ConstInfo_searchbyname',
     },
   },
+  branchdetail: {
+    application: {
+      fetchAll: 'BranchDetail_fetchAll',
+      fetchById: 'BranchDetail_fetchById',
+      create: 'BranchDetail_create',
+      delete: 'BranchDetail_delete',
+      update: 'BranchDetail_update',
+    },
+    db: {
+      fetchAll: 'DB_BranchDetail_fetchAll',
+      fetchById: 'DB_BranchDetail_fetchById',
+      create: 'DB_BranchDetail_create',
+      delete: 'DB_BranchDetail_delete',
+      update: 'DB_BranchDetail_update',
+      searchbyname: 'DB_BranchDetail_searchbyname',
+    },
+  },
 }

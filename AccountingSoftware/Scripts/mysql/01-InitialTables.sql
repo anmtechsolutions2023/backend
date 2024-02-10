@@ -322,3 +322,34 @@ create table costinfo
     UNIQUE (Id, TenantId),
     FOREIGN KEY (TaxGroupId) REFERENCES taxgroup(Id)
 )
+
+
+-- Branch Detail table
+create table branchdetail
+(
+	Id varchar(50) not null,
+    OrganizationDetailId varchar(50) not null,
+    ContactDetailId varchar(50) not null,
+    AddressDetailId varchar(50) not null,
+    TransactionTypeConfigId varchar(50) not null,
+    BranchName varchar(50) not null,
+	TINNo varchar(50),
+    GSTIN varchar(50),
+    PAN varchar(50),
+    CF1 varchar(50),
+    CF2 varchar(50),
+    CF3 varchar(50),
+    CF4 varchar(50),
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (OrganizationDetailId, BranchName, TenantId),
+    FOREIGN KEY (OrganizationDetailId) REFERENCES organizationdetail(Id),
+    FOREIGN KEY (ContactDetailId) REFERENCES contactdetail(Id),
+    FOREIGN KEY (AddressDetailId) REFERENCES addressdetail(Id),
+    FOREIGN KEY (TransactionTypeConfigId) REFERENCES transactiontypeconfig(Id)
+)

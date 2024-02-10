@@ -378,6 +378,121 @@ module.exports = {
     FROM costinfo as ci JOIN taxgroup as tg ON ci.TaxGroupId = tg.Id
     WHERE ci.TenantId = ? AND tg.Name = ?`,
   },
+  branchdetail: {
+    fetchAll: `SELECT 
+    bd.*,
+    od.Id "OrganizationDetailId",
+    od.Name "OrganizationDetailName",
+    od.Active "OrganizationDetailActive",
+    cd.Id "ContactDetailId",
+    cd.FirstName "ContactDetailFirstName",
+    cd.LastName "ContactDetailLastName",
+    cd.MobileNo "ContactDetailMobileNo",
+    cd.AltMobileNo "ContactDetailAltMobileNo",
+    cd.Landline1 "ContactDetailLandline1",
+    cd.Landline2 "ContactDetailLandline2",
+    cd.Ext1 "ContactDetailExt1",
+    cd.Ext2 "ContactDetailExt2",
+    cd.ContactAddressTypeId "ContactDetailContactAddressTypeId",
+    cd.Active "ContactDetailActive",
+    ad.Id "AddressDetailId",
+    ad.AddressLine1 "AddressDetailAddressLine1",
+    ad.AddressLine2 "AddressDetailAddressLine2",
+    ad.City "AddressDetailCity",
+    ad.State "AddressDetailState",
+    ad.Pincode "AddressDetailPincode",
+    ad.MapProviderLocationMapperId "AddressDetailMapProviderLocationMapperId",
+    ad.Landmark "AddressDetailLandmark",
+    ad.ContactAddressTypeId "AddressDetailContactAddressTypeId",
+    ad.Active "AddressDetailActive",
+    ttc.Id "TransactionTypeConfigId",
+    ttc.StartCounterNo "TransactionTypeConfigStartCounterNo",
+    ttc.Prefix "TransactionTypeConfigPrefix",
+    ttc.Format "TransactionTypeConfigFormat",
+    ttc.Active "TransactionTypeConfigActive"
+    FROM branchdetail as bd JOIN organizationdetail as od ON bd.OrganizationDetailId = od.Id
+    JOIN contactdetail as cd ON bd.ContactDetailId = cd.Id
+    JOIN addressdetail as ad ON bd.AddressDetailId = ad.Id
+    JOIN transactiontypeconfig as ttc ON bd.TransactionTypeConfigId = ttc.Id
+    WHERE bd.TenantId = ?`,
+    fetchById: `SELECT 
+    bd.*,
+    od.Id "OrganizationDetailId",
+    od.Name "OrganizationDetailName",
+    od.Active "OrganizationDetailActive",
+    cd.Id "ContactDetailId",
+    cd.FirstName "ContactDetailFirstName",
+    cd.LastName "ContactDetailLastName",
+    cd.MobileNo "ContactDetailMobileNo",
+    cd.AltMobileNo "ContactDetailAltMobileNo",
+    cd.Landline1 "ContactDetailLandline1",
+    cd.Landline2 "ContactDetailLandline2",
+    cd.Ext1 "ContactDetailExt1",
+    cd.Ext2 "ContactDetailExt2",
+    cd.ContactAddressTypeId "ContactDetailContactAddressTypeId",
+    cd.Active "ContactDetailActive",
+    ad.Id "AddressDetailId",
+    ad.AddressLine1 "AddressDetailAddressLine1",
+    ad.AddressLine2 "AddressDetailAddressLine2",
+    ad.City "AddressDetailCity",
+    ad.State "AddressDetailState",
+    ad.Pincode "AddressDetailPincode",
+    ad.MapProviderLocationMapperId "AddressDetailMapProviderLocationMapperId",
+    ad.Landmark "AddressDetailLandmark",
+    ad.ContactAddressTypeId "AddressDetailContactAddressTypeId",
+    ad.Active "AddressDetailActive",
+    ttc.Id "TransactionTypeConfigId",
+    ttc.StartCounterNo "TransactionTypeConfigStartCounterNo",
+    ttc.Prefix "TransactionTypeConfigPrefix",
+    ttc.Format "TransactionTypeConfigFormat",
+    ttc.Active "TransactionTypeConfigActive"
+    FROM branchdetail as bd JOIN organizationdetail as od ON bd.OrganizationDetailId = od.Id
+    JOIN contactdetail as cd ON bd.ContactDetailId = cd.Id
+    JOIN addressdetail as ad ON bd.AddressDetailId = ad.Id
+    JOIN transactiontypeconfig as ttc ON bd.TransactionTypeConfigId = ttc.Id
+    WHERE bd.TenantId = ? AND bd.Id = ?`,
+    create: `INSERT INTO branchdetail (Id, OrganizationDetailId, ContactDetailId, AddressDetailId, TransactionTypeConfigId, BranchName, TINNo, GSTIN, PAN, CF1, CF2, CF3, CF4, TenantId, Active, CreatedOn, CreatedBy) 
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    delete: 'DELETE FROM branchdetail WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE branchdetail SET OrganizationDetailId = ?, ContactDetailId = ?, AddressDetailId = ?, TransactionTypeConfigId = ?, BranchName = ? , TINNo = ?, GSTIN = ?, PAN = ?, CF1 =?, CF2 = ?, CF3 = ?, CF4 = ? , Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
+    searchbyorganizationdetailid: `SELECT 
+    bd.*,
+    od.Id "OrganizationDetailId",
+    od.Name "OrganizationDetailName",
+    od.Active "OrganizationDetailActive",
+    cd.Id "ContactDetailId",
+    cd.FirstName "ContactDetailFirstName",
+    cd.LastName "ContactDetailLastName",
+    cd.MobileNo "ContactDetailMobileNo",
+    cd.AltMobileNo "ContactDetailAltMobileNo",
+    cd.Landline1 "ContactDetailLandline1",
+    cd.Landline2 "ContactDetailLandline2",
+    cd.Ext1 "ContactDetailExt1",
+    cd.Ext2 "ContactDetailExt2",
+    cd.ContactAddressTypeId "ContactDetailContactAddressTypeId",
+    cd.Active "ContactDetailActive",
+    ad.Id "AddressDetailId",
+    ad.AddressLine1 "AddressDetailAddressLine1",
+    ad.AddressLine2 "AddressDetailAddressLine2",
+    ad.City "AddressDetailCity",
+    ad.State "AddressDetailState",
+    ad.Pincode "AddressDetailPincode",
+    ad.MapProviderLocationMapperId "AddressDetailMapProviderLocationMapperId",
+    ad.Landmark "AddressDetailLandmark",
+    ad.ContactAddressTypeId "AddressDetailContactAddressTypeId",
+    ad.Active "AddressDetailActive",
+    ttc.Id "TransactionTypeConfigId",
+    ttc.StartCounterNo "TransactionTypeConfigStartCounterNo",
+    ttc.Prefix "TransactionTypeConfigPrefix",
+    ttc.Format "TransactionTypeConfigFormat",
+    ttc.Active "TransactionTypeConfigActive"
+    FROM branchdetail as bd JOIN organizationdetail as od ON bd.OrganizationDetailId = od.Id
+    JOIN contactdetail as cd ON bd.ContactDetailId = cd.Id
+    JOIN addressdetail as ad ON bd.AddressDetailId = ad.Id
+    JOIN transactiontypeconfig as ttc ON bd.TransactionTypeConfigId = ttc.Id
+    WHERE bd.TenantId = ?`,
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
