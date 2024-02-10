@@ -19,6 +19,7 @@ module.exports = (app) => {
   const contactdetail = require('../controllers/contactdetail.controller.js')
   const addressdetail = require('../controllers/addressdetail.controller.js')
   const costinfo = require('../controllers/costinfo.controller.js')
+  const branchdetail = require('../controllers/branchdetail.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -175,6 +176,13 @@ module.exports = (app) => {
   router.put('/cinfo/:id', costinfo.update)
 
   // Batch Detail Operations
+  router.get('/branchds', branchdetail.fetchAll)
+  router.get('/branchd/search', branchdetail.search)
+  router.get('/branchd/:id', branchdetail.fetchById)
+  router.post('/branchd', branchdetail.create)
+  router.delete('/branchd/:id', branchdetail.delete)
+  router.put('/branchd/:id', branchdetail.update)
+
   // Item Operations
   // Branch Detail Operations
 
