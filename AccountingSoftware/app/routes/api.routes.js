@@ -20,6 +20,7 @@ module.exports = (app) => {
   const addressdetail = require('../controllers/addressdetail.controller.js')
   const costinfo = require('../controllers/costinfo.controller.js')
   const branchdetail = require('../controllers/branchdetail.controller.js')
+  const branchusergroupmapper = require('../controllers/branchusergroupmapper.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -182,6 +183,14 @@ module.exports = (app) => {
   router.post('/branchd', branchdetail.create)
   router.delete('/branchd/:id', branchdetail.delete)
   router.put('/branchd/:id', branchdetail.update)
+
+  // Batch User Group Mapper Operations
+  router.get('/bugms', branchusergroupmapper.fetchAll)
+  router.get('/bugm/search', branchusergroupmapper.search)
+  router.get('/bugm/:id', branchusergroupmapper.fetchById)
+  router.post('/bugm', branchusergroupmapper.create)
+  router.delete('/bugm/:id', branchusergroupmapper.delete)
+  router.put('/bugm/:id', branchusergroupmapper.update)
 
   // Item Operations
   // Branch Detail Operations

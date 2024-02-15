@@ -353,3 +353,20 @@ create table branchdetail
     FOREIGN KEY (AddressDetailId) REFERENCES addressdetail(Id),
     FOREIGN KEY (TransactionTypeConfigId) REFERENCES transactiontypeconfig(Id)
 )
+
+ -- Branch User Group Mapper table
+create table branchusergroupmapper
+(
+	Id varchar(50) not null,
+    BranchDetailId varchar(50) not null,
+    UserGroupId varchar(50) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (BranchDetailId, UserGroupId, TenantId),
+    FOREIGN KEY (BranchDetailId) REFERENCES branchdetail(Id)
+)
