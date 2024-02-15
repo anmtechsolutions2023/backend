@@ -146,7 +146,6 @@ exports.fetchAll = (req, res) => {
   branchDetailModel
     .getAll(tenantId, username)
     .then((resp) => {
-      //   res.status(200).send(resp)
       res.status(200).send(translateResponse(resp))
     })
     .catch((err) => {

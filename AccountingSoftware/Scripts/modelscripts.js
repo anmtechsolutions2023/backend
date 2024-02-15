@@ -456,7 +456,7 @@ module.exports = {
     delete: 'DELETE FROM branchdetail WHERE Id = ? and TenantId = ?',
     update:
       'UPDATE branchdetail SET OrganizationDetailId = ?, ContactDetailId = ?, AddressDetailId = ?, TransactionTypeConfigId = ?, BranchName = ? , TINNo = ?, GSTIN = ?, PAN = ?, CF1 =?, CF2 = ?, CF3 = ?, CF4 = ? , Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
-    searchbyorganizationdetailid: `SELECT 
+    searchbyparam: `SELECT 
     bd.*,
     od.Id "OrganizationDetailId",
     od.Name "OrganizationDetailName",
@@ -492,6 +492,32 @@ module.exports = {
     JOIN addressdetail as ad ON bd.AddressDetailId = ad.Id
     JOIN transactiontypeconfig as ttc ON bd.TransactionTypeConfigId = ttc.Id
     WHERE bd.TenantId = ?`,
+  },
+  branchusergroupmapper: {
+    fetchAll: `SELECT
+    bugm.*,
+    bd.Id "BranchDetailId",
+    bd.OrganizationDetailId "BranchDetailOrganizationDetailId",
+    bd.ContactDetailId "BranchDetailContactDetailId",
+    bd.AddressDetailId "BranchDetailAddressDetailId",
+    bd.TransactionTypeConfigId "BranchDetailTransactionTypeConfigId",
+    bd.BranchName "BranchDetailBranchName",
+    bd.TINNo "BranchDetailTINNo",
+    bd.GSTIN "BrnachDetailGSTIN",
+    bd.PAN "BranchDetailPAN",
+    bd.CF1 "BranchDetailCF1",
+    bd.CF2 "BranchDetailCF2",
+    bd.CF3 "BranchDetailCF3",
+    bd.CF4 "BranchDetailCF4",
+    bd.Active "BranchDetailActive"
+    FROM branchusergroupmapper bugm JOIN branchdetail bd ON bugm.BranchDetailId = bd.Id
+    WHERE bugm.TenantId = ?`,
+    fetchById: ' AND bugm.Id = ?',
+    create:
+      'INSERT INTO branchusergroupmapper (Id, BranchDetailId, UserGroupId, TenantId, Active, CreatedOn, CreatedBy) VALUES (?,?,?,?,?,?,?)',
+    delete: 'DELETE FROM branchusergroupmapper WHERE Id = ? and TenantId = ?',
+    update:
+      'UPDATE branchusergroupmapper SET BranchDetailId = ?, UserGroupId = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
   generalmodule: {
     fetchAll: '',

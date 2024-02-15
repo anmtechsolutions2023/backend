@@ -310,4 +310,21 @@ module.exports = {
       searchbyname: 'DB_BranchDetail_searchbyname',
     },
   },
+  branchusergroupmapper: {
+    application: {
+      fetchAll: 'BranchUserGroupMapper_fetchAll',
+      fetchById: 'BranchUserGroupMapper_fetchById',
+      create: 'BranchUserGroupMapper_create',
+      delete: 'BranchUserGroupMapper_delete',
+      update: 'BranchUserGroupMapper_update',
+    },
+    db: {
+      fetchAll: 'DB_BranchUserGroupMapper_fetchAll',
+      fetchById: 'DB_BranchUserGroupMapper_fetchById',
+      create: 'DB_BranchUserGroupMapper_create',
+      delete: 'DB_BranchUserGroupMapper_delete',
+      update: 'DB_BranchUserGroupMapper_update',
+      searchbyname: 'DB_BranchUserGroupMapper_searchbyname',
+    },
+  },
 }
