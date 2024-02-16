@@ -327,4 +327,21 @@ module.exports = {
       searchbyname: 'DB_BranchUserGroupMapper_searchbyname',
     },
   },
+  batchdetail: {
+    application: {
+      fetchAll: 'BatchDetail_fetchAll',
+      fetchById: 'BatchDetail_fetchById',
+      create: 'BatchDetail_create',
+      delete: 'BatchDetail_delete',
+      update: 'BatchDetail_update',
+    },
+    db: {
+      fetchAll: 'DB_BatchDetail_fetchAll',
+      fetchById: 'DB_BatchDetail_fetchById',
+      create: 'DB_BatchDetail_create',
+      delete: 'DB_BatchDetail_delete',
+      update: 'DB_BatchDetail_update',
+      searchbyname: 'DB_BatchDetail_searchbyname',
+    },
+  },
 }
