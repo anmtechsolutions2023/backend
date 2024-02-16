@@ -370,3 +370,32 @@ create table branchusergroupmapper
     UNIQUE (BranchDetailId, UserGroupId, TenantId),
     FOREIGN KEY (BranchDetailId) REFERENCES branchdetail(Id)
 )
+
+-- Batch Detail table
+create table batchdetail
+(
+	Id varchar(50) not null,
+    BatchNo varchar(50) not null,
+    Barcode varchar(50) not null,
+    MfgDate datetime not null,
+    Expdate datetime not null,
+    PurchaseDate datetime not null,
+    IsNonReturnable tinyint(1) not null,
+    CostInfoId varchar(50) not null,
+    UOMId varchar(50) not null,
+    Quantity varchar(50) not null,
+    MapProviderLocationMapperId varchar(50) not null,
+    BranchDetailId varchar(50) not null,    
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (BatchNo, BranchDetailId, TenantId),
+    FOREIGN KEY (CostInfoId) REFERENCES costinfo(Id),
+    FOREIGN KEY (UOMId) REFERENCES UOM(Id),
+    FOREIGN KEY (MapProviderLocationMapperId) REFERENCES mapproviderlocationmapper(Id),
+    FOREIGN KEY (BranchDetailId) REFERENCES branchdetail(Id)
+)
