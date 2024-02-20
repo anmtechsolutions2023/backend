@@ -361,4 +361,21 @@ module.exports = {
       searchbyname: 'DB_ItemDetail_searchbyname',
     },
   },
+  transactiontypebaseconversion: {
+    application: {
+      fetchAll: 'TransactionTypeBaseConversion_fetchAll',
+      fetchById: 'TransactionTypeBaseConversion_fetchById',
+      create: 'TransactionTypeBaseConversion_create',
+      delete: 'TransactionTypeBaseConversion_delete',
+      update: 'TransactionTypeBaseConversion_update',
+    },
+    db: {
+      fetchAll: 'DB_TransactionTypeBaseConversion_fetchAll',
+      fetchById: 'DB_TransactionTypeBaseConversion_fetchById',
+      create: 'DB_TransactionTypeBaseConversion_create',
+      delete: 'DB_TransactionTypeBaseConversion_delete',
+      update: 'DB_TransactionTypeBaseConversion_update',
+      searchbyname: 'DB_TransactionTypeBaseConversion_searchbyname',
+    },
+  },
 }

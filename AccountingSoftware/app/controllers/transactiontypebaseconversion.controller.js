@@ -1,4 +1,4 @@
-const itemdetailmodel = require('../models/itemdetail.model')
+const transactiontypebaseconversionmodel = require('../models/transactiontypebaseconversion.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
 const decodeToken = require('../utils/extracttoken')
@@ -16,11 +16,11 @@ exports.update = async (req, res) => {
       message: 'Content can not be empty!',
     })
   } else {
-    let findById = await itemdetailmodel.findById(
+    let findById = await transactiontypebaseconversionmodel.findById(
       req.params.id,
       tenantId,
       username,
-      moduleNames.itemdetail.application.update
+      moduleNames.transactiontypebaseconversion.application.update
     )
 
     if (findById == '404') {
@@ -31,20 +31,12 @@ exports.update = async (req, res) => {
 
     let updatedReq = {
       Id: findById[0].Id,
-      Type: helper.isEmpty(req.body.Type) ? findById[0].Type : req.body.Type,
-      HSNCode: helper.isEmpty(req.body.HSNCode)
-        ? findById[0].HSNCode
-        : req.body.HSNCode,
-      SKU: helper.isEmpty(req.body.SKU) ? findById[0].SKU : req.body.SKU,
-      BatchDetailId: helper.isEmpty(req.body.BatchDetailId)
-        ? findById[0].BatchDetailId
-        : req.body.BatchDetailId,
-      CategoryId: helper.isEmpty(req.body.CategoryId)
-        ? findById[0].CategoryId
-        : req.body.CategoryId,
-      Description: helper.isEmpty(req.body.Description)
-        ? findById[0].Description
-        : req.body.Description,
+      FromTransactionTypeId: helper.isEmpty(req.body.FromTransactionTypeId)
+        ? findById[0].FromTransactionTypeId
+        : req.body.FromTransactionTypeId,
+      ToTransactionTypeId: helper.isEmpty(req.body.ToTransactionTypeId)
+        ? findById[0].ToTransactionTypeId
+        : req.body.ToTransactionTypeId,
       Active: helper.isEmpty(req.body.Active)
         ? findById[0].Active
         : req.body.Active,
@@ -53,7 +45,7 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await itemdetailmodel
+    await transactiontypebaseconversionmodel
       .update(updatedReq, username)
       .then(() => {
         return res.status(200).send()
@@ -70,11 +62,11 @@ exports.delete = async (req, res) => {
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  let findById = await itemdetailmodel.findById(
+  let findById = await transactiontypebaseconversionmodel.findById(
     req.params.id,
     tenantId,
     username,
-    moduleNames.itemdetail.application.delete
+    moduleNames.transactiontypebaseconversion.application.delete
   )
 
   if (findById == '404') {
@@ -83,7 +75,7 @@ exports.delete = async (req, res) => {
     })
   }
 
-  itemdetailmodel
+  transactiontypebaseconversionmodel
     .delete(req.params.id, tenantId, username)
     .then(() => {
       res.status(204).send()
@@ -110,7 +102,7 @@ exports.search = (req, res) => {
     })
   }
 
-  itemdetailmodel
+  transactiontypebaseconversionmodel
     .searchByParam(tenantId, username, params)
     .then((resp) => {
       res.status(200).send(translateResponse(resp))
@@ -131,9 +123,10 @@ exports.fetchAll = (req, res) => {
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  itemdetailmodel
+  transactiontypebaseconversionmodel
     .getAll(tenantId, username)
     .then((resp) => {
+      //   res.status(200).send(resp)
       res.status(200).send(translateResponse(resp))
     })
     .catch((err) => {
@@ -146,12 +139,8 @@ function translateResponse(respObj) {
   respObj.map((resp) => {
     let respObject = {
       Id: resp.Id,
-      Type: resp.Type,
-      HSNCode: resp.HSNCode,
-      SKU: resp.SKU,
-      BatchDetailId: resp.BatchDetailId,
-      CategoryId: resp.CategoryId,
-      Description: resp.Description,
+      FromTransactionTypeId: resp.FromTransactionTypeId,
+      ToTransactionTypeId: resp.ToTransactionTypeId,
       TenantId: resp.TenantId,
       Active: resp.Active,
       CreatedOn: resp.CreatedOn,
@@ -160,30 +149,22 @@ function translateResponse(respObj) {
       UpdatedBy: resp.UpdatedBy,
     }
 
-    let batchdetailObject = {
-      Id: resp.BatchDetailId,
-      BatchNo: resp.BatchDetailBatchNo,
-      Barcode: resp.BatchDetailBarcode,
-      MfgDate: resp.BatchDetailMfgDate,
-      Expdate: resp.BatchDetailExpdate,
-      PurchaseDate: resp.BatchDetailPurchaseDate,
-      IsNonReturnable: resp.BatchDetailIsNonReturnable,
-      CostInfoId: resp.BatchDetailCostInfoId,
-      UOMId: resp.BatchDetailUOMId,
-      Quantity: resp.BatchDetailQuantity,
-      MapProviderLocationMapperId: resp.BatchDetailMapProviderLocationMapperId,
-      BranchDetailId: resp.BatchDetailBranchDetailId,
-      Active: resp.BranchDetailActive,
+    let fromTransationTypeObject = {
+      Id: resp.FromTransactionTypeId,
+      Name: resp.FromTransactionTypeName,
+      TransactionTypeConfigId: resp.FromTransactionTypeTransactionTypeConfigId,
+      Active: resp.FromTransactionTypeActive,
     }
 
-    let categorydetail = {
-      Id: resp.CategoryDetailId,
-      Name: resp.CategoryDetailName,
-      Active: resp.CategoryDetailActive,
+    let toTransationTypeObject = {
+      Id: resp.ToTransactionTypeId,
+      Name: resp.ToTransactionTypeName,
+      TransactionTypeConfigId: resp.ToTransactionTypeTransactionTypeConfigId,
+      Active: resp.ToTransactionTypeActive,
     }
 
-    respObject.batchdetailObject = batchdetailObject
-    respObject.categorydetail = categorydetail
+    respObject.fromTransationTypeObject = fromTransationTypeObject
+    respObject.toTransationTypeObject = toTransationTypeObject
 
     respDetail.push(respObject)
   })
@@ -196,12 +177,12 @@ exports.fetchById = (req, res) => {
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  itemdetailmodel
+  transactiontypebaseconversionmodel
     .findById(
       req.params.id,
       tenantId,
       username,
-      moduleNames.itemdetail.application.fetchById
+      moduleNames.transactiontypebaseconversion.application.fetchById
     )
     .then((resp) => {
       if (resp === 404) {
@@ -231,19 +212,15 @@ exports.create = (req, res) => {
   } else {
     // Create a Record
     let reqModel = {
-      Type: req.body.Type,
-      HSNCode: req.body.HSNCode,
-      SKU: req.body.SKU,
-      BatchDetailId: req.body.BatchDetailId,
-      CategoryId: req.body.CategoryId,
-      Description: req.body.Description,
+      FromTransactionTypeId: req.body.FromTransactionTypeId,
+      ToTransactionTypeId: req.body.ToTransactionTypeId,
       Active: req.body.Active,
       TenantId: tenantId,
       CreatedOn: new Date(),
       CreatedBy: username,
     }
 
-    itemdetailmodel
+    transactiontypebaseconversionmodel
       .create(reqModel, username)
       .then((resp) => {
         res.send(resp)

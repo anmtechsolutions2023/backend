@@ -593,6 +593,28 @@ module.exports = {
     update: `UPDATE itemdetail SET Type = ?, HSNCode = ?, SKU = ?, BatchDetailId = ?, CategoryId = ?, Description = ?, 
     Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
   },
+  transactiontypebaseconversion: {
+    fetchAll: `SELECT
+    ttbs.*,
+    ttfrom.Id "FromTransactionTypeId",
+    ttfrom.Name "FromTransactionTypeName",
+    ttfrom.TransactionTypeConfigId "FromTransactionTypeTransactionTypeConfigId",
+    ttfrom.Active "FromTransactionTypeActive",
+    ttto.Id "ToTransactionTypeId",
+    ttto.Name "ToTransactionTypeName",
+    ttto.TransactionTypeConfigId "ToTransactionTypeTransactionTypeConfigId",
+    ttto.Active "ToTransactionTypeActive"
+    FROM transactiontypebaseconversion as ttbs JOIN transactiontype as ttfrom ON ttbs.FromTransactionTypeId = ttfrom.Id
+    JOIN transactiontype ttto ON ttbs.ToTransactionTypeId = ttto.Id
+    WHERE ttbs.TenantId = ?`,
+    fetchById: ' AND ttbs.Id = ?',
+    create: `INSERT INTO transactiontypebaseconversion (Id, FromTransactionTypeId, ToTransactionTypeId, TenantId, Active, CreatedOn, CreatedBy) 
+    VALUES (?,?,?,?,?,?,?)`,
+    delete:
+      'DELETE FROM transactiontypebaseconversion WHERE Id = ? and TenantId = ?',
+    update: `UPDATE transactiontypebaseconversion SET FromTransactionTypeId = ?, ToTransactionTypeId = ?,
+    Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
