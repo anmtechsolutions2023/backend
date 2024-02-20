@@ -23,6 +23,8 @@ module.exports = (app) => {
   const branchusergroupmapper = require('../controllers/branchusergroupmapper.controller.js')
   const batchdetail = require('../controllers/batchdetail.controller.js')
   const itemdetail = require('../controllers/itemdetail.controller.js')
+  const transactiontypebaseconversion = require('../controllers/transactiontypebaseconversion.controller.js')
+
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -211,7 +213,13 @@ module.exports = (app) => {
   router.put('/itemd/:id', itemdetail.update)
 
   // Transaction Type Base Conversion Opertions
-  // Transaction Type Counter Operations -- Need to see for this usage
+  router.get('/ttbcs', transactiontypebaseconversion.fetchAll)
+  router.get('/ttbc/search', transactiontypebaseconversion.search)
+  router.get('/ttbc/:id', transactiontypebaseconversion.fetchById)
+  router.post('/ttbc', transactiontypebaseconversion.create)
+  router.delete('/ttbc/:id', transactiontypebaseconversion.delete)
+  router.put('/ttbc/:id', transactiontypebaseconversion.update)
+
   // Transaction Detail log Operations
   // Transaction Item Detail Operations
 

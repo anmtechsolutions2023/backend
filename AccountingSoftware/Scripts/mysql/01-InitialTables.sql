@@ -401,7 +401,6 @@ create table batchdetail
 )
 
 -- Item Detail table
-
 create table itemdetail (
 	Id varchar(50) not null,
     Type varchar(50) not null,
@@ -420,4 +419,21 @@ create table itemdetail (
     UNIQUE (Type, TenantId),
     FOREIGN KEY (BatchDetailId) REFERENCES batchdetail(Id),
     FOREIGN KEY (CategoryId) REFERENCES categorydetail(Id)
+)
+
+-- Transaction Type Base Conversion  table
+create table transactiontypebaseconversion (
+	Id varchar(50) not null,   
+    FromTransactionTypeId varchar(50) not null,
+    ToTransactionTypeId varchar(50) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (FromTransactionTypeId, ToTransactionTypeId, TenantId),
+    FOREIGN KEY (FromTransactionTypeId) REFERENCES transactiontype(Id),
+    FOREIGN KEY (ToTransactionTypeId) REFERENCES transactiontype(Id)
 )
