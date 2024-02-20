@@ -344,4 +344,21 @@ module.exports = {
       searchbyname: 'DB_BatchDetail_searchbyname',
     },
   },
+  itemdetail: {
+    application: {
+      fetchAll: 'ItemDetail_fetchAll',
+      fetchById: 'ItemDetail_fetchById',
+      create: 'ItemDetail_create',
+      delete: 'ItemDetail_delete',
+      update: 'ItemDetail_update',
+    },
+    db: {
+      fetchAll: 'DB_ItemDetail_fetchAll',
+      fetchById: 'DB_ItemDetail_fetchById',
+      create: 'DB_ItemDetail_create',
+      delete: 'DB_ItemDetail_delete',
+      update: 'DB_ItemDetail_update',
+      searchbyname: 'DB_ItemDetail_searchbyname',
+    },
+  },
 }

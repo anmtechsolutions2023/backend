@@ -22,6 +22,7 @@ module.exports = (app) => {
   const branchdetail = require('../controllers/branchdetail.controller.js')
   const branchusergroupmapper = require('../controllers/branchusergroupmapper.controller.js')
   const batchdetail = require('../controllers/batchdetail.controller.js')
+  const itemdetail = require('../controllers/itemdetail.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -202,6 +203,12 @@ module.exports = (app) => {
   router.put('/batchd/:id', batchdetail.update)
 
   // Item Operations
+  router.get('/itemds', itemdetail.fetchAll)
+  router.get('/itemd/search', itemdetail.search)
+  router.get('/itemd/:id', itemdetail.fetchById)
+  router.post('/itemd', itemdetail.create)
+  router.delete('/itemd/:id', itemdetail.delete)
+  router.put('/itemd/:id', itemdetail.update)
 
   // Transaction Type Base Conversion Opertions
   // Transaction Type Counter Operations -- Need to see for this usage

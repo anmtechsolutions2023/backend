@@ -1,10 +1,11 @@
-const branchusergroupmapperModel = require('../models/branchusergroupmapper.model')
+const itemdetailmodel = require('../models/itemdetail.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
 const decodeToken = require('../utils/extracttoken')
 const queryParams = require('../utils/queyParams')
 
 exports.update = async (req, res) => {
+  console.log('Inside update')
   var decodedToken = decodeToken.decodeToken(req)
 
   let tenantId = decodedToken.tenantId
@@ -16,11 +17,11 @@ exports.update = async (req, res) => {
       message: 'Content can not be empty!',
     })
   } else {
-    let findById = await branchusergroupmapperModel.findById(
+    let findById = await itemdetailmodel.findById(
       req.params.id,
       tenantId,
       username,
-      moduleNames.branchusergroupmapper.application.update
+      moduleNames.itemdetail.application.update
     )
 
     if (findById == '404') {
@@ -31,12 +32,20 @@ exports.update = async (req, res) => {
 
     let updatedReq = {
       Id: findById[0].Id,
-      BranchDetailId: helper.isEmpty(req.body.BranchDetailId)
-        ? findById[0].BranchDetailId
-        : req.body.BranchDetailId,
-      UserGroupId: helper.isEmpty(req.body.UserGroupId)
-        ? findById[0].UserGroupId
-        : req.body.UserGroupId,
+      Type: helper.isEmpty(req.body.Type) ? findById[0].Type : req.body.Type,
+      HSNCode: helper.isEmpty(req.body.HSNCode)
+        ? findById[0].HSNCode
+        : req.body.HSNCode,
+      SKU: helper.isEmpty(req.body.SKU) ? findById[0].SKU : req.body.SKU,
+      BatchDetailId: helper.isEmpty(req.body.BatchDetailId)
+        ? findById[0].BatchDetailId
+        : req.body.BatchDetailId,
+      CategoryId: helper.isEmpty(req.body.CategoryId)
+        ? findById[0].CategoryId
+        : req.body.CategoryId,
+      Description: helper.isEmpty(req.body.Description)
+        ? findById[0].Description
+        : req.body.Description,
       Active: helper.isEmpty(req.body.Active)
         ? findById[0].Active
         : req.body.Active,
@@ -45,7 +54,7 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await branchusergroupmapperModel
+    await itemdetailmodel
       .update(updatedReq, username)
       .then(() => {
         return res.status(200).send()
@@ -62,11 +71,11 @@ exports.delete = async (req, res) => {
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  let findById = await branchusergroupmapperModel.findById(
+  let findById = await itemdetailmodel.findById(
     req.params.id,
     tenantId,
     username,
-    moduleNames.branchusergroupmapper.application.delete
+    moduleNames.itemdetail.application.delete
   )
 
   if (findById == '404') {
@@ -75,7 +84,7 @@ exports.delete = async (req, res) => {
     })
   }
 
-  branchusergroupmapperModel
+  itemdetailmodel
     .delete(req.params.id, tenantId, username)
     .then(() => {
       res.status(204).send()
@@ -102,7 +111,7 @@ exports.search = (req, res) => {
     })
   }
 
-  branchusergroupmapperModel
+  itemdetailmodel
     .searchByParam(tenantId, username, params)
     .then((resp) => {
       res.status(200).send(translateResponse(resp))
@@ -123,7 +132,7 @@ exports.fetchAll = (req, res) => {
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  branchusergroupmapperModel
+  itemdetailmodel
     .getAll(tenantId, username)
     .then((resp) => {
       res.status(200).send(translateResponse(resp))
@@ -138,8 +147,12 @@ function translateResponse(respObj) {
   respObj.map((resp) => {
     let respObject = {
       Id: resp.Id,
-      BranchDetailId: resp.BranchDetailId,
-      UserGroupId: resp.UserGroupId,
+      Type: resp.Type,
+      HSNCode: resp.HSNCode,
+      SKU: resp.SKU,
+      BatchDetailId: resp.BatchDetailId,
+      CategoryId: resp.CategoryId,
+      Description: resp.Description,
       TenantId: resp.TenantId,
       Active: resp.Active,
       CreatedOn: resp.CreatedOn,
@@ -148,24 +161,30 @@ function translateResponse(respObj) {
       UpdatedBy: resp.UpdatedBy,
     }
 
-    let branchdetailObject = {
-      Id: resp.BranchDetailId,
-      OrganizationDetailId: resp.BranchDetailOrganizationDetailId,
-      ContactDetailId: resp.BranchDetailContactDetailId,
-      AddressDetailId: resp.BranchDetailAddressDetailId,
-      TransactionTypeConfigId: resp.BranchDetailTransactionTypeConfigId,
-      BranchName: resp.BranchDetailBranchName,
-      TINNo: resp.BranchDetailTINNo,
-      GSTIN: resp.BrnachDetailGSTIN,
-      PAN: resp.BranchDetailPAN,
-      CF1: resp.BranchDetailCF1,
-      CF2: resp.BranchDetailCF2,
-      CF3: resp.BranchDetailCF3,
-      CF4: resp.BranchDetailCF4,
+    let batchdetailObject = {
+      Id: resp.BatchDetailId,
+      BatchNo: resp.BatchDetailBatchNo,
+      Barcode: resp.BatchDetailBarcode,
+      MfgDate: resp.BatchDetailMfgDate,
+      Expdate: resp.BatchDetailExpdate,
+      PurchaseDate: resp.BatchDetailPurchaseDate,
+      IsNonReturnable: resp.BatchDetailIsNonReturnable,
+      CostInfoId: resp.BatchDetailCostInfoId,
+      UOMId: resp.BatchDetailUOMId,
+      Quantity: resp.BatchDetailQuantity,
+      MapProviderLocationMapperId: resp.BatchDetailMapProviderLocationMapperId,
+      BranchDetailId: resp.BatchDetailBranchDetailId,
       Active: resp.BranchDetailActive,
     }
 
-    respObject.branchdetail = branchdetailObject
+    let categorydetail = {
+      Id: resp.CategoryDetailId,
+      Name: resp.CategoryDetailName,
+      Active: resp.CategoryDetailActive,
+    }
+
+    respObject.batchdetailObject = batchdetailObject
+    respObject.categorydetail = categorydetail
 
     respDetail.push(respObject)
   })
@@ -178,12 +197,12 @@ exports.fetchById = (req, res) => {
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  branchusergroupmapperModel
+  itemdetailmodel
     .findById(
       req.params.id,
       tenantId,
       username,
-      moduleNames.branchusergroupmapper.application.fetchById
+      moduleNames.itemdetail.application.fetchById
     )
     .then((resp) => {
       if (resp === 404) {
@@ -213,15 +232,19 @@ exports.create = (req, res) => {
   } else {
     // Create a Record
     let reqModel = {
-      BranchDetailId: req.body.BranchDetailId,
-      UserGroupId: req.body.UserGroupId,
+      Type: req.body.Type,
+      HSNCode: req.body.HSNCode,
+      SKU: req.body.SKU,
+      BatchDetailId: req.body.BatchDetailId,
+      CategoryId: req.body.CategoryId,
+      Description: req.body.Description,
       Active: req.body.Active,
       TenantId: tenantId,
       CreatedOn: new Date(),
       CreatedBy: username,
     }
 
-    branchusergroupmapperModel
+    itemdetailmodel
       .create(reqModel, username)
       .then((resp) => {
         res.send(resp)

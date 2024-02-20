@@ -399,3 +399,25 @@ create table batchdetail
     FOREIGN KEY (MapProviderLocationMapperId) REFERENCES mapproviderlocationmapper(Id),
     FOREIGN KEY (BranchDetailId) REFERENCES branchdetail(Id)
 )
+
+-- Item Detail table
+
+create table itemdetail (
+	Id varchar(50) not null,
+    Type varchar(50) not null,
+    HSNCode varchar(50),
+    SKU varchar(50),    
+    BatchDetailId varchar(50) not null,
+    CategoryId varchar(50) not null,
+    Description varchar(50),    
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),
+    UNIQUE (Type, TenantId),
+    FOREIGN KEY (BatchDetailId) REFERENCES batchdetail(Id),
+    FOREIGN KEY (CategoryId) REFERENCES categorydetail(Id)
+)

@@ -562,6 +562,37 @@ module.exports = {
     update:
       'UPDATE batchdetail SET BatchNo = ?, Barcode = ?, MfgDate = ?, Expdate = ?, PurchaseDate = ?, IsNonReturnable = ?, CostInfoId = ?, UOMId = ?, Quantity = ?, MapProviderLocationMapperId = ?, BranchDetailId = ?, Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
   },
+  itemdetail: {
+    fetchAll: `
+    SELECT 
+    id.*,
+    bd.Id "BatchDetailId",
+    bd.BatchNo "BatchDetailBatchNo",
+    bd.Barcode "BatchDetailBarcode",
+    bd.MfgDate "BatchDetailMfgDate",
+    bd.Expdate "BatchDetailExpdate",
+    bd.PurchaseDate "BatchDetailPurchaseDate",
+    bd.IsNonReturnable "BatchDetailIsNonReturnable",
+    bd.CostInfoId "BatchDetailCostInfoId",
+    bd.UOMId "BatchDetailUOMId",
+    bd.Quantity "BatchDetailQuantity",
+    bd.MapProviderLocationMapperId "BatchDetailMapProviderLocationMapperId",
+    bd.BranchDetailId "BatchDetailBranchDetailId",
+    bd.Active "BatchDetailActive",
+    cd.Id "CategoryDetailId",
+    cd.Name "CategoryDetailName",
+    cd.Active "CategoryDetailActive"
+    FROM itemdetail as id JOIN batchdetail as bd ON id.BatchDetailId = bd.Id
+    JOIN categorydetail as cd ON id.CategoryId = cd.Id
+    WHERE id.TenantId = ?
+    `,
+    fetchById: ' AND id.Id = ?',
+    create: `INSERT INTO itemdetail (Id, Type, HSNCode, SKU, BatchDetailId, CategoryId, Description, TenantId, Active, CreatedOn, CreatedBy) 
+    VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+    delete: 'DELETE FROM itemdetail WHERE Id = ? and TenantId = ?',
+    update: `UPDATE itemdetail SET Type = ?, HSNCode = ?, SKU = ?, BatchDetailId = ?, CategoryId = ?, Description = ?, 
+    Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
