@@ -1,3 +1,5 @@
+// We clean this file, as and when progress on code.
+
 const KeycloakAdminClient = require('keycloak-admin-client')
 const kcConfig = require('../config/kcconfig')
 // const { json } = require('express');
@@ -100,34 +102,80 @@ exports.authorization = async (req, res, next) => {
 
   var kcAdminClient = await new KeycloakAdminClient(credentials)
   // var group = await kcAdminClient.groups.members.find(credentials.realmName, kcConfig.apiScopeMapperGroupId); // Get the Group Id where API and scope mapper defined
-  var group = await kcAdminClient.groups.members.find(
-    credentials.realmName,
-    tokenDetail.tenantscope
-  ) // Get the Group Id where API and scope mapper defined
-  // console.log(`Group: ${JSON.stringify(group)}`)
+  // Below one is fetching only first 100 records.
+  // var group = await kcAdminClient.groups.members.find(
+  //   credentials.realmName,
+  //   tokenDetail.tenantscope
+  // ) // Get the Group Id where API and scope mapper defined
+  // // console.log(`Group: ${JSON.stringify(group)}`)
 
-  // var foundUser = group.find((g) => g.username === groupuserapimapper)
-  var foundUser = group.find((g) => g.username === apiMapperforTenant)
+  try {
+    var userDetail = await findUserByUsername(
+      kcAdminClient,
+      credentials.realmName,
+      apiMapperforTenant
+    )
 
-  if (foundUser === undefined) {
+    // console.log(`User Detail: ${JSON.stringify(userDetail)}`)
+
+    if (!userDetail || userDetail.length === 0) {
+      throw new Error('User not found')
+    }
+
+    var userGroups = await findUserGroupsByUserId(
+      kcAdminClient,
+      credentials.realmName,
+      userDetail[0].id
+    )
+
+    // console.log(`User Group: ${JSON.stringify(userGroups)}`)
+
+    if (!userGroups || userGroups.length === 0) {
+      throw new Error('User not associated with any group')
+    }
+
+    const isAssociated = userGroups.some(
+      (ug) => ug.id === tokenDetail.tenantscope
+    )
+    if (!isAssociated) {
+      throw new Error('User not associated with tenantscope group')
+    }
+  } catch (error) {
     logger.loggerHelper(
       tokenDetail.tenant,
       tokenDetail.preferred_username,
       req.url,
       logger.logType.error,
-      `No API user mapper found, no scope found`
+      `No API user mapper found, no scope found, Error: ${error}`
     )
     return false
   }
 
-  // console.log(foundUser);
+  // // var foundUser = group.find((g) => g.username === groupuserapimapper)
+  // var foundUser = group.find((g) => g.username === apiMapperforTenant)
 
-  var userId = foundUser.id
-  var user = await kcAdminClient.users.find(credentials.realmName, {
-    userId: userId,
-  })
+  // if (foundUser === undefined) {
+  //   logger.loggerHelper(
+  //     tokenDetail.tenant,
+  //     tokenDetail.preferred_username,
+  //     req.url,
+  //     logger.logType.error,
+  //     `No API user mapper found, no scope found`
+  //   )
+  //   return false
+  // }
 
-  // console.log(`User detail: ${JSON.stringify(user)}`)
+  // console.log(foundUser)
+
+  // var userId = foundUser.id
+  // var user = await kcAdminClient.users.find(credentials.realmName, {
+  //   userId: userId,
+  // })
+
+  // console.log(`User detail: ${JSON.stringify(userDetail)}`)
+  // console.log(`User attributes: ${userDetail.attributes}`)
+
+  var user = userDetail[0]
 
   allowedRoles =
     user.attributes &&
@@ -186,4 +234,14 @@ exports.authorization = async (req, res, next) => {
   }
   // console.log('scope matched')
   return true
+}
+
+async function findUserByUsername(kcAdminClient, realmName, username) {
+  return await kcAdminClient.users.find(realmName, {
+    username: username,
+  })
+}
+
+async function findUserGroupsByUserId(kcAdminClient, realmName, userId) {
+  return await kcAdminClient.users.groups.find(realmName, userId)
 }
