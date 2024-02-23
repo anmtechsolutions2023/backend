@@ -462,3 +462,22 @@ create table transactiondetaillog
     FOREIGN KEY (AccountTypeBaseId) REFERENCES accounttypebase(Id),
     FOREIGN KEY (BranchDetailId) REFERENCES branchdetail(Id)
 )
+
+-- Transaction Item Detail table
+create table transactionitemdetail
+  (
+	Id varchar(50) not null,    
+    TransactionDetailLogId varchar(50) not null,
+    ItemId varchar(50) not null,
+    Comment varchar(100),
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),    
+    UNIQUE (TransactionDetailLogId, ItemId, TenantId),
+    FOREIGN KEY (TransactionDetailLogId) REFERENCES transactiondetaillog(Id),
+    FOREIGN KEY (ItemId) REFERENCES itemdetail(Id)
+  )
