@@ -646,6 +646,38 @@ module.exports = {
     update: `UPDATE transactiondetaillog SET AccountTypeBaseId = ?, UserId = ?, Description = ?, BranchDetailId = ?, CF1 = ?,  CF2 = ?,  CF3 = ?,  CF4 = ?,
     Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
   },
+  transactionitemdetail: {
+    fetchAll: `SELECT 
+    tid.*,
+    tdl.Id "TransactionDetailLogId",
+    tdl.AccountTypeBaseId "TransactionDetailLogAccountTypeBaseId",
+    tdl.UserId "TransactionDetailLogUserId",
+    tdl.TransactionDateTime "TransactionDetailLogTransactionDateTime",
+    tdl.Description "TransactionDetailLogDescription",
+    tdl.BranchDetailId "TransactionDetailLogBranchDetailId",
+    tdl.CF1 "TransactionDetailLogCF1",
+    tdl.CF2 "TransactionDetailLogCF2",
+    tdl.CF3 "TransactionDetailLogCF3",
+    tdl.CF4 "TransactionDetailLogCF4",
+    tdl.Active "TransactionDetailLogActive",
+    id.Id "ItemDetailId",
+    id.Type "ItemDetailType",
+    id.HSNCode "ItemDetailHSNCode",
+    id.SKU "ItemDetailSKU",
+    id.BatchDetailId "ItemDetailBatchDetailId",
+    id.CategoryId "ItemDetailBatchCategoryId",
+    id.Description "ItemDetailDescription",
+    id.Active "ItemDetailActive"
+    FROM transactionitemdetail as tid JOIN transactiondetaillog as tdl ON tid.TransactionDetailLogId = tdl.Id
+    JOIN itemdetail as id ON tid.ItemId = id.Id
+    WHERE tid.TenantId = ?`,
+    fetchById: ' AND tid.Id = ?',
+    create: `INSERT INTO transactionitemdetail (Id, TransactionDetailLogId, ItemId, Comment, TenantId, Active, CreatedOn, CreatedBy) 
+    VALUES (?,?,?,?,?,?,?,?)`,
+    delete: 'DELETE FROM transactionitemdetail WHERE Id = ? and TenantId = ?',
+    update: `UPDATE transactionitemdetail SET TransactionDetailLogId = ?, ItemId = ?, Comment = ?, 
+    Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',

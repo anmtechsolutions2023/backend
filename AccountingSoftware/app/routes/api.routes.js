@@ -25,6 +25,7 @@ module.exports = (app) => {
   const itemdetail = require('../controllers/itemdetail.controller.js')
   const transactiontypebaseconversion = require('../controllers/transactiontypebaseconversion.controller.js')
   const transactiondetaillog = require('../controllers/transactiondetaillog.controller.js')
+  const transactionitemdetail = require('../controllers/transactionitemdetail.controller.js')
 
   const roles = require('../config/roles.json')
 
@@ -230,6 +231,13 @@ module.exports = (app) => {
   router.put('/tdl/:id', transactiondetaillog.update)
 
   // Transaction Item Detail Operations
+  router.get('/tids', transactionitemdetail.fetchAll)
+  router.get('/tid/search', transactionitemdetail.search)
+  router.get('/tid/:id', transactionitemdetail.fetchById)
+  router.post('/tid', transactionitemdetail.create)
+  router.delete('/tid/:id', transactionitemdetail.delete)
+  router.put('/tid/:id', transactionitemdetail.update)
+
   //Transction Type Conversion Mapper Operations
 
   // Payment Received Type Operations

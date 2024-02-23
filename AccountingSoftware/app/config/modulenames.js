@@ -395,4 +395,21 @@ module.exports = {
       searchbyname: 'DB_TransactionDetailLog_searchbyname',
     },
   },
+  transactionitemdetail: {
+    application: {
+      fetchAll: 'TransactionItemDetail_fetchAll',
+      fetchById: 'TransactionItemDetail_fetchById',
+      create: 'TransactionItemDetail_create',
+      delete: 'TransactionItemDetail_delete',
+      update: 'TransactionItemDetail_update',
+    },
+    db: {
+      fetchAll: 'DB_TransactionItemDetail_fetchAll',
+      fetchById: 'DB_TransactionItemDetail_fetchById',
+      create: 'DB_TransactionItemDetail_create',
+      delete: 'DB_TransactionItemDetail_delete',
+      update: 'DB_TransactionItemDetail_update',
+      searchbyname: 'DB_TransactionItemDetail_searchbyname',
+    },
+  },
 }
