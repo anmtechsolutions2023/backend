@@ -1,4 +1,4 @@
-const transactiontypebaseconversionmodel = require('../models/transactiontypebaseconversion.model')
+const transactiondetaillogmodel = require('../models/transactiondetaillog.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
 const decodeToken = require('../utils/extracttoken')
@@ -16,11 +16,11 @@ exports.update = async (req, res) => {
       message: 'Content can not be empty!',
     })
   } else {
-    let findById = await transactiontypebaseconversionmodel.findById(
+    let findById = await transactiondetaillogmodel.findById(
       req.params.id,
       tenantId,
       username,
-      moduleNames.transactiontypebaseconversion.application.update
+      moduleNames.transactiondetaillog.application.update
     )
 
     if (findById == '404') {
@@ -31,21 +31,28 @@ exports.update = async (req, res) => {
 
     let updatedReq = {
       Id: findById[0].Id,
-      FromTransactionTypeId: helper.isEmpty(req.body.FromTransactionTypeId)
-        ? findById[0].FromTransactionTypeId
-        : req.body.FromTransactionTypeId,
-      ToTransactionTypeId: helper.isEmpty(req.body.ToTransactionTypeId)
-        ? findById[0].ToTransactionTypeId
-        : req.body.ToTransactionTypeId,
-      Active: helper.isEmpty(req.body.Active)
-        ? findById[0].Active
-        : req.body.Active,
+      AccountTypeBaseId: helper.updateFieldValue(
+        findById,
+        req.body.AccountTypeBaseId
+      ),
+
+      UserId: helper.updateFieldValue(findById, req.body.UserId),
+      Description: helper.updateFieldValue(findById, req.body.Description),
+      BranchDetailId: helper.updateFieldValue(
+        findById,
+        req.body.BranchDetailId
+      ),
+      CF1: helper.updateFieldValue(findById, req.body.CF1),
+      CF2: helper.updateFieldValue(findById, req.body.CF2),
+      CF3: helper.updateFieldValue(findById, req.body.CF3),
+      CF4: helper.updateFieldValue(findById, req.body.CF4),
+      Active: helper.updateFieldValue(findById, req.body.Active),
       TenantId: tenantId,
       UpdatedOn: new Date(),
       UpdatedBy: username,
     }
 
-    await transactiontypebaseconversionmodel
+    await transactiondetaillogmodel
       .update(updatedReq, username)
       .then(() => {
         return res.status(200).send()
@@ -62,11 +69,11 @@ exports.delete = async (req, res) => {
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  let findById = await transactiontypebaseconversionmodel.findById(
+  let findById = await transactiondetaillogmodel.findById(
     req.params.id,
     tenantId,
     username,
-    moduleNames.transactiontypebaseconversion.application.delete
+    moduleNames.transactiondetaillog.application.delete
   )
 
   if (findById == '404') {
@@ -75,7 +82,7 @@ exports.delete = async (req, res) => {
     })
   }
 
-  transactiontypebaseconversionmodel
+  transactiondetaillogmodel
     .delete(req.params.id, tenantId, username)
     .then(() => {
       res.status(204).send()
@@ -102,7 +109,7 @@ exports.search = (req, res) => {
     })
   }
 
-  transactiontypebaseconversionmodel
+  transactiondetaillogmodel
     .searchByParam(tenantId, username, params)
     .then((resp) => {
       res.status(200).send(translateResponse(resp))
@@ -123,7 +130,7 @@ exports.fetchAll = (req, res) => {
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  transactiontypebaseconversionmodel
+  transactiondetaillogmodel
     .getAll(tenantId, username)
     .then((resp) => {
       res.status(200).send(translateResponse(resp))
@@ -138,8 +145,15 @@ function translateResponse(respObj) {
   respObj.map((resp) => {
     let respObject = {
       Id: resp.Id,
-      FromTransactionTypeId: resp.FromTransactionTypeId,
-      ToTransactionTypeId: resp.ToTransactionTypeId,
+      AccountTypeBaseId: resp.AccountTypeBaseId,
+      UserId: resp.UserId,
+      TransactionDateTime: resp.TransactionDateTime,
+      Description: resp.Description,
+      BranchDetailId: resp.BranchDetailId,
+      CF1: resp.CF1,
+      CF2: resp.CF2,
+      CF3: resp.CF3,
+      CF4: resp.CF4,
       TenantId: resp.TenantId,
       Active: resp.Active,
       CreatedOn: resp.CreatedOn,
@@ -148,22 +162,31 @@ function translateResponse(respObj) {
       UpdatedBy: resp.UpdatedBy,
     }
 
-    let fromTransationTypeObject = {
-      Id: resp.FromTransactionTypeId,
-      Name: resp.FromTransactionTypeName,
-      TransactionTypeConfigId: resp.FromTransactionTypeTransactionTypeConfigId,
-      Active: resp.FromTransactionTypeActive,
+    let accounttypebaseObject = {
+      Id: resp.AccountTypeBaseId,
+      Name: resp.AccountTypeBaseName,
+      Active: resp.AccountTypeBaseActive,
     }
 
-    let toTransationTypeObject = {
-      Id: resp.ToTransactionTypeId,
-      Name: resp.ToTransactionTypeName,
-      TransactionTypeConfigId: resp.ToTransactionTypeTransactionTypeConfigId,
-      Active: resp.ToTransactionTypeActive,
+    let branchdetailObject = {
+      Id: resp.BranchDetailId,
+      OrganizationDetailId: resp.BranchDetailOrganizationDetail,
+      ContactDetailId: resp.BranchDetailContactDetailId,
+      AddressDetailId: resp.BranchDetailAddressDetailId,
+      TransactionTypeConfigId: resp.BranchDetailTransactionTypeConfigId,
+      BranchName: resp.BranchDetailBranchName,
+      TINNo: resp.BranchDetailTINNo,
+      GSTIN: resp.BranchDetailGSTIN,
+      PAN: resp.BranchDetailPAN,
+      CF1: resp.BranchDetailCF1,
+      CF2: resp.BranchDetailCF2,
+      CF3: resp.BranchDetailCF3,
+      CF4: resp.BranchDetailCF4,
+      Active: resp.BranchDetailActive,
     }
 
-    respObject.fromTransationTypeObject = fromTransationTypeObject
-    respObject.toTransationTypeObject = toTransationTypeObject
+    respObject.accounttypebaseObject = accounttypebaseObject
+    respObject.branchdetailObject = branchdetailObject
 
     respDetail.push(respObject)
   })
@@ -176,12 +199,12 @@ exports.fetchById = (req, res) => {
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  transactiontypebaseconversionmodel
+  transactiondetaillogmodel
     .findById(
       req.params.id,
       tenantId,
       username,
-      moduleNames.transactiontypebaseconversion.application.fetchById
+      moduleNames.transactiondetaillog.application.fetchById
     )
     .then((resp) => {
       if (resp === 404) {
@@ -211,15 +234,22 @@ exports.create = (req, res) => {
   } else {
     // Create a Record
     let reqModel = {
-      FromTransactionTypeId: req.body.FromTransactionTypeId,
-      ToTransactionTypeId: req.body.ToTransactionTypeId,
+      AccountTypeBaseId: req.body.AccountTypeBaseId,
+      UserId: req.body.UserId,
+      TransactionDateTime: new Date(),
+      Description: req.body.Description,
+      BranchDetailId: req.body.BranchDetailId,
+      CF1: req.body.CF1,
+      CF2: req.body.CF2,
+      CF3: req.body.CF3,
+      CF4: req.body.CF4,
       Active: req.body.Active,
       TenantId: tenantId,
       CreatedOn: new Date(),
       CreatedBy: username,
     }
 
-    transactiontypebaseconversionmodel
+    transactiondetaillogmodel
       .create(reqModel, username)
       .then((resp) => {
         res.send(resp)
