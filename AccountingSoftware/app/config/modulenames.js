@@ -378,4 +378,21 @@ module.exports = {
       searchbyname: 'DB_TransactionTypeBaseConversion_searchbyname',
     },
   },
+  transactiondetaillog: {
+    application: {
+      fetchAll: 'TransactionDetailLog_fetchAll',
+      fetchById: 'TransactionDetailLog_fetchById',
+      create: 'TransactionDetailLog_create',
+      delete: 'TransactionDetailLog_delete',
+      update: 'TransactionDetailLog_update',
+    },
+    db: {
+      fetchAll: 'DB_TransactionDetailLog_fetchAll',
+      fetchById: 'DB_TransactionDetailLog_fetchById',
+      create: 'DB_TransactionDetailLog_create',
+      delete: 'DB_TransactionDetailLog_delete',
+      update: 'DB_TransactionDetailLog_update',
+      searchbyname: 'DB_TransactionDetailLog_searchbyname',
+    },
+  },
 }

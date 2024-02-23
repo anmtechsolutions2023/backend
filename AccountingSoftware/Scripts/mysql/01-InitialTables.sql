@@ -354,7 +354,7 @@ create table branchdetail
     FOREIGN KEY (TransactionTypeConfigId) REFERENCES transactiontypeconfig(Id)
 )
 
- -- Branch User Group Mapper table
+ -- Branch  Group Mapper table
 create table branchusergroupmapper
 (
 	Id varchar(50) not null,
@@ -436,4 +436,29 @@ create table transactiontypebaseconversion (
     UNIQUE (FromTransactionTypeId, ToTransactionTypeId, TenantId),
     FOREIGN KEY (FromTransactionTypeId) REFERENCES transactiontype(Id),
     FOREIGN KEY (ToTransactionTypeId) REFERENCES transactiontype(Id)
+)
+
+-- Transaction Detail log table
+
+create table transactiondetaillog
+(
+	Id varchar(50) not null,    
+    AccountTypeBaseId varchar(50) not null,
+    UserId varchar(50) not null,
+    TransactionDateTime varchar(50) not null,
+    Description varchar(100),
+    BranchDetailId varchar(50) not null,
+	CF1 varchar(50),
+    CF2 varchar(50),
+    CF3 varchar(50),
+    CF4 varchar(50),      
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),    
+    FOREIGN KEY (AccountTypeBaseId) REFERENCES accounttypebase(Id),
+    FOREIGN KEY (BranchDetailId) REFERENCES branchdetail(Id)
 )

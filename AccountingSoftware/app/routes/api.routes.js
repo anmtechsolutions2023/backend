@@ -24,6 +24,7 @@ module.exports = (app) => {
   const batchdetail = require('../controllers/batchdetail.controller.js')
   const itemdetail = require('../controllers/itemdetail.controller.js')
   const transactiontypebaseconversion = require('../controllers/transactiontypebaseconversion.controller.js')
+  const transactiondetaillog = require('../controllers/transactiondetaillog.controller.js')
 
   const roles = require('../config/roles.json')
 
@@ -221,7 +222,15 @@ module.exports = (app) => {
   router.put('/ttbc/:id', transactiontypebaseconversion.update)
 
   // Transaction Detail log Operations
+  router.get('/tdls', transactiondetaillog.fetchAll)
+  router.get('/tdl/search', transactiondetaillog.search)
+  router.get('/tdl/:id', transactiondetaillog.fetchById)
+  router.post('/tdl', transactiondetaillog.create)
+  router.delete('/tdl/:id', transactiondetaillog.delete)
+  router.put('/tdl/:id', transactiondetaillog.update)
+
   // Transaction Item Detail Operations
+  //Transction Type Conversion Mapper Operations
 
   // Payment Received Type Operations
   // Payment Mode Operations

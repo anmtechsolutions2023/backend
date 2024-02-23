@@ -8,3 +8,9 @@ exports.isEmpty = (value) => {
     (value.constructor === Object && Object.keys(value).length === 0)
   )
 }
+
+exports.updateFieldValue = (existingObj, updatedObject) => {
+  return this.isEmpty(updatedObject)
+    ? existingObj[0].FromTransactionTypeId
+    : updatedObject
+}
