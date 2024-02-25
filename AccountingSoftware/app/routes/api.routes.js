@@ -27,6 +27,7 @@ module.exports = (app) => {
   const transactiondetaillog = require('../controllers/transactiondetaillog.controller.js')
   const transactionitemdetail = require('../controllers/transactionitemdetail.controller.js')
   const transactiontypeconversionmapper = require('../controllers/transactiontypeconversionmapper.controller.js')
+  const paymentreceivedtype = require('../controllers/paymentreceivedtype.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -247,6 +248,13 @@ module.exports = (app) => {
   router.put('/ttcm/:id', transactiontypeconversionmapper.update)
 
   // Payment Received Type Operations
+  router.get('/prts', paymentreceivedtype.fetchAll)
+  router.get('/prt/search', paymentreceivedtype.search)
+  router.get('/prt/:id', paymentreceivedtype.fetchById)
+  router.post('/prt', paymentreceivedtype.create)
+  router.delete('/prt/:id', paymentreceivedtype.delete)
+  router.put('/prt/:id', paymentreceivedtype.update)
+
   // Payment Mode Operations
   // Payment Mode Transaction Detail Operations
   // Payment Detail Operations

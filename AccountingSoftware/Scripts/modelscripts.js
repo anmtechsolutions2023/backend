@@ -712,6 +712,15 @@ module.exports = {
     update: `UPDATE transactiontypeconversionmapper SET TransactionTypeBaseCoversionId = ?, TransactionDetailLogId = ?, TransactionTypeStatusId = ?, 
     Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
   },
+  paymentreceivedtype: {
+    fetchAll: `SELECT * FROM paymentreceivedtype WHERE TenantId = ?`,
+    fetchById: ' AND Id = ?',
+    create: `INSERT INTO paymentreceivedtype (Id, Type, TenantId, Active, CreatedOn, CreatedBy) 
+    VALUES (?,?,?,?,?,?)`,
+    delete: 'DELETE FROM paymentreceivedtype WHERE Id = ? and TenantId = ?',
+    update: `UPDATE paymentreceivedtype SET Type = ?, 
+    Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
