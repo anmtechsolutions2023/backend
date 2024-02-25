@@ -481,3 +481,23 @@ create table transactionitemdetail
     FOREIGN KEY (TransactionDetailLogId) REFERENCES transactiondetaillog(Id),
     FOREIGN KEY (ItemId) REFERENCES itemdetail(Id)
   )
+
+-- Transaction Type Conversion Mapper table
+create table transactiontypeconversionmapper 
+(
+	Id varchar(50) not null,    
+    TransactionTypeBaseCoversionId varchar(50) not null,
+    TransactionDetailLogId varchar(50) not null,
+    TransactionTypeStatusId varchar(50) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),    
+    UNIQUE (TransactionTypeBaseCoversionId, TransactionDetailLogId, TransactionTypeStatusId, TenantId),
+    FOREIGN KEY (TransactionTypeBaseCoversionId) REFERENCES transactiontypebaseconversion(Id),
+    FOREIGN KEY (TransactionDetailLogId) REFERENCES transactiondetaillog(Id),
+    FOREIGN KEY (TransactionTypeStatusId) REFERENCES transactiontypestatus(Id)
+)
