@@ -30,6 +30,7 @@ module.exports = (app) => {
   const paymentreceivedtype = require('../controllers/paymentreceivedtype.controller.js')
   const paymentmode = require('../controllers/paymentmode.controller.js')
   const paymentmodetransactiondetail = require('../controllers/paymentmodetransacationdetail.controller.js')
+  const paymentdetail = require('../controllers/paymentdetail.controller.js')
   const roles = require('../config/roles.json')
 
   const keycloak = require('../config/keycloak-config.js').getKeycloak()
@@ -274,6 +275,13 @@ module.exports = (app) => {
   router.put('/pmtd/:id', paymentmodetransactiondetail.update)
 
   // Payment Detail Operations
+  router.get('/payds', paymentdetail.fetchAll)
+  router.get('/payd/search', paymentdetail.search)
+  router.get('/payd/:id', paymentdetail.fetchById)
+  router.post('/payd', paymentdetail.create)
+  router.delete('/payd/:id', paymentdetail.delete)
+  router.put('/payd/:id', paymentdetail.update)
+
   // Payment Breakup Operations
   // Account Type Base Profile Operations
 

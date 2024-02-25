@@ -551,3 +551,26 @@ create table paymentmodetransactiondetail
     PRIMARY KEY (Id),    
     FOREIGN KEY (PaymentModeId) REFERENCES paymentmode(Id)
 )
+
+-- Payment Detail table
+create table paymentdetail 
+(
+	Id varchar(50) not null,    
+    AccountTypeBaseId varchar(50) not null,
+    TransactionDetailLogId varchar(50) not null,
+    DiscountAmount varchar(100),
+	RoundOff varchar(50),
+    TotalAmount varchar(50) not null,
+    TaxesAmount varchar(50),
+    GrossAmount varchar(50) not null,    
+    UserId varchar(50) not null,    
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),    
+    FOREIGN KEY (AccountTypeBaseId) REFERENCES accounttypebase(Id),
+    FOREIGN KEY (TransactionDetailLogId) REFERENCES transactiondetaillog(Id)
+)
