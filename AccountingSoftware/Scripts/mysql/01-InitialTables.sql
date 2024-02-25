@@ -516,3 +516,18 @@ create table paymentreceivedtype
     PRIMARY KEY (Id),    
     UNIQUE (Type, TenantId)
 )
+
+-- Payment mode table
+create table paymentmode 
+(
+	Id varchar(50) not null,    
+    Type varchar(50) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),    
+    UNIQUE (Type, TenantId)
+)

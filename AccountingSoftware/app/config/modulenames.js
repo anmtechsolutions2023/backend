@@ -446,4 +446,21 @@ module.exports = {
       searchbyname: 'DB_PaymentReceivedType_searchbyname',
     },
   },
+  paymentmode: {
+    application: {
+      fetchAll: 'PaymentMode_fetchAll',
+      fetchById: 'PaymentMode_fetchById',
+      create: 'PaymentMode_create',
+      delete: 'PaymentMode_delete',
+      update: 'PaymentMode_update',
+    },
+    db: {
+      fetchAll: 'DB_PaymentMode_fetchAll',
+      fetchById: 'DB_PaymentMode_fetchById',
+      create: 'DB_PaymentMode_create',
+      delete: 'DB_PaymentMode_delete',
+      update: 'DB_PaymentMode_update',
+      searchbyname: 'DB_PaymentMode_searchbyname',
+    },
+  },
 }
