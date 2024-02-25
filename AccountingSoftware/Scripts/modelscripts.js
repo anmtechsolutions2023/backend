@@ -721,6 +721,15 @@ module.exports = {
     update: `UPDATE paymentreceivedtype SET Type = ?, 
     Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
   },
+  paymentmode: {
+    fetchAll: `SELECT * FROM paymentmode WHERE TenantId = ?`,
+    fetchById: ' AND Id = ?',
+    create: `INSERT INTO paymentmode (Id, Type, TenantId, Active, CreatedOn, CreatedBy) 
+    VALUES (?,?,?,?,?,?)`,
+    delete: 'DELETE FROM paymentmode WHERE Id = ? and TenantId = ?',
+    update: `UPDATE paymentmode SET Type = ?, 
+    Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',
