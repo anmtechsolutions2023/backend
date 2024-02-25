@@ -412,4 +412,21 @@ module.exports = {
       searchbyname: 'DB_TransactionItemDetail_searchbyname',
     },
   },
+  transactiontypeconversionmapper: {
+    application: {
+      fetchAll: 'TransactionTypeConversionMapper_fetchAll',
+      fetchById: 'TransactionTypeConversionMapper_fetchById',
+      create: 'TransactionTypeConversionMapper_create',
+      delete: 'TransactionTypeConversionMapper_delete',
+      update: 'TransactionTypeConversionMapper_update',
+    },
+    db: {
+      fetchAll: 'DB_TransactionTypeConversionMapper_fetchAll',
+      fetchById: 'DB_TransactionTypeConversionMapper_fetchById',
+      create: 'DB_TransactionTypeConversionMapper_create',
+      delete: 'DB_TransactionTypeConversionMapper_delete',
+      update: 'DB_TransactionTypeConversionMapper_update',
+      searchbyname: 'DB_TransactionTypeConversionMapper_searchbyname',
+    },
+  },
 }
