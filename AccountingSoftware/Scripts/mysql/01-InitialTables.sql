@@ -501,3 +501,18 @@ create table transactiontypeconversionmapper
     FOREIGN KEY (TransactionDetailLogId) REFERENCES transactiondetaillog(Id),
     FOREIGN KEY (TransactionTypeStatusId) REFERENCES transactiontypestatus(Id)
 )
+
+-- Payment Received Type table
+create table paymentreceivedtype 
+(
+	Id varchar(50) not null,    
+    Type varchar(50) not null,
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),    
+    UNIQUE (Type, TenantId)
+)

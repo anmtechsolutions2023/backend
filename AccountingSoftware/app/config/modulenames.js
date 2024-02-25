@@ -429,4 +429,21 @@ module.exports = {
       searchbyname: 'DB_TransactionTypeConversionMapper_searchbyname',
     },
   },
+  paymentreceivedtype: {
+    application: {
+      fetchAll: 'PaymentReceivedType_fetchAll',
+      fetchById: 'PaymentReceivedType_fetchById',
+      create: 'PaymentReceivedType_create',
+      delete: 'PaymentReceivedType_delete',
+      update: 'PaymentReceivedType_update',
+    },
+    db: {
+      fetchAll: 'DB_PaymentReceivedType_fetchAll',
+      fetchById: 'DB_PaymentReceivedType_fetchById',
+      create: 'DB_PaymentReceivedType_create',
+      delete: 'DB_PaymentReceivedType_delete',
+      update: 'DB_PaymentReceivedType_update',
+      searchbyname: 'DB_PaymentReceivedType_searchbyname',
+    },
+  },
 }
