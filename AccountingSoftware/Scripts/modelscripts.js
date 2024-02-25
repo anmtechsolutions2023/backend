@@ -747,6 +747,33 @@ module.exports = {
     update: `UPDATE paymentmodetransactiondetail SET PaymentModeId = ?, RefNo = ?, Comment = ?, CF1 = ?, CF2 = ?, CF3 = ?, CF4 = ?,
     Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
   },
+  paymentdetail: {
+    fetchAll: `SELECT 
+    pd.*,
+    atb.Id "AccountTypeBaseId",
+    atb.Name "AccountTypeBaseName",
+    atb.Active "AccountTypeBaseActive",
+    tdl.Id "TransactionDetailLogId",
+    tdl.AccountTypeBaseId "TransactionDetailLogAccountTypeBaseId",
+    tdl.UserId "TransactionDetailLogUserId",
+    tdl.TransactionDateTime "TransactionDetailLogTransactionDateTime",
+    tdl.Description "TransactionDetailLogDescription",
+    tdl.BranchDetailId "TransactionDetailLogBranchDetailId",
+    tdl.CF1 "TransactionDetailLogCF1",
+    tdl.CF2 "TransactionDetailLogCF2",
+    tdl.CF3 "TransactionDetailLogCF3",
+    tdl.CF4 "TransactionDetailLogCF4",
+    tdl.Active "TransactionDetailLogActive"
+    FROM paymentdetail as pd JOIN accounttypebase atb ON pd.AccountTypeBaseId = atb.Id
+    JOIN transactiondetaillog tdl ON pd.TransactionDetailLogId = tdl.Id
+    WHERE pd.TenantId = ?`,
+    fetchById: ' AND pd.Id = ?',
+    create: `INSERT INTO paymentdetail (Id, AccountTypeBaseId, TransactionDetailLogId, DiscountAmount, RoundOff, TotalAmount, TaxesAmount, GrossAmount, UserId, TenantId, Active,  CreatedOn, CreatedBy)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    delete: 'DELETE FROM paymentdetail WHERE Id = ? and TenantId = ?',
+    update: `UPDATE paymentdetail SET AccountTypeBaseId = ?, TransactionDetailLogId = ?, DiscountAmount = ?, RoundOff = ?, TotalAmount = ?, TaxesAmount = ?, GrossAmount = ?, UserId = ?,
+    Active = ?,  UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?`,
+  },
   generalmodule: {
     fetchAll: '',
     fetchById: '',

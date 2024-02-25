@@ -480,4 +480,21 @@ module.exports = {
       searchbyname: 'DB_PaymentModeTransactionDetail_searchbyname',
     },
   },
+  paymentdetail: {
+    application: {
+      fetchAll: 'PaymentDetail_fetchAll',
+      fetchById: 'PaymentDetail_fetchById',
+      create: 'PaymentDetail_create',
+      delete: 'PaymentDetail_delete',
+      update: 'PaymentDetail_update',
+    },
+    db: {
+      fetchAll: 'DB_PaymentDetail_fetchAll',
+      fetchById: 'DB_PaymentDetail_fetchById',
+      create: 'DB_PaymentDetail_create',
+      delete: 'DB_PaymentDetail_delete',
+      update: 'DB_PaymentDetail_update',
+      searchbyname: 'DB_PaymentDetail_searchbyname',
+    },
+  },
 }
