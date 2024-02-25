@@ -439,7 +439,6 @@ create table transactiontypebaseconversion (
 )
 
 -- Transaction Detail log table
-
 create table transactiondetaillog
 (
 	Id varchar(50) not null,    
@@ -530,4 +529,25 @@ create table paymentmode
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),    
     UNIQUE (Type, TenantId)
+)
+
+-- Payment Mode Transaction Detail table
+create table paymentmodetransactiondetail
+(
+	Id varchar(50) not null,    
+    PaymentModeId varchar(50) not null,
+    RefNo varchar(50),
+    Comment varchar(100),
+	CF1 varchar(50),
+    CF2 varchar(50),
+    CF3 varchar(50),
+    CF4 varchar(50),      
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),    
+    FOREIGN KEY (PaymentModeId) REFERENCES paymentmode(Id)
 )
