@@ -497,4 +497,21 @@ module.exports = {
       searchbyname: 'DB_PaymentDetail_searchbyname',
     },
   },
+  paymentbreakup: {
+    application: {
+      fetchAll: 'PaymentBreakup_fetchAll',
+      fetchById: 'PaymentBreakup_fetchById',
+      create: 'PaymentBreakup_create',
+      delete: 'PaymentBreakup_delete',
+      update: 'PaymentBreakup_update',
+    },
+    db: {
+      fetchAll: 'DB_PaymentBreakup_fetchAll',
+      fetchById: 'DB_PaymentBreakup_fetchById',
+      create: 'DB_PaymentBreakup_create',
+      delete: 'DB_PaymentBreakup_delete',
+      update: 'DB_PaymentBreakup_update',
+      searchbyname: 'DB_PaymentBreakup_searchbyname',
+    },
+  },
 }

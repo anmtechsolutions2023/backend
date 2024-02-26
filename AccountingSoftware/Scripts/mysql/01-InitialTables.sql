@@ -574,3 +574,26 @@ create table paymentdetail
     FOREIGN KEY (AccountTypeBaseId) REFERENCES accounttypebase(Id),
     FOREIGN KEY (TransactionDetailLogId) REFERENCES transactiondetaillog(Id)
 )
+
+-- Payment Breakup table
+create table paymentbreakup
+(
+	Id varchar(50) not null,    
+    AccountTypeBaseId varchar(50) not null,
+    PaymentDetailId varchar(50) not null,
+    PaymentModeTransactionDetailId varchar(100) not null,
+	PaymentReceivedTypeId varchar(50) not null,
+    UserId varchar(50) not null,    
+    Timestamp datetime not null,    
+    TenantId varchar(50) not null,
+    Active tinyint(1) not null,
+    CreatedOn datetime,
+    CreatedBy varchar(50),
+    UpdatedOn datetime,
+    UpdatedBy varchar(50),
+    PRIMARY KEY (Id),    
+    FOREIGN KEY (AccountTypeBaseId) REFERENCES accounttypebase(Id),
+    FOREIGN KEY (PaymentDetailId) REFERENCES paymentdetail(Id),
+    FOREIGN KEY (PaymentModeTransactionDetailId) REFERENCES paymentmodetransactiondetail(Id),
+    FOREIGN KEY (PaymentReceivedTypeId) REFERENCES paymentreceivedtype(Id)
+)
