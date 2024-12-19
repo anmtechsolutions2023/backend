@@ -74,30 +74,28 @@ exports.deleteUOM = async (req, res) => {
     })
   }
 
-  uom
+  await uom
     .deleteUOM(req.params.id, tenantId, username)
     .then(() => {
-      res.status(204).send()
+      return res.status(204).send()
     })
     .catch((err) => {
-      res.sendStatus(500).send()
+      return res.status(500).send()
     })
 }
 
-exports.fetchAllUOMs = (req, res) => {
+exports.fetchAllUOMs = async (req, res) => {
   var decodedToken = decodeToken.decodeToken(req)
 
   let tenantId = decodedToken.tenantId
   let username = decodedToken.username
 
-  uom
-    .getAll(tenantId, username)
-    .then((uom) => {
-      res.send(uom)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+  try {
+    const uoms = await uom.getAll(tenantId, username)
+    res.send(uoms)
+  } catch (err) {
+    res.sendStatus(500)
+  }
 }
 
 exports.fetchUOMById = (req, res) => {
@@ -122,7 +120,7 @@ exports.fetchUOMById = (req, res) => {
       res.send(uom)
     })
     .catch((err) => {
-      res.sendStatus(500).send()
+      res.sendStatus(500)
     })
 }
 
@@ -156,10 +154,10 @@ exports.createUOM = (req, res) => {
       .catch((err) => {
         switch (err) {
           case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
+            return res.sendStatus(409)
           }
         }
-        res.sendStatus(500).send()
+        res.sendStatus(500)
       })
   }
 }
