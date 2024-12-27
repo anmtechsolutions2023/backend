@@ -1,34 +1,31 @@
 const uom = require('../models/uom.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
-const decodeToken = require('../utils/extracttoken')
+const statusCodes = require('../config/statusCodes')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
 
 exports.updateUOM = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let uomFindById = await uom.findById(
-      req.params.id,
-      tenantId,
-      username,
-      moduleNames.uom.application.update
-    )
-
-    if (uomFindById == '404') {
-      return res.status(404).send({
-        message: 'UOM not found.',
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
       })
     }
 
-    let updatedUOM = {
+    // Find UOM by Id
+    const uomFindById = await uom.findById(req.params.id, tenantId, username)
+
+    if (uomFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.uom.notFound'),
+      })
+    }
+
+    const updatedUOM = {
       Id: uomFindById[0].Id,
       UnitName: helper.isEmpty(req.body.UnitName)
         ? uomFindById[0].UnitName
@@ -44,102 +41,117 @@ exports.updateUOM = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await uom
-      .update(updatedUOM, username)
-      .then(() => {
-        return res.status(200).send()
+    // Update UOM in database
+    return res
+      .status(await uom.update(updatedUOM, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
-      .catch((err) => {
-        return res.status(500).send()
-      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.uom.internalServerError'),
+    })
   }
 }
 
 exports.deleteUOM = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const uomFindById = await uom.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.uom.application.delete
+    )
 
-  let uomFindById = await uom.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.uom.application.delete
-  )
+    if (uomFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.uom.notFound'),
+      })
+    }
 
-  if (uomFindById == '404') {
-    return res.status(404).send({
-      message: 'UOM not found.',
+    await uom.deleteUOM(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.errors.database.connectionRefused'),
     })
   }
-
-  uom
-    .deleteUOM(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.fetchAllUOMs = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAllUOMs = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    return res.send(await uom.getAll(tenantId, username))
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
 
-  uom
-    .getAll(tenantId, username)
-    .then((uom) => {
-      res.send(uom)
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.errors.database.connectionRefused'),
     })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+  }
 }
 
-exports.fetchUOMById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchUOMById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  uom
-    .findById(
+    const uomData = await uom.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.uom.application.fetchById
     )
-    .then((uom) => {
-      if (uom === 404) {
-        return res.status(404).send({
-          message: 'UOM not found.',
-        })
-      }
-      res.send(uom)
+
+    if (uomData === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.uom.notFound'),
+      })
+    }
+
+    return res.send(uomData)
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.uom.internalServerError'),
     })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+  }
 }
 
-exports.createUOM = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.createUOM = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a UOM
-    let um = {
+    const um = {
       UnitName: req.body.UnitName,
       IsPrimary: req.body.IsPrimary,
       Active: req.body.Active,
@@ -148,18 +160,17 @@ exports.createUOM = (req, res) => {
       CreatedBy: username,
     }
 
-    uom
-      .create(um, username)
-      .then((uomResp) => {
-        res.send(uomResp)
+    const createdUOM = await uom.create(um, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(createdUOM)
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.uom.internalServerError'),
+    })
   }
 }

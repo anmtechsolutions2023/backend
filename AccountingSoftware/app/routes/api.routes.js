@@ -1,6 +1,5 @@
 module.exports = (app) => {
   var router = require('express').Router()
-  const tutorials = require('../controllers/tutorial.controller.js')
   const taxtype = require('../controllers/taxtype.controller.js')
   const uom = require('../controllers/uom.controller.js')
   const categorydetail = require('../controllers/categorydetail.controller.js')
@@ -32,33 +31,23 @@ module.exports = (app) => {
   const paymentmodetransactiondetail = require('../controllers/paymentmodetransacationdetail.controller.js')
   const paymentdetail = require('../controllers/paymentdetail.controller.js')
   const paymentbreakup = require('../controllers/paymentbreakup.controller.js')
-  const roles = require('../config/roles.json')
+  const corsMiddleware = require('../middleware/corsHeaders.js')
+  const kcAuthvalidatorMiddleware = require('../middleware/kcAuthValidator.js')
+  const authCommonHeaderMiddleware = require('../middleware/auth.common.js')
+  const devSkipAuth = require('../config/dev.skipauth.testing.js')
 
-  const keycloak = require('../config/keycloak-config.js').getKeycloak()
+  // Apply CORS headers
+  router.use(corsMiddleware)
 
-  router.use(async (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Headers', '*')
-    res.header(
-      'Access-Control-Allow-Methods',
-      'POST, PUT, PATCH, GET, DELETE, OPTIONS'
-    )
+  // Authorization validator
+  !devSkipAuth.DevTestingEnabled && router.use(kcAuthvalidatorMiddleware)
 
-    var authorizerval = require('../utils/authorizervalidator.js')
-    var result = await authorizerval.authorization(req, res, next)
+  // Auth common header or code middleware
+  router.use(authCommonHeaderMiddleware)
 
-    if (!result) {
-      return res.status(401).send()
-    }
+  // Define the routes for each controller
 
-    return next()
-  })
-
-  // Tax Types Operations
-  // router.get("/taxtypes", keycloak.protect(["user", "admin", "superadmin"]), taxtype.fetchAllTaxTypes);
-  // router.get("/taxtypes", keycloak.protect(taxtypesRoles), taxtype.fetchAllTaxTypes);
-  // router.get("/taxtypes", keycloak.protect(), taxtype.fetchAllTaxTypes);
-  // router.get("/taxtype/:id", keycloak.protect(), taxtype.fetchTaxTypeById);
+  // Tax Type Operations
   router.get('/taxtypes', taxtype.fetchAllTaxTypes)
   router.get('/taxtype/:id', taxtype.fetchTaxTypeById)
   router.delete('/taxtypes/:id', taxtype.deleteTaxType)

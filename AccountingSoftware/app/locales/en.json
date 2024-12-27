@@ -1,0 +1,54 @@
+{
+  "messages": {
+    "errors": {
+      "database": {
+        "connectionRefused": "Service unavailable. Please try again later.",
+        "accessDenied": "Access denied. Please check your credentials.",
+        "databaseNotFound": "Database not found. Please check your configuration.",
+        "duplicateEntry": "Duplicate entry. Record already exists."
+      },
+      "general": {
+        "internalServerError": "Internal Server Error: Failed to process the request."
+      },
+      "validation": {
+        "requiredField": "Field is required.",
+        "invalidFormat": "Invalid format.",
+        "emptyContent": "Content cannot be empty!"
+      },
+      "authentication": {
+        "invalidCredentials": "Invalid username or password"
+      },
+      "resource": {
+        "notFound": "Resource not found."
+      },
+      "uom": {
+        "notFound": "messages.errors.uom.notFound"
+      }
+    },
+    "modules": {
+      "uom": {
+        "notFound": "UOM not found.",
+        "internalServerError": "An error occurred while fetching the UOM."
+      }
+    },
+    "logger": {
+      "success": "Success",
+      "error": "Error Code: {{code}}, Error: {{message}}",
+      "recordFindById": "Record found for Id: {{id}}",
+      "recordNotFindById": "Record not found for Id: {{id}}",
+      "errorFindById": "Error for Id: {{id}}, Error Code: {{code}}, Error: {{message}}",
+      "successDeleteById": "Deleted record Id: {{id}}, affected Rows: {{affectedRows}}",
+      "errorDeleteById": "Error for Id: {{id}}, Error Code: {{code}}, Error: {{message}}",
+      "successCreatedById": "Successfully created with Id: {{id}}",
+      "errorCreatedById": "Error while creating record for {{name}}, Error Code: {{code}}, Error: {{message}}",
+      "successUpdatedById": "Successfully updated for Id: {{id}}",
+      "errorUpdatedById": "Error for Id: {{id}}, Error code: {{code}}, Error: {{message}}"
+    },
+    "success": {
+      "fetchAll": "Successfully fetched all records.",
+      "create": "Record created successfully.",
+      "update": "Record updated successfully.",
+      "delete": "Record deleted successfully."
+    }
+  }
+}

@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise')
 const dbConfig = require('../config/db.config.js')
 
-var connection = mysql.createPool({
+const mysqlConnection = mysql.createPool({
   host: dbConfig.HOST,
   user: dbConfig.USER,
   password: dbConfig.PASSWORD,
@@ -12,4 +12,4 @@ var connection = mysql.createPool({
   queueLimit: 0, // Sets the maximum number of connection requests the pool will queue before returning an error.
 })
 
-module.exports = connection
+module.exports = mysqlConnection

@@ -6,7 +6,6 @@ const kcConfig = require('../config/kcconfig')
 const logger = require('../utils/loggerHelper')
 // const decodeToken = require('../utils/extracttoken');
 const tokenDecoder = require('../utils/token')
-const { log } = require('winston')
 
 // update this method to handle multiple api/ method name
 exports.authorization = async (req, res, next) => {
