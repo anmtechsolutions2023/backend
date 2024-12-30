@@ -7,7 +7,9 @@
     "start": "node index.js",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:single": "jest /Users/animeshmalhotra/DATA/Learning/NodeJs/Backend/backend/AccountingSoftware/app/unittests/controllers/uom/createuomtests.js",
+    "test:case": "jest /Users/animeshmalhotra/DATA/Learning/NodeJs/Backend/backend/AccountingSoftware/app/unittests/controllers/uom/createuomtests.js -t \"updateUOM\""
   },
   "author": "",
   "license": "ISC",
