@@ -29,6 +29,10 @@
       "uom": {
         "notFound": "UOM not found.",
         "internalServerError": "An error occurred while fetching the UOM."
+      },
+      "uomfactor": {
+        "notFound": "UOM Factor not found.",
+        "internalServerError": "An error occurred while fetching the UOM Factor."
       }
     },
     "logger": {

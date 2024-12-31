@@ -85,7 +85,7 @@ exports.deleteUOM = async (req, res) => {
     }
 
     return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.errors.database.connectionRefused'),
+      message: i18n.__('messages.modules.uom.internalServerError'),
     })
   }
 }
@@ -103,7 +103,7 @@ exports.fetchAllUOMs = async (req, res) => {
     }
 
     return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.errors.database.connectionRefused'),
+      message: i18n.__('messages.modules.uom.internalServerError'),
     })
   }
 }
