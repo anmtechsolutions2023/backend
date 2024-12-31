@@ -1,46 +1,50 @@
 {
-  "messages": {
-    "errors": {
-      "database": {
-        "connectionRefused": "Servicio no disponible. Por favor, inténtelo de nuevo más tarde.",
-        "accessDenied": "Acceso denegado. Por favor, verifique sus credenciales.",
-        "databaseNotFound": "Base de datos no encontrada. Por favor, verifique su configuración.",
-        "duplicateEntry": "Entrada duplicada. El UOM ya existe."
-      },
-      "general": {
-        "internalServerError": "messages.errors.general.internalServerError"
-      },
-      "validation": {
-        "requiredField": "Field is required.",
-        "invalidFormat": "Invalid format.",
-        "emptyContent": "messages.errors.validation.emptyContent"
-      },
-      "authentication": {
-        "invalidCredentials": "Invalid username or password"
-      },
-      "resource": {
-        "notFound": "Resource not found."
-      }
-    },
-    "success": {
-      "fetchAll": "Successfully fetched all records.",
-      "create": "Record created successfully.",
-      "update": "ES Record updated successfully.",
-      "delete": "Record deleted successfully."
-    },
-    "logger": {
-      "success": "messages.logger.success",
-      "error": "messages.logger.error",
-      "errorFindById": "messages.logger.errorFindById",
-      "recordFindById": "messages.logger.recordFindById",
-      "successDeleteById": "messages.logger.successDeleteById",
-      "recordNotFindById": "messages.logger.recordNotFindById",
-      "errorCreatedById": "messages.logger.errorCreatedById"
-    },
-    "modules": {
-      "uom": {
-        "notFound": "messages.modules.uom.notFound"
-      }
-    }
-  }
+	"messages": {
+		"errors": {
+			"database": {
+				"connectionRefused": "Servicio no disponible. Por favor, inténtelo de nuevo más tarde.",
+				"accessDenied": "Acceso denegado. Por favor, verifique sus credenciales.",
+				"databaseNotFound": "Base de datos no encontrada. Por favor, verifique su configuración.",
+				"duplicateEntry": "Entrada duplicada. El UOM ya existe."
+			},
+			"general": {
+				"internalServerError": "messages.errors.general.internalServerError"
+			},
+			"validation": {
+				"requiredField": "Field is required.",
+				"invalidFormat": "Invalid format.",
+				"emptyContent": "messages.errors.validation.emptyContent"
+			},
+			"authentication": {
+				"invalidCredentials": "Invalid username or password"
+			},
+			"resource": {
+				"notFound": "Resource not found."
+			}
+		},
+		"success": {
+			"fetchAll": "Successfully fetched all records.",
+			"create": "Record created successfully.",
+			"update": "ES Record updated successfully.",
+			"delete": "Record deleted successfully."
+		},
+		"logger": {
+			"success": "messages.logger.success",
+			"error": "messages.logger.error",
+			"errorFindById": "messages.logger.errorFindById",
+			"recordFindById": "messages.logger.recordFindById",
+			"successDeleteById": "messages.logger.successDeleteById",
+			"recordNotFindById": "messages.logger.recordNotFindById",
+			"errorCreatedById": "messages.logger.errorCreatedById",
+			"successUpdatedById": "messages.logger.successUpdatedById"
+		},
+		"modules": {
+			"uom": {
+				"notFound": "messages.modules.uom.notFound"
+			},
+			"uomfactor": {
+				"notFound": "messages.modules.uomfactor.notFound"
+			}
+		}
+	}
 }
