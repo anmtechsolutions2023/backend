@@ -1,193 +1,122 @@
 const { v4: uuidv4 } = require('uuid')
 const sql = require('./db.js')
-const statuses = require('./statuses.js')
+const mysqlConnection = require('../utils/db.js')
 const logger = require('../utils/loggerHelper')
 const moduleScripts = require('../../Scripts/modelscripts.js')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes.js')
+const getAllModels = require('../models/common/getAll.model')
+const getFindById = require('../models/common/findById.model')
+const deleteById = require('../models/common/deleteById.model')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
 
-exports.deleteUOM = (id, tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.uom.delete
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.uom.db.delete,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB UOM Error, for operation:  deleteUOM.' + err)
-      }
-
-      if (JSON.stringify(res.affectedRows)) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.uom.db.delete,
-          logger.logType.debug,
-          `Deleted record Id: ${id}, affected Rows are: ${res.affectedRows} `
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.uom.db.delete,
-          logger.logType.error,
-          ` No Record found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.deleteUOM = async (id, tenantId, username) => {
+  return await deleteById.deleteUOM(
+    id,
+    tenantId,
+    username,
+    moduleScripts.uom.delete,
+    moduleNames.uom.db.delete
+  )
 }
 
-exports.getAll = (tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.uom.fetchAll
-
-    sql.query(query, [tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.uom.db.fetchAll,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB UOM Error, for operation:  getAll.' + err)
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.uom.db.fetchAll,
-        logger.logType.debug,
-        `Success`
-      )
-      resolve(res)
-    })
-  })
+exports.getAll = async (tenantId, username) => {
+  return await getAllModels.getAll(
+    tenantId,
+    username,
+    moduleScripts.uom.fetchAll,
+    moduleNames.uom.db.fetchAll
+  )
 }
 
-exports.update = (uom, username) => {
-  return new Promise((resolve, reject) => {
+exports.update = async (uom, username) => {
+  try {
     let query = moduleScripts.uom.update
 
-    sql.query(
-      query,
-      [
-        uom.UnitName,
-        uom.IsPrimary,
-        uom.Active,
-        uom.UpdatedOn,
-        uom.UpdatedBy,
-        uom.Id,
-        uom.TenantId,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            uom.TenantId,
-            username,
-            moduleNames.uom.db.update,
-            logger.logType.error,
-            `Error for Id: ${uom.Id}, Error code: ${err.code}, Error: ${err}`
-          )
-          return reject('DB UOM Error, for operation:  update.' + err)
-        }
+    await mysqlConnection.query(query, [
+      uom.UnitName,
+      uom.IsPrimary,
+      uom.Active,
+      uom.UpdatedOn,
+      uom.UpdatedBy,
+      uom.Id,
+      uom.TenantId,
+    ])
 
-        logger.loggerHelper(
-          uom.TenantId,
-          username,
-          moduleNames.uom.db.update,
-          logger.logType.debug,
-          `Successfully updated UOM Id: ${uom.Id}`
-        )
-        resolve(res)
-      }
+    logger.loggerHelper(
+      uom.TenantId,
+      username,
+      moduleNames.uom.db.update,
+      logger.logType.debug,
+      i18n.__('messages.logger.successUpdatedById', { id: uom.Id })
     )
-  })
+
+    return statusCodes.HTTP_STATUS_OK
+  } catch (err) {
+    logger.loggerHelper(
+      uom.TenantId,
+      username,
+      moduleNames.uom.db.update,
+      logger.logType.error,
+      i18n.__('messages.logger.errorUpdatedById', {
+        id: uom.Id,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError(err)
+  }
 }
 
-exports.findById = (id, tenantId, username, callerModule) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.uom.fetchById
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.uom.db.fetchById}`,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB UOM Error, for operation:  findById.' + err)
-      }
-
-      if (res.length) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.uom.db.fetchById}`,
-          logger.logType.debug,
-          `Record found for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.uom.db.fetchById}`,
-          logger.logType.error,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.findById = async (id, tenantId, username, callerModule) => {
+  return await getFindById.findById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.uom.fetchById,
+    `${callerModule}--${moduleNames.uom.db.fetchById}`
+  )
 }
 
-exports.create = (uom, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.uom.create
-    let uomId = uuidv4()
+exports.create = async (uom, username) => {
+  try {
+    const query = moduleScripts.uom.create
+    const uomId = uuidv4()
 
-    sql.query(
-      query,
-      [
-        uomId,
-        uom.UnitName,
-        uom.IsPrimary,
-        uom.Active,
-        uom.TenantId,
-        uom.CreatedOn,
-        uom.CreatedBy,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            uom.TenantId,
-            username,
-            moduleNames.uom.db.create,
-            logger.logType.error,
-            `Error while creating record for ${uom.UnitName}, Error Code: ${err.code} , Error: ${err}`
-          )
-          return reject(err.code)
-        }
+    await mysqlConnection.query(query, [
+      uomId,
+      uom.UnitName,
+      uom.IsPrimary,
+      uom.Active,
+      uom.TenantId,
+      uom.CreatedOn,
+      uom.CreatedBy,
+    ])
 
-        logger.loggerHelper(
-          uom.TenantId,
-          username,
-          moduleNames.uom.db.create,
-          logger.logType.debug,
-          `Successfully created with Id: ${uomId}`
-        )
-        resolve(uomId)
-      }
+    logger.loggerHelper(
+      uom.TenantId,
+      username,
+      moduleNames.uom.db.create,
+      logger.logType.debug,
+      i18n.__('messages.logger.successCreatedById', { id: uomId })
     )
-  })
+
+    return uomId
+  } catch (err) {
+    logger.loggerHelper(
+      uom.TenantId,
+      username,
+      moduleNames.uom.db.create,
+      logger.logType.error,
+      i18n.__('messages.logger.errorCreatedById', {
+        name: uom.UnitName,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError(err)
+  }
 }

@@ -8,7 +8,7 @@ var memoryStore = new session.MemoryStore()
 const app = express()
 
 var corsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }
@@ -48,7 +48,9 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to our application.' })
 })
 
-require('./app/routes/api.routes.js')(app)
+// require('./app/routes/api.routes.js')(app)
+
+require('./app/routes/api.routes')(app)
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8000

@@ -2,19 +2,22 @@ const uomfactor = require('../models/uomfactor.model')
 const helper = require('../utils/helper')
 const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
+    // Find UOM factor by Id
     let uomfFindById = await uomfactor.findById(
       req.params.id,
       tenantId,
@@ -22,9 +25,9 @@ exports.update = async (req, res) => {
       moduleNames.uomfactor.application.update
     )
 
-    if (uomfFindById == '404') {
-      return res.status(404).send({
-        message: 'UOMFactor not found.',
+    if (uomfFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.uomfactor.notFound'),
       })
     }
 
@@ -47,158 +50,167 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await uomfactor
-      .update(updateuomf, username)
-      .then(() => {
-        res.status(200).send()
+    return res
+      .status(await uomfactor.update(updateuomf, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        return res.sendStatus(500).send()
-      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.uomfactor.internalServerError'),
+    })
   }
 }
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    let uomfFindById = await uomfactor.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.uomfactor.application.delete
+    )
 
-  let uomfFindById = await uomfactor.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.uomfactor.application.delete
-  )
+    if (uomfFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.uomfactor.notFound'),
+      })
+    }
 
-  if (uomfFindById == '404') {
-    return res.status(404).send({
-      message: 'UOMFactor not found.',
+    await uomfactor.delete(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.uomfactor.internalServerError'),
     })
   }
-
-  uomfactor
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.fetchAll = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAll = async (req, res) => {
+  try {
+    const { tenantId, username } = req
+    const uomf = await uomfactor.getAll(tenantId, username)
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    let uomfDetail = []
+    uomf.map((uf) => {
+      let primaryuom = {
+        PrimaryUOMId: uf.PrimaryUOMId,
+        PrimaryUOMName: uf.PrimaryUnitName,
+        PrimaryUOMActive: uf.PrimaryUnitNameActive,
+      }
 
-  uomfactor
-    .getAll(tenantId, username)
-    .then((uomf) => {
-      let uomfDetail = []
-      uomf.map((uf) => {
-        let primaryuom = {
-          PrimaryUOMId: uf.PrimaryUOMId,
-          PrimaryUOMName: uf.PrimaryUnitName,
-          PrimaryUOMActive: uf.PrimaryUnitNameActive,
-        }
+      let secondaryuom = {
+        SecondaryUOMId: uf.SecondaryUOMId,
+        SecondaryUOMName: uf.SecondayUnitName,
+        SecondaryUOMActive: uf.SecondayUnitActive,
+      }
 
-        let secondaryuom = {
-          SecondaryUOMId: uf.SecondaryUOMId,
-          SecondaryUOMName: uf.SecondayUnitName,
-          SecondaryUOMActive: uf.SecondayUnitActive,
-        }
+      let uomf = {
+        Id: uf.Id,
+        Factor: uf.Factor,
+        TenantId: uf.TenantId,
+        Active: uf.Active,
+        PrimaryUOM: primaryuom,
+        SecondayUOM: secondaryuom,
+      }
 
-        let uomf = {
-          Id: uf.Id,
-          Factor: uf.Factor,
-          TenantId: uf.TenantId,
-          Active: uf.Active,
-          PrimaryUOM: primaryuom,
-          SecondayUOM: secondaryuom,
-        }
+      uomfDetail.push(uomf)
+    })
 
-        uomfDetail.push(uomf)
+    return res.status(statusCodes.HTTP_STATUS_OK).send(uomfDetail)
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
+    }
 
-      res.status(200).send(uomfDetail)
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.uomfactor.internalServerError'),
     })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+  }
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  uomfactor
-    .findById(
+    const uomf = await uomfactor.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.uomfactor.application.fetchById
     )
-    .then((uomf) => {
-      if (uomf === 404) {
-        return res.status(404).send({
-          message: 'UOM factor not found.',
-        })
+
+    if (uomf === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.uomfactor.notFound'),
+      })
+    }
+
+    let uomfDetail = []
+    uomf.map((uf) => {
+      let primaryuom = {
+        PrimaryUOMId: uf.PrimaryUOMId,
+        PrimaryUOMName: uf.PrimaryUnitName,
+        PrimaryUOMActive: uf.PrimaryUnitNameActive,
       }
 
-      let uomfDetail = []
-      uomf.map((uf) => {
-        let primaryuom = {
-          PrimaryUOMId: uf.PrimaryUOMId,
-          PrimaryUOMName: uf.PrimaryUnitName,
-          PrimaryUOMActive: uf.PrimaryUnitNameActive,
-        }
+      let secondaryuom = {
+        SecondaryUOMId: uf.SecondaryUOMId,
+        SecondaryUOMName: uf.SecondayUnitName,
+        SecondaryUOMActive: uf.SecondayUnitActive,
+      }
 
-        let secondaryuom = {
-          SecondaryUOMId: uf.SecondaryUOMId,
-          SecondaryUOMName: uf.SecondayUnitName,
-          SecondaryUOMActive: uf.SecondayUnitActive,
-        }
+      let uomf = {
+        Id: uf.Id,
+        Factor: uf.Factor,
+        TenantId: uf.TenantId,
+        Active: uf.Active,
+        PrimaryUOM: primaryuom,
+        SecondayUOM: secondaryuom,
+      }
 
-        let uomf = {
-          Id: uf.Id,
-          Factor: uf.Factor,
-          TenantId: uf.TenantId,
-          Active: uf.Active,
-          PrimaryUOM: primaryuom,
-          SecondayUOM: secondaryuom,
-        }
+      uomfDetail.push(uomf)
+    })
 
-        uomfDetail.push(uomf)
+    return res.status(statusCodes.HTTP_STATUS_OK).send(uomfDetail)
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
+    }
 
-      res.status(200).send(uomfDetail)
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.uomfactor.internalServerError'),
     })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+  }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a UOM Factor
     let uomf = {
       PrimaryUOMId: req.body.PrimaryUOMId,
@@ -210,18 +222,17 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    uomfactor
-      .create(uomf, username)
-      .then((uomfResp) => {
-        res.send(uomfResp)
+    const createdUOMFactor = await uomfactor.create(uomf, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(createdUOMFactor)
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        return res.sendStatus(500).send()
-      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.uomfactor.internalServerError'),
+    })
   }
 }
