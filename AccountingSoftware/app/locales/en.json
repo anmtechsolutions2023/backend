@@ -33,6 +33,10 @@
       "uomfactor": {
         "notFound": "UOM Factor not found.",
         "internalServerError": "An error occurred while fetching the UOM Factor."
+      },
+      "taxtype": {
+        "notFound": "Tax Type not found.",
+        "internalServerError": "An error occurred while fetching the Tax Type."
       }
     },
     "logger": {

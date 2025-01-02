@@ -140,11 +140,11 @@ describe('UOM Controller Tests', () => {
       const mockUOM = [{ Id: 1, UnitName: 'kg' }]
 
       uom.findById.mockResolvedValue(mockUOM) // Mock UOM found
-      uom.deleteUOM.mockResolvedValue(true) // Mock successful delete
+      uom.deleteById.mockResolvedValue(true) // Mock successful delete
 
       await deleteUOM(req, res)
 
-      expect(uom.deleteUOM).toHaveBeenCalledWith('1', 'tenant123', 'testUser')
+      expect(uom.deleteById).toHaveBeenCalledWith('1', 'tenant123', 'testUser')
       expect(res.status).toHaveBeenCalledWith(
         statusCodes.HTTP_STATUS_NO_CONTENT
       )
@@ -154,7 +154,7 @@ describe('UOM Controller Tests', () => {
       const mockUOM = [{ Id: 1, UnitName: 'kg' }]
 
       uom.findById.mockResolvedValue(mockUOM) // Mock UOM found
-      uom.deleteUOM.mockRejectedValue(new Error('Delete failed')) // Mock error
+      uom.deleteById.mockRejectedValue(new Error('Delete failed')) // Mock error
 
       await deleteUOM(req, res)
 
@@ -186,7 +186,7 @@ describe('UOM Controller Tests', () => {
         statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR
       )
       expect(res.send).toHaveBeenCalledWith({
-        message: i18n.__('messages.errors.database.connectionRefused'),
+        message: i18n.__('messages.modules.uom.internalServerError'),
       })
     })
   })

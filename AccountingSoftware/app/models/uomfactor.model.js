@@ -12,8 +12,8 @@ const handleDatabaseError = require('../common/errorhandle.common')
 const i18n = require('../utils/i18n')
 const mysqlConnection = require('../utils/db.js')
 
-exports.delete = async (id, tenantId, username) => {
-  return await deleteById.deleteUOM(
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
     id,
     tenantId,
     username,

@@ -36,7 +36,8 @@
 			"successDeleteById": "messages.logger.successDeleteById",
 			"recordNotFindById": "messages.logger.recordNotFindById",
 			"errorCreatedById": "messages.logger.errorCreatedById",
-			"successUpdatedById": "messages.logger.successUpdatedById"
+			"successUpdatedById": "messages.logger.successUpdatedById",
+			"errorUpdatedById": "messages.logger.errorUpdatedById"
 		},
 		"modules": {
 			"uom": {
@@ -44,6 +45,9 @@
 			},
 			"uomfactor": {
 				"notFound": "messages.modules.uomfactor.notFound"
+			},
+			"taxtype": {
+				"notFound": "messages.modules.taxtype.notFound"
 			}
 		}
 	}
