@@ -75,7 +75,7 @@ exports.deleteUOM = async (req, res) => {
       })
     }
 
-    await uom.deleteUOM(req.params.id, tenantId, username)
+    await uom.deleteById(req.params.id, tenantId, username)
     return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
   } catch (err) {
     if (err instanceof handleDatabaseError.DatabaseError) {

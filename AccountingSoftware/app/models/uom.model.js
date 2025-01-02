@@ -1,5 +1,4 @@
 const { v4: uuidv4 } = require('uuid')
-const sql = require('./db.js')
 const mysqlConnection = require('../utils/db.js')
 const logger = require('../utils/loggerHelper')
 const moduleScripts = require('../../Scripts/modelscripts.js')
@@ -11,8 +10,8 @@ const deleteById = require('../models/common/deleteById.model')
 const handleDatabaseError = require('../common/errorhandle.common')
 const i18n = require('../utils/i18n')
 
-exports.deleteUOM = async (id, tenantId, username) => {
-  return await deleteById.deleteUOM(
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
     id,
     tenantId,
     username,
