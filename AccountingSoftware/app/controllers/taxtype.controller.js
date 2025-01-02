@@ -2,101 +2,112 @@ const taxTypes = require('../models/taxtype.model')
 const helper = require('../utils/helper')
 const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
 
 exports.deleteTaxType = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const taxTypeFindById = await taxTypes.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.taxtypes.application.delete
+    )
 
-  let taxTypeFindById = await taxTypes.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.taxtypes.application.delete
-  )
+    if (taxTypeFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.taxtype.notFound'),
+      })
+    }
 
-  if (taxTypeFindById == '404') {
-    return res.status(404).send({
-      message: 'Tax type not found.',
+    await taxTypes.deleteById(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.taxtype.internalServerError'),
     })
   }
-
-  taxTypes
-    .deleteTaxType(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
 exports.fetchAllTaxTypes = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    return res.send(await taxTypes.getAll(tenantId, username))
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
 
-  taxTypes
-    .getAll(tenantId, username)
-    .then((taxtypes) => {
-      res.status(200).send(taxtypes)
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.taxtype.internalServerError'),
     })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+  }
 }
 
-exports.fetchTaxTypeById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchTaxTypeById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  taxTypes
-    .findById(
+    const taxType = await taxTypes.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.taxtypes.application.fetchById
     )
-    .then((taxType) => {
-      if (taxType == '404') {
-        return res.status(404).send({
-          message: 'Tax type not found.',
-        })
-      }
 
-      res.status(200).send(taxType)
+    if (taxType === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.taxtype.notFound'),
+      })
+    }
+
+    return res.send(taxType)
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.taxtype.internalServerError'),
     })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+  }
 }
 
 exports.updateTaxType = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let taxTypeFindById = await taxTypes.findById(
+    const taxTypeFindById = await taxTypes.findById(
       req.params.id,
       tenantId,
       username,
-      moduleNames.taxtypes.application.update
+      moduleNames.taxtypes.application.fetchById
     )
 
-    if (taxTypeFindById == '404') {
-      return res.status(404).send({
-        message: 'Tax type not found.',
+    if (taxTypeFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.taxtype.notFound'),
       })
     }
 
@@ -116,34 +127,34 @@ exports.updateTaxType = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await taxTypes
-      .update(tt, username)
-      .then(() => {
-        return res.status(200).send()
+    // Update in database
+    return res
+      .status(await taxTypes.update(tt, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        return res.sendStatus(500).send()
-      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.taxtype.internalServerError'),
+    })
   }
 }
 
-exports.createTaxType = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.createTaxType = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a taxtype
     let tt = {
       Name: req.body.Name,
@@ -154,18 +165,17 @@ exports.createTaxType = (req, res) => {
       CreatedBy: username,
     }
 
-    taxTypes
-      .create(tt, username)
-      .then((taxTypeResp) => {
-        res.send(taxTypeResp)
+    const taxTypeResp = await taxTypes.create(tt, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(taxTypeResp)
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.taxtype.internalServerError'),
+    })
   }
 }

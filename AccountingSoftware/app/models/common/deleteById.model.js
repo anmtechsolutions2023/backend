@@ -4,7 +4,7 @@ const statusCodes = require('../../config/statusCodes.js')
 const handleDatabaseError = require('../../common/errorhandle.common')
 const i18n = require('../../utils/i18n')
 
-exports.deleteUOM = async (
+exports.deleteById = async (
   id,
   tenantId,
   username,

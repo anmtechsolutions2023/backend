@@ -50,9 +50,9 @@ module.exports = (app) => {
   // Tax Type Operations
   router.get('/taxtypes', taxtype.fetchAllTaxTypes)
   router.get('/taxtype/:id', taxtype.fetchTaxTypeById)
-  router.delete('/taxtypes/:id', taxtype.deleteTaxType)
-  router.post('/taxtypes', taxtype.createTaxType)
-  router.put('/taxtypes/:id', taxtype.updateTaxType)
+  router.delete('/taxtype/:id', taxtype.deleteTaxType)
+  router.post('/taxtype', taxtype.createTaxType)
+  router.put('/taxtype/:id', taxtype.updateTaxType)
 
   // UOM Operations
   router.get('/uoms', uom.fetchAllUOMs)
