@@ -31,12 +31,16 @@
         "internalServerError": "An error occurred while fetching the UOM."
       },
       "uomfactor": {
-        "notFound": "UOM Factor not found.",
-        "internalServerError": "An error occurred while fetching the UOM Factor."
+        "notFound": "UOM factor not found.",
+        "internalServerError": "An error occurred while fetching the UOM factor."
       },
       "taxtype": {
-        "notFound": "Tax Type not found.",
-        "internalServerError": "An error occurred while fetching the Tax Type."
+        "notFound": "Tax type not found.",
+        "internalServerError": "An error occurred while fetching the tax type."
+      },
+      "taxgroup": {
+        "notFound": "Tax group not found.",
+        "internalServerError": "An error occurred while fetching the tax group."
       }
     },
     "logger": {
