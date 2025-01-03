@@ -1,102 +1,112 @@
 const taxGroup = require('../models/taxgroup.model')
 const helper = require('../utils/helper')
-const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const taxGroupFindById = await taxGroup.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.taxgroup.application.delete
+    )
 
-  let taxGroupFindById = await taxGroup.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.taxgroup.application.delete
-  )
+    if (taxGroupFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.taxgroup.notFound'),
+      })
+    }
 
-  if (taxGroupFindById == '404') {
-    return res.status(404).send({
-      message: 'Tax group not found.',
+    await taxGroup.deleteById(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.taxgroup.internalServerError'),
     })
   }
-
-  taxGroup
-    .deletetaxGroup(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
 exports.fetchAll = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    return res.send(await taxGroup.getAll(tenantId, username))
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
 
-  taxGroup
-    .getAll(tenantId, username)
-    .then((taxgroups) => {
-      res.status(200).send(taxgroups)
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.uom.internalServerError'),
     })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+  }
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  taxGroup
-    .findById(
+    const taxGroupResp = await taxGroup.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.taxgroup.application.fetchById
     )
-    .then((taxGroupResp) => {
-      if (taxGroupResp == '404') {
-        return res.status(404).send({
-          message: 'Tax group not found.',
-        })
-      }
 
-      res.status(200).send(taxGroupResp)
+    if (taxGroupResp === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.taxgroup.notFound'),
+      })
+    }
+
+    return res.send(taxGroupResp)
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.taxgroup.internalServerError'),
     })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+  }
 }
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let taxGroupFindById = await taxGroup.findById(
+    const taxGroupFindById = await taxGroup.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.taxgroup.application.update
     )
 
-    if (taxGroupFindById == '404') {
-      return res.status(404).send({
-        message: 'Tax Group not found.',
+    if (taxGroupFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.taxgroup.notFound'),
       })
     }
 
@@ -116,34 +126,33 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await taxGroup
-      .update(tg, username)
-      .then(() => {
-        return res.status(200).send()
+    return res
+      .status(await taxGroup.update(tg, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        return res.sendStatus(500).send()
-      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.taxgroup.internalServerError'),
+    })
   }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a tax group
     let tg = {
       Name: req.body.Name,
@@ -153,18 +162,17 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    taxGroup
-      .create(tg, username)
-      .then((taxGroupResp) => {
-        res.send(taxGroupResp)
+    const taxGroupResp = await taxGroup.create(tg, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(taxGroupResp)
+  } catch (err) {
+    if (err instanceof handleDatabaseError.DatabaseError) {
+      return res.status(err.statusCode).send({
+        message: err.message,
       })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+      message: i18n.__('messages.modules.taxgroup.internalServerError'),
+    })
   }
 }

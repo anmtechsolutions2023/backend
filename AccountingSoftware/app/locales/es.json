@@ -48,6 +48,9 @@
 			},
 			"taxtype": {
 				"notFound": "messages.modules.taxtype.notFound"
+			},
+			"taxgroup": {
+				"notFound": "messages.modules.taxgroup.notFound"
 			}
 		}
 	}
