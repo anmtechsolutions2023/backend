@@ -41,6 +41,10 @@
       "taxgroup": {
         "notFound": "Tax group not found.",
         "internalServerError": "An error occurred while fetching the tax group."
+      },
+      "contactaddresstype": {
+        "notFound": "Contact address type not found.",
+        "internalServerError": "An error occurred while fetching the contact address type."
       }
     },
     "logger": {

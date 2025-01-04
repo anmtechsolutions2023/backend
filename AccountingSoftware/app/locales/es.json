@@ -51,6 +51,9 @@
 			},
 			"taxgroup": {
 				"notFound": "messages.modules.taxgroup.notFound"
+			},
+			"contactaddresstype": {
+				"notFound": "messages.modules.contactaddresstype.notFound"
 			}
 		}
 	}
