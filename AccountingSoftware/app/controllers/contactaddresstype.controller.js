@@ -1,10 +1,9 @@
 const contactaddresstype = require('../models/contactaddresstype.model')
 const helper = require('../utils/helper')
-const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
 const statusCodes = require('../config/statusCodes')
-const handleDatabaseError = require('../common/errorhandle.common')
 const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.delete = async (req, res) => {
   try {
@@ -26,17 +25,11 @@ exports.delete = async (req, res) => {
     await contactaddresstype.deleteById(req.params.id, tenantId, username)
     return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__(
-        'messages.modules.contactaddresstype.internalServerError'
-      ),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.contactaddresstype.internalServerError',
+      res
+    )
   }
 }
 
@@ -44,19 +37,15 @@ exports.fetchAll = async (req, res) => {
   try {
     const { tenantId, username } = req
 
-    return res.send(await contactaddresstype.getAll(tenantId, username))
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(await contactaddresstype.getAll(tenantId, username))
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__(
-        'messages.modules.contactaddresstype.internalServerError'
-      ),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.contactaddresstype.internalServerError',
+      res
+    )
   }
 }
 
@@ -77,19 +66,13 @@ exports.fetchById = async (req, res) => {
       })
     }
 
-    return res.send(catResp)
+    return res.status(statusCodes.HTTP_STATUS_OK).send(catResp)
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__(
-        'messages.modules.contactaddresstype.internalServerError'
-      ),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.contactaddresstype.internalServerError',
+      res
+    )
   }
 }
 
@@ -132,17 +115,11 @@ exports.update = async (req, res) => {
       .status(await contactaddresstype.update(cat, username))
       .send(i18n.__('messages.success.update'))
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__(
-        'messages.modules.contactaddresstype.internalServerError'
-      ),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.contactaddresstype.internalServerError',
+      res
+    )
   }
 }
 
@@ -169,16 +146,10 @@ exports.create = async (req, res) => {
     const catResp = await contactaddresstype.create(cat, username)
     return res.status(statusCodes.HTTP_STATUS_CREATED).send(catResp)
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__(
-        'messages.modules.contactaddresstype.internalServerError'
-      ),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.contactaddresstype.internalServerError',
+      res
+    )
   }
 }

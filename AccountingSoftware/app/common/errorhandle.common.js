@@ -1,3 +1,4 @@
+const modelscripts = require('../../Scripts/modelscripts')
 const statusCodes = require('../config/statusCodes')
 const i18n = require('../utils/i18n')
 
@@ -38,5 +39,18 @@ const handleDatabaseError = (err) => {
   }
 }
 
+const commonControllerErrorHandler = (err, errorMessage, res) => {
+  if (err instanceof handleDatabaseError.DatabaseError) {
+    return res.status(err.statusCode).send({
+      message: err.message,
+    })
+  }
+
+  return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
+    message: i18n.__(errorMessage),
+  })
+}
+
 module.exports = handleDatabaseError
 module.exports.DatabaseError = DatabaseError
+module.exports = commonControllerErrorHandler

@@ -54,6 +54,11 @@
 			},
 			"contactaddresstype": {
 				"notFound": "messages.modules.contactaddresstype.notFound"
+			},
+			"contactdetail": {
+				"notFound": "messages.modules.contactdetail.notFound",
+				"queryParamMissing": "messages.modules.contactdetail.queryParamMissing",
+				"queryParamNotSupported": "messages.modules.contactdetail.queryParamNotSupported"
 			}
 		}
 	}

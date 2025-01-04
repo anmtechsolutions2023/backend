@@ -1,10 +1,9 @@
 const taxTypes = require('../models/taxtype.model')
 const helper = require('../utils/helper')
-const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
 const statusCodes = require('../config/statusCodes')
-const handleDatabaseError = require('../common/errorhandle.common')
 const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.deleteTaxType = async (req, res) => {
   try {
@@ -26,15 +25,11 @@ exports.deleteTaxType = async (req, res) => {
     await taxTypes.deleteById(req.params.id, tenantId, username)
     return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.taxtype.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.taxtype.internalServerError',
+      res
+    )
   }
 }
 
@@ -42,17 +37,15 @@ exports.fetchAllTaxTypes = async (req, res) => {
   try {
     const { tenantId, username } = req
 
-    return res.send(await taxTypes.getAll(tenantId, username))
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(await taxTypes.getAll(tenantId, username))
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.taxtype.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.taxtype.internalServerError',
+      res
+    )
   }
 }
 
@@ -73,17 +66,13 @@ exports.fetchTaxTypeById = async (req, res) => {
       })
     }
 
-    return res.send(taxType)
+    return res.statusCode(statusCodes.HTTP_STATUS_OK).send(taxType)
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.taxtype.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.taxtype.internalServerError',
+      res
+    )
   }
 }
 
@@ -132,15 +121,11 @@ exports.updateTaxType = async (req, res) => {
       .status(await taxTypes.update(tt, username))
       .send(i18n.__('messages.success.update'))
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.taxtype.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.taxtype.internalServerError',
+      res
+    )
   }
 }
 
@@ -168,14 +153,10 @@ exports.createTaxType = async (req, res) => {
     const taxTypeResp = await taxTypes.create(tt, username)
     return res.status(statusCodes.HTTP_STATUS_CREATED).send(taxTypeResp)
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.taxtype.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.taxtype.internalServerError',
+      res
+    )
   }
 }

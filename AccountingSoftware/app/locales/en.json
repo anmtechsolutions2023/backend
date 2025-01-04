@@ -45,12 +45,19 @@
       "contactaddresstype": {
         "notFound": "Contact address type not found.",
         "internalServerError": "An error occurred while fetching the contact address type."
+      },
+      "contactdetail": {
+        "notFound": "Contact detail type not found.",
+        "internalServerError": "An error occurred while fetching the contact detail.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {
       "success": "Success",
       "error": "Error Code: {{code}}, Error: {{message}}",
       "recordFindById": "Record found for Id: {{id}}",
+      "recordFindByQueryParam": "Record found for query parameter.",
       "recordNotFindById": "Record not found for Id: {{id}}",
       "errorFindById": "Error for Id: {{id}}, Error Code: {{code}}, Error: {{message}}",
       "successDeleteById": "Deleted record Id: {{id}}, affected Rows: {{affectedRows}}",
@@ -58,7 +65,8 @@
       "successCreatedById": "Successfully created with Id: {{id}}",
       "errorCreatedById": "Error while creating record for {{name}}, Error Code: {{code}}, Error: {{message}}",
       "successUpdatedById": "Successfully updated for Id: {{id}}",
-      "errorUpdatedById": "Error for Id: {{id}}, Error code: {{code}}, Error: {{message}}"
+      "errorUpdatedById": "Error for Id: {{id}}, Error code: {{code}}, Error: {{message}}",
+      "errorSearchParam": "Error while fetching records by Param, Error Code: {{code}}, Error: {{message}}"
     },
     "success": {
       "fetchAll": "Successfully fetched all records.",

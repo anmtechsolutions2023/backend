@@ -2,8 +2,8 @@ const uom = require('../models/uom.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
 const statusCodes = require('../config/statusCodes')
-const handleDatabaseError = require('../common/errorhandle.common')
 const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.updateUOM = async (req, res) => {
   try {
@@ -46,15 +46,11 @@ exports.updateUOM = async (req, res) => {
       .status(await uom.update(updatedUOM, username))
       .send(i18n.__('messages.success.update'))
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.uom.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.uom.internalServerError',
+      res
+    )
   }
 }
 
@@ -78,15 +74,11 @@ exports.deleteUOM = async (req, res) => {
     await uom.deleteById(req.params.id, tenantId, username)
     return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.uom.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.uom.internalServerError',
+      res
+    )
   }
 }
 
@@ -94,17 +86,15 @@ exports.fetchAllUOMs = async (req, res) => {
   try {
     const { tenantId, username } = req
 
-    return res.send(await uom.getAll(tenantId, username))
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(await uom.getAll(tenantId, username))
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.uom.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.uom.internalServerError',
+      res
+    )
   }
 }
 
@@ -125,17 +115,13 @@ exports.fetchUOMById = async (req, res) => {
       })
     }
 
-    return res.send(uomData)
+    return res.status(statusCodes.HTTP_STATUS_OK).send(uomData)
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.uom.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.uom.internalServerError',
+      res
+    )
   }
 }
 
@@ -163,14 +149,10 @@ exports.createUOM = async (req, res) => {
     const createdUOM = await uom.create(um, username)
     return res.status(statusCodes.HTTP_STATUS_CREATED).send(createdUOM)
   } catch (err) {
-    if (err instanceof handleDatabaseError.DatabaseError) {
-      return res.status(err.statusCode).send({
-        message: err.message,
-      })
-    }
-
-    return res.status(statusCodes.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({
-      message: i18n.__('messages.modules.uom.internalServerError'),
-    })
+    return commonControllerErrorHandler(
+      err,
+      'messages.modules.uom.internalServerError',
+      res
+    )
   }
 }
