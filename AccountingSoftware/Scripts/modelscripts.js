@@ -269,7 +269,7 @@ module.exports = {
     cat.Active as "ContactAddressActive"
     FROM contactdetail as cd 
     JOIN contactaddresstype as cat ON cd.ContactAddressTypeId = cat.Id
-    WHERE cd.TenantId = ? AND cd.Id =?`,
+    WHERE cd.Id =? AND cd.TenantId = ?`,
     create:
       'INSERT INTO contactdetail (Id, FirstName, LastName, MobileNo, AltMobileNo, Landline1, LandLine2, Ext1, Ext2, ContactAddressTypeId, TenantId, Active, CreatedOn, CreatedBy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
     delete: 'DELETE FROM contactdetail WHERE Id = ? and TenantId = ?',

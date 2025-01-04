@@ -1,7 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
-const sql = require('./db.js')
 const mysqlConnection = require('../utils/db.js')
-const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper')
 const moduleNames = require('../config/modulenames')
 const moduleScripts = require('../../Scripts/modelscripts.js')
@@ -45,7 +43,7 @@ exports.update = async (cat, username) => {
   try {
     let query = moduleScripts.contactaddresstype.update
 
-    sql.query(query, [
+    await mysqlConnection.query(query, [
       cat.Name,
       cat.Active,
       cat.UpdatedOn,
