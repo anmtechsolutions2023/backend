@@ -76,7 +76,7 @@ exports.searchByParam = async (tenantId, username, queryParams) => {
         message: err,
       })
     )
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }
 
@@ -123,7 +123,7 @@ exports.update = async (cdReq, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }
 
@@ -181,6 +181,6 @@ exports.create = async (cdReq, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }

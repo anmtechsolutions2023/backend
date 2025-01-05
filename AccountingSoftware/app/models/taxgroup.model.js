@@ -112,6 +112,6 @@ exports.create = async (taxGroup, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }

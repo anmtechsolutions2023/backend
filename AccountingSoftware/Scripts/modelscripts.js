@@ -343,7 +343,7 @@ module.exports = {
     JOIN mapproviderlocationmapper as mplm ON ad.MapProviderLocationMapperId = mplm.id
     JOIN mapprovider as mp ON mplm.MapProviderId = mp.Id
     JOIN locationdetail as ld ON mplm.LocationDetailId = ld.Id
-    WHERE ad.TenantId = ? AND ad.Id = ?`,
+    WHERE  ad.Id = ? AND ad.TenantId = ?`,
     create:
       'INSERT INTO addressdetail (Id, AddressLine1, AddressLine2, City, State, Pincode, MapProviderLocationMapperId, Landmark, ContactAddressTypeId, TenantId, Active, CreatedOn, CreatedBy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
     delete: 'DELETE FROM addressdetail WHERE Id = ? and TenantId = ?',

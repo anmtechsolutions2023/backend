@@ -1,4 +1,3 @@
-const modelscripts = require('../../Scripts/modelscripts')
 const statusCodes = require('../config/statusCodes')
 const i18n = require('../utils/i18n')
 
@@ -40,7 +39,7 @@ const handleDatabaseError = (err) => {
 }
 
 const commonControllerErrorHandler = (err, errorMessage, res) => {
-  if (err instanceof handleDatabaseError.DatabaseError) {
+  if (err instanceof DatabaseError) {
     return res.status(err.statusCode).send({
       message: err.message,
     })
@@ -51,6 +50,8 @@ const commonControllerErrorHandler = (err, errorMessage, res) => {
   })
 }
 
-module.exports = handleDatabaseError
-module.exports.DatabaseError = DatabaseError
-module.exports = commonControllerErrorHandler
+module.exports = {
+  handleDatabaseError,
+  DatabaseError,
+  commonControllerErrorHandler,
+}

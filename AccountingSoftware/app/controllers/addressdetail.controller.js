@@ -1,22 +1,21 @@
 const addressdetail = require('../models/addressdetail.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
-const decodeToken = require('../utils/extracttoken')
-const queryParams = require('../utils/queyParams')
-const { add } = require('winston')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     let adFindById = await addressdetail.findById(
       req.params.id,
       tenantId,
@@ -24,9 +23,9 @@ exports.update = async (req, res) => {
       moduleNames.addressdetail.application.update
     )
 
-    if (adFindById == '404') {
-      return res.status(404).send({
-        message: 'Record not found.',
+    if (adFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.addressdetail.notFound'),
       })
     }
 
@@ -64,60 +63,63 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await addressdetail
-      .update(updatedad, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        return res.status(500).send()
-      })
+    // update record in database
+    return res
+      .status(await addressdetail.update(updatedad, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.addressdetail.internalServerError',
+      res
+    )
   }
 }
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    let adFindById = await addressdetail.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.addressdetail.application.delete
+    )
 
-  let adFindById = await addressdetail.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.addressdetail.application.delete
-  )
+    if (adFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.addressdetail.notFound'),
+      })
+    }
 
-  if (adFindById == '404') {
-    return res.status(404).send({
-      message: 'Record not found.',
-    })
+    await addressdetail.deleteById(req.params.id, tenantId, username)
+
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.addressdetail.internalServerError',
+      res
+    )
   }
-
-  addressdetail
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.fetchAll = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAll = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  addressdetail
-    .getAll(tenantId, username)
-    .then((adResp) => {
-      res.status(200).send(translateResponse(adResp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    const adResp = await addressdetail.getAll(tenantId, username)
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(translateResponse(adResp))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.addressdetail.internalServerError',
+      res
+    )
+  }
 }
 
 function translateResponse(adResp) {
@@ -182,44 +184,46 @@ function translateResponse(adResp) {
   return addressDetailResp
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  addressdetail
-    .findById(
+    const adResp = await addressdetail.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.addressdetail.application.fetchById
     )
-    .then((adResp) => {
-      if (adResp === 404) {
-        return res.status(404).send({
-          message: 'Record not found.',
-        })
-      }
-      res.status(200).send(translateResponse(adResp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+
+    if (adResp === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.addressdetail.notFound'),
+      })
+    }
+
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(translateResponse(adResp))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.addressdetail.internalServerError',
+      res
+    )
+  }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a record
     let ad = {
       AddressLine1: req.body.AddressLine1,
@@ -236,18 +240,14 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    addressdetail
-      .create(ad, username)
-      .then((adResp) => {
-        res.send(adResp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const adResp = await addressdetail.create(ad, username)
+
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(adResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.addressdetail.internalServerError',
+      res
+    )
   }
 }

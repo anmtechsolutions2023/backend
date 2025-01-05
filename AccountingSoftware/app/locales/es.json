@@ -59,6 +59,9 @@
 				"notFound": "messages.modules.contactdetail.notFound",
 				"queryParamMissing": "messages.modules.contactdetail.queryParamMissing",
 				"queryParamNotSupported": "messages.modules.contactdetail.queryParamNotSupported"
+			},
+			"addressdetail": {
+				"notFound": "messages.modules.addressdetail.notFound"
 			}
 		}
 	}

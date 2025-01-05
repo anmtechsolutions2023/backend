@@ -25,6 +25,6 @@ exports.getAll = async (tenantId, username, moduleScript, moduleName) => {
       i18n.__('messages.logger.error', { code: err.code, message: err })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }

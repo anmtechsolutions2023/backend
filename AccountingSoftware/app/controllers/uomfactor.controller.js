@@ -53,7 +53,7 @@ exports.update = async (req, res) => {
       .status(await uomfactor.update(updateuomf, username))
       .send(i18n.__('messages.success.update'))
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uomfactor.internalServerError',
       res
@@ -81,7 +81,7 @@ exports.delete = async (req, res) => {
     await uomfactor.deleteById(req.params.id, tenantId, username)
     return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uomfactor.internalServerError',
       res
@@ -122,7 +122,7 @@ exports.fetchAll = async (req, res) => {
 
     return res.status(statusCodes.HTTP_STATUS_OK).send(uomfDetail)
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uomfactor.internalServerError',
       res
@@ -175,7 +175,7 @@ exports.fetchById = async (req, res) => {
 
     return res.status(statusCodes.HTTP_STATUS_OK).send(uomfDetail)
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uomfactor.internalServerError',
       res
@@ -208,7 +208,7 @@ exports.create = async (req, res) => {
     const createdUOMFactor = await uomfactor.create(uomf, username)
     return res.status(statusCodes.HTTP_STATUS_CREATED).send(createdUOMFactor)
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uomfactor.internalServerError',
       res
