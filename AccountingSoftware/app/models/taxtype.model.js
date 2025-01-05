@@ -74,7 +74,7 @@ exports.update = async (taxType, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }
 
@@ -115,6 +115,6 @@ exports.create = async (taxtype, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }

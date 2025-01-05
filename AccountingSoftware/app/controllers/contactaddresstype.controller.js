@@ -25,7 +25,7 @@ exports.delete = async (req, res) => {
     await contactaddresstype.deleteById(req.params.id, tenantId, username)
     return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactaddresstype.internalServerError',
       res
@@ -41,7 +41,7 @@ exports.fetchAll = async (req, res) => {
       .status(statusCodes.HTTP_STATUS_OK)
       .send(await contactaddresstype.getAll(tenantId, username))
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactaddresstype.internalServerError',
       res
@@ -68,7 +68,7 @@ exports.fetchById = async (req, res) => {
 
     return res.status(statusCodes.HTTP_STATUS_OK).send(catResp)
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactaddresstype.internalServerError',
       res
@@ -115,7 +115,7 @@ exports.update = async (req, res) => {
       .status(await contactaddresstype.update(cat, username))
       .send(i18n.__('messages.success.update'))
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactaddresstype.internalServerError',
       res
@@ -146,7 +146,7 @@ exports.create = async (req, res) => {
     const catResp = await contactaddresstype.create(cat, username)
     return res.status(statusCodes.HTTP_STATUS_CREATED).send(catResp)
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactaddresstype.internalServerError',
       res

@@ -28,29 +28,33 @@
     "modules": {
       "uom": {
         "notFound": "UOM not found.",
-        "internalServerError": "An error occurred while fetching the UOM."
+        "internalServerError": "An error occurred while performing action on the UOM."
       },
       "uomfactor": {
         "notFound": "UOM factor not found.",
-        "internalServerError": "An error occurred while fetching the UOM factor."
+        "internalServerError": "An error occurred while performing action on the UOM factor."
       },
       "taxtype": {
         "notFound": "Tax type not found.",
-        "internalServerError": "An error occurred while fetching the tax type."
+        "internalServerError": "An error occurred while performing action on the tax type."
       },
       "taxgroup": {
         "notFound": "Tax group not found.",
-        "internalServerError": "An error occurred while fetching the tax group."
+        "internalServerError": "An error occurred while performing action on the tax group."
       },
       "contactaddresstype": {
         "notFound": "Contact address type not found.",
-        "internalServerError": "An error occurred while fetching the contact address type."
+        "internalServerError": "An error occurred while performing action on the contact address type."
       },
       "contactdetail": {
         "notFound": "Contact detail type not found.",
-        "internalServerError": "An error occurred while fetching the contact detail.",
+        "internalServerError": "An error occurred while performing action on the contact detail.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "addressdetail": {
+        "notFound": "Address detail not found.",
+        "internalServerError": "An error occurred while performing action on the address detail."
       }
     },
     "logger": {

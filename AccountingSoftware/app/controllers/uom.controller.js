@@ -46,7 +46,7 @@ exports.updateUOM = async (req, res) => {
       .status(await uom.update(updatedUOM, username))
       .send(i18n.__('messages.success.update'))
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uom.internalServerError',
       res
@@ -74,7 +74,7 @@ exports.deleteUOM = async (req, res) => {
     await uom.deleteById(req.params.id, tenantId, username)
     return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uom.internalServerError',
       res
@@ -90,7 +90,7 @@ exports.fetchAllUOMs = async (req, res) => {
       .status(statusCodes.HTTP_STATUS_OK)
       .send(await uom.getAll(tenantId, username))
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uom.internalServerError',
       res
@@ -117,7 +117,7 @@ exports.fetchUOMById = async (req, res) => {
 
     return res.status(statusCodes.HTTP_STATUS_OK).send(uomData)
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uom.internalServerError',
       res
@@ -149,7 +149,7 @@ exports.createUOM = async (req, res) => {
     const createdUOM = await uom.create(um, username)
     return res.status(statusCodes.HTTP_STATUS_CREATED).send(createdUOM)
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.uom.internalServerError',
       res
