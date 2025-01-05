@@ -72,7 +72,7 @@ exports.update = async (cat, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }
 
@@ -111,6 +111,6 @@ exports.create = async (cat, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }

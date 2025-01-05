@@ -157,7 +157,7 @@ exports.fetchAll = async (req, res) => {
       .status(statusCodes.HTTP_STATUS_OK)
       .send(translateResponse(cdResp))
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactdetail.internalServerError',
       res
@@ -220,7 +220,7 @@ exports.fetchById = async (req, res) => {
       .status(statusCodes.HTTP_STATUS_OK)
       .send(translateResponse(cdResp))
   } catch (err) {
-    return commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactdetail.internalServerError',
       res

@@ -51,6 +51,6 @@ exports.deleteById = async (
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }

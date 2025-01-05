@@ -65,7 +65,7 @@ exports.update = async (uom, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }
 
@@ -116,6 +116,6 @@ exports.create = async (uom, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }

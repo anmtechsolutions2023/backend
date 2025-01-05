@@ -41,6 +41,6 @@ exports.findById = async (id, tenantId, username, moduleScript, moduleName) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }

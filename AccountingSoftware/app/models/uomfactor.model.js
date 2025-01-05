@@ -66,7 +66,7 @@ exports.update = async (uomf, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }
 
@@ -118,6 +118,6 @@ exports.create = async (uomf, username) => {
       })
     )
 
-    throw handleDatabaseError(err)
+    throw handleDatabaseError.handleDatabaseError(err)
   }
 }
