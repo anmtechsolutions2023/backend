@@ -62,6 +62,9 @@
 			},
 			"addressdetail": {
 				"notFound": "messages.modules.addressdetail.notFound"
+			},
+			"locationdetail": {
+				"notFound": "messages.modules.locationdetail.notFound"
 			}
 		}
 	}

@@ -1,106 +1,106 @@
 const locationDetail = require('../models/locationdetail.model')
 const helper = require('../utils/helper')
-const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    let locationDetailFindById = await locationDetail.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.locationdetail.application.delete
+    )
 
-  let locationDetailFindById = await locationDetail.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.locationdetail.application.delete
-  )
+    if (locationDetailFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.locationdetail.notFound'),
+      })
+    }
 
-  if (locationDetailFindById == '404') {
-    return res.status(404).send({
-      message: 'Record not found.',
-    })
+    await locationDetail.deleteById(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.locationdetail.internalServerError',
+      res
+    )
   }
-
-  locationDetail
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
 exports.fetchAll = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  locationDetail
-    .getAll(tenantId, username)
-    .then((locationdetailResp) => {
-      res.status(200).send(locationdetailResp)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(await locationDetail.getAll(tenantId, username))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.locationdetail.internalServerError',
+      res
+    )
+  }
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  locationDetail
-    .findById(
+    const locationdetailResp = await locationDetail.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.locationdetail.application.fetchById
     )
-    .then((locationdetailResp) => {
-      if (locationdetailResp == '404') {
-        return res.status(404).send({
-          message: 'Record not found.',
-        })
-      }
 
-      res.status(200).send(locationdetailResp)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    if (locationdetailResp === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.locationdetail.notFound'),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(locationdetailResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.locationdetail.internalServerError',
+      res
+    )
+  }
 }
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let locationDetailFindById = await locationDetail.findById(
+    const locationDetailFindById = await locationDetail.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.locationdetail.application.update
     )
 
-    if (locationDetailFindById == '404') {
-      return res.status(404).send({
-        message: 'Record not found.',
+    if (locationDetailFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.locationdetail.notFound'),
       })
     }
 
-    let ldReq = {
+    const ldReq = {
       Id: locationDetailFindById[0].Id,
       Lat: helper.isEmpty(req.body.Lat)
         ? locationDetailFindById[0].Lat
@@ -129,34 +129,30 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await locationDetail
-      .update(ldReq, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        return res.sendStatus(500).send()
-      })
+    // update record in database
+    return res
+      .status(await locationDetail.update(ldReq, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.locationdetail.internalServerError',
+      res
+    )
   }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a location detail
     let ld = {
       Lat: req.body.Lat,
@@ -171,18 +167,13 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    locationDetail
-      .create(ld, username)
-      .then((locationDetailResp) => {
-        res.send(locationDetailResp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const locationDetailResp = await locationDetail.create(ld, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(locationDetailResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.locationdetail.internalServerError',
+      res
+    )
   }
 }

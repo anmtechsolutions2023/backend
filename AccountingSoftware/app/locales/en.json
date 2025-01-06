@@ -55,6 +55,10 @@
       "addressdetail": {
         "notFound": "Address detail not found.",
         "internalServerError": "An error occurred while performing action on the address detail."
+      },
+      "locationdetail": {
+        "notFound": "Location detail not found.",
+        "internalServerError": "An error occurred while performing action on the location detail."
       }
     },
     "logger": {
