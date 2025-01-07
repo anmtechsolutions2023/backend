@@ -2,105 +2,106 @@ const mapProvider = require('../models/mapprovider.model')
 const helper = require('../utils/helper')
 const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    let mapProviderFindById = await mapProvider.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.mapprovider.application.delete
+    )
 
-  let mapProviderFindById = await mapProvider.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.mapprovider.application.delete
-  )
+    if (mapProviderFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.mapprovider.notFound'),
+      })
+    }
 
-  if (mapProviderFindById == '404') {
-    return res.status(404).send({
-      message: 'Record not found.',
-    })
+    await mapProvider.deleteById(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapprovider.internalServerError',
+      res
+    )
   }
-
-  mapProvider
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
 exports.fetchAll = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  mapProvider
-    .getAll(tenantId, username)
-    .then((mapProviderResp) => {
-      res.status(200).send(mapProviderResp)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(await mapProvider.getAll(tenantId, username))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapprovider.internalServerError',
+      res
+    )
+  }
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  mapProvider
-    .findById(
+    const mapProviderResp = await mapProvider.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.mapprovider.application.fetchById
     )
-    .then((mapProviderResp) => {
-      if (mapProviderResp == '404') {
-        return res.status(404).send({
-          message: 'Record not found.',
-        })
-      }
 
-      res.status(200).send(mapProviderResp)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    if (mapProviderResp === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.mapprovider.notFound'),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(mapProviderResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapprovider.internalServerError',
+      res
+    )
+  }
 }
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let mapProviderFindById = await mapProvider.findById(
+    const mapProviderFindById = await mapProvider.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.mapprovider.application.update
     )
 
-    if (mapProviderFindById == '404') {
-      return res.status(404).send({
-        message: 'Record not found.',
+    if (mapProviderFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.mapprovider.notFound'),
       })
     }
 
-    let mpReq = {
+    const mpReq = {
       Id: mapProviderFindById[0].Id,
       ProviderName: helper.isEmpty(req.body.ProviderName)
         ? mapProviderFindById[0].ProviderName
@@ -113,36 +114,32 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await mapProvider
-      .update(mpReq, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        return res.sendStatus(500).send()
-      })
+    // Update record in database
+    return res
+      .status(await mapProvider.update(mpReq, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapprovider.internalServerError',
+      res
+    )
   }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a Map Provider
-    let tg = {
+    const tg = {
       ProviderName: req.body.ProviderName,
       Active: req.body.Active,
       TenantId: tenantId,
@@ -150,18 +147,13 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    mapProvider
-      .create(tg, username)
-      .then((mapProviderResp) => {
-        res.send(mapProviderResp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const mapProviderResp = await mapProvider.create(tg, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(mapProviderResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapprovider.internalServerError',
+      res
+    )
   }
 }
