@@ -4,188 +4,118 @@ const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper')
 const moduleNames = require('../config/modulenames')
 const moduleScripts = require('../../Scripts/modelscripts.js')
+const statusCodes = require('../config/statusCodes.js')
+const getAllModels = require('../models/common/getAll.model')
+const getFindById = require('../models/common/findById.model')
+const deleteById = require('../models/common/deleteById.model')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
+const mysqlConnection = require('../utils/db.js')
 
-exports.delete = (id, tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.mapprovider.delete
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.mapprovider.db.delete,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  delete' + err)
-      }
-
-      if (JSON.stringify(res.affectedRows)) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.mapprovider.db.delete,
-          logger.logType.debug,
-          `Record Deleted, Id ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.mapprovider.db.delete,
-          logger.logType.error,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.mapprovider.delete,
+    moduleNames.mapprovider.db.delete
+  )
 }
 
-exports.getAll = (tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.mapprovider.fetchAll
-
-    sql.query(query, [tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.mapprovider.db.fetchAll,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  getAll.' + err)
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.mapprovider.db.fetchAll,
-        logger.logType.debug,
-        'Success'
-      )
-      resolve(res)
-    })
-  })
+exports.getAll = async (tenantId, username) => {
+  return await getAllModels.getAll(
+    tenantId,
+    username,
+    moduleScripts.mapprovider.fetchAll,
+    moduleNames.mapprovider.db.fetchAll
+  )
 }
 
-exports.findById = (id, tenantId, username, callerModule) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.mapprovider.fetchById
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.mapprovider.db.fetchById}`,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  findById' + err)
-      }
-
-      if (res.length) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.mapprovider.db.fetchById}`,
-          logger.logType.debug,
-          `Record found for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.mapprovider.db.fetchById}`,
-          logger.logType.debug,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.findById = async (id, tenantId, username, callerModule) => {
+  return await getFindById.findById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.mapprovider.fetchById,
+    `${callerModule}--${moduleNames.mapprovider.db.fetchById}`
+  )
 }
 
-exports.update = (mapProviderReq, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.mapprovider.update
+exports.update = async (mapProviderReq, username) => {
+  try {
+    const query = moduleScripts.mapprovider.update
 
-    sql.query(
-      query,
-      [
-        mapProviderReq.ProviderName,
-        mapProviderReq.Active,
-        mapProviderReq.UpdatedOn,
-        mapProviderReq.UpdatedBy,
-        mapProviderReq.Id,
-        mapProviderReq.TenantId,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            mapProviderReq.TenantId,
-            username,
-            moduleNames.mapprovider.db.update,
-            logger.logType.error,
-            `Error for Id: ${mapProviderReq.Id}, Error Code: ${err.code}, Error: ${err}`
-          )
-          return reject(err.code)
-        }
+    await mysqlConnection.query(query, [
+      mapProviderReq.ProviderName,
+      mapProviderReq.Active,
+      mapProviderReq.UpdatedOn,
+      mapProviderReq.UpdatedBy,
+      mapProviderReq.Id,
+      mapProviderReq.TenantId,
+    ])
 
-        logger.loggerHelper(
-          mapProviderReq.TenantId,
-          username,
-          moduleNames.mapprovider.db.update,
-          logger.logType.debug,
-          `Successfully updated Id: ${mapProviderReq.Id}`
-        )
-        resolve(res)
-      }
+    logger.loggerHelper(
+      mapProviderReq.TenantId,
+      username,
+      moduleNames.mapprovider.db.update,
+      logger.logType.debug,
+      i18n.__('messages.logger.successUpdatedById', { id: mapProviderReq.Id })
     )
-  })
+
+    return statusCodes.HTTP_STATUS_OK
+  } catch (err) {
+    logger.loggerHelper(
+      mapProviderReq.TenantId,
+      username,
+      moduleNames.mapprovider.db.update,
+      logger.logType.error,
+      i18n.__('messages.logger.errorUpdatedById', {
+        id: mapProviderReq.Id,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
 
-exports.create = (mapProviderReq, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.mapprovider.create
-    let mapProviderId = uuidv4()
+exports.create = async (mapProviderReq, username) => {
+  try {
+    const query = moduleScripts.mapprovider.create
+    const mapProviderId = uuidv4()
 
-    sql.query(
-      query,
-      [
-        mapProviderId,
-        mapProviderReq.ProviderName,
-        mapProviderReq.Active,
-        mapProviderReq.TenantId,
-        mapProviderReq.CreatedOn,
-        mapProviderReq.CreatedBy,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            mapProviderReq.TenantId,
-            username,
-            moduleNames.mapprovider.db.create,
-            logger.logType.error,
-            `Error for creating record: ${mapProviderReq.ProviderName}, Error Code: ${err.code} Error: ${err}`
-          )
-          return reject(err.code)
-        }
+    await mysqlConnection.query(query, [
+      mapProviderId,
+      mapProviderReq.ProviderName,
+      mapProviderReq.Active,
+      mapProviderReq.TenantId,
+      mapProviderReq.CreatedOn,
+      mapProviderReq.CreatedBy,
+    ])
 
-        logger.loggerHelper(
-          mapProviderReq.TenantId,
-          username,
-          moduleNames.mapprovider.db.create,
-          logger.logType.debug,
-          `Successfully created with Id: ${mapProviderId}`
-        )
-        resolve(mapProviderId)
-      }
+    logger.loggerHelper(
+      mapProviderReq.TenantId,
+      username,
+      moduleNames.mapprovider.db.create,
+      logger.logType.debug,
+      i18n.__('messages.logger.successCreatedById', { id: mapProviderId })
     )
-  })
+
+    return mapProviderId
+  } catch (err) {
+    logger.loggerHelper(
+      mapProviderReq.TenantId,
+      username,
+      moduleNames.mapprovider.db.create,
+      logger.logType.error,
+      i18n.__('messages.logger.errorCreatedById', {
+        name: mapProviderReq.ProviderName,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }

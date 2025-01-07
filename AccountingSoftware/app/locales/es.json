@@ -65,6 +65,9 @@
 			},
 			"locationdetail": {
 				"notFound": "messages.modules.locationdetail.notFound"
+			},
+			"mapprovider": {
+				"notFound": "messages.modules.mapprovider.notFound"
 			}
 		}
 	}
