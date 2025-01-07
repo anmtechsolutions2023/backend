@@ -59,6 +59,10 @@
       "locationdetail": {
         "notFound": "Location detail not found.",
         "internalServerError": "An error occurred while performing action on the location detail."
+      },
+      "mapprovider": {
+        "notFound": "Map provider detail not found.",
+        "internalServerError": "An error occurred while performing action on the map provider detail."
       }
     },
     "logger": {
