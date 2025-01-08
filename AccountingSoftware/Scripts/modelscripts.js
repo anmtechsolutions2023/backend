@@ -245,7 +245,7 @@ module.exports = {
     FROM mapproviderlocationmapper as mplm 
     JOIN mapprovider as mp ON mplm.MapProviderId = mp.Id
     JOIN locationdetail as ld ON mplm.LocationDetailId = ld.Id
-    WHERE mplm.TenantId = ? AND mplm.Id = ?`,
+    WHERE mplm.Id = ? AND mplm.TenantId = ? `,
     create:
       'insert into mapproviderlocationmapper (Id, MapProviderId, LocationDetailId, TenantId, Active, CreatedOn, CreatedBy) values(?,?,?,?,?,?,?)',
     delete:

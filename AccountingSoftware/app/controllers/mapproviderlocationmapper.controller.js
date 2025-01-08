@@ -1,36 +1,36 @@
 const mapproviderlocationmapper = require('../models/mapproviderlocationmapper.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
-const decodeToken = require('../utils/extracttoken')
-const queryParams = require('../utils/queyParams')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let mplmFindById = await mapproviderlocationmapper.findById(
+    const mplmFindById = await mapproviderlocationmapper.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.mapproviderlocationmapper.application.update
     )
 
-    if (mplmFindById == '404') {
-      return res.status(404).send({
-        message: 'Record not found.',
+    if (mplmFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.mapproviderlocationmapper.notFound'),
       })
     }
 
-    let updatedmplm = {
-      Id: mplmFindById[0].MapProviderLocationDetailId,
+    const updatedmplm = {
+      Id: mplmFindById[0].Id,
       MapProviderId: helper.isEmpty(req.body.MapProviderId)
         ? mplmFindById[0].MapProviderId
         : req.body.MapProviderId,
@@ -45,142 +45,106 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await mapproviderlocationmapper
-      .update(updatedmplm, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        return res.status(500).send()
-      })
+    // Update record in database
+    return res
+      .status(await mapproviderlocationmapper.update(updatedmplm, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapproviderlocationmapper.internalServerError',
+      res
+    )
   }
 }
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const respFindById = await mapproviderlocationmapper.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.mapproviderlocationmapper.application.delete
+    )
 
-  let tgtymFindById = await mapproviderlocationmapper.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.mapproviderlocationmapper.application.delete
-  )
+    if (respFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.mapproviderlocationmapper.notFound'),
+      })
+    }
 
-  if (tgtymFindById == '404') {
-    return res.status(404).send({
-      message: 'Record not found.',
-    })
+    await mapproviderlocationmapper.deleteById(
+      req.params.id,
+      tenantId,
+      username
+    )
+
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapproviderlocationmapper.internalServerError',
+      res
+    )
   }
-
-  mapproviderlocationmapper
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.fetchAll = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAll = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  mapproviderlocationmapper
-    .getAll(tenantId, username)
-    .then((mplmResp) => {
-      res.status(200).send(translateResp(mplmResp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(await mapproviderlocationmapper.getAll(tenantId, username))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapproviderlocationmapper.internalServerError',
+      res
+    )
+  }
 }
 
-function translateResp(mplmResp) {
-  let mappersDetail = []
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  mplmResp.map((resp) => {
-    var mapper = {
-      Id: resp.Id,
-      MapProviderId: resp.MapProviderId,
-      LocationDetailId: resp.LocationDetailId,
-      TenantId: resp.TenantId,
-      Active: resp.Active,
-      CreatedOn: resp.CreatedOn,
-      CreatedBy: resp.CreatedBy,
-      UpdatedOn: resp.UpdatedOn,
-      UpdatedBy: resp.UpdatedBy,
-    }
-
-    var mapprovider = {
-      Id: resp.MapProviderId,
-      ProviderName: resp.MapProviderName,
-      Active: resp.MapProviderActive,
-    }
-
-    var locationdetail = {
-      Id: resp.LocationDetailId,
-      Lat: resp.LocationDetailLat,
-      Lng: resp.LocationDetailLng,
-      CF1: resp.LocationDetailCF1,
-      CF2: resp.LocationDetailCF2,
-      CF3: resp.LocationDetailCF3,
-      CF4: resp.LocationDetailCF4,
-      Active: resp.LocationDetailActive,
-    }
-
-    mapper.mapprovider = mapprovider
-    mapper.locationdetail = locationdetail
-
-    mappersDetail.push(mapper)
-  })
-
-  return mappersDetail
-}
-
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
-
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  mapproviderlocationmapper
-    .findById(
+    const mplmResp = await mapproviderlocationmapper.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.mapproviderlocationmapper.application.fetchById
     )
-    .then((mplmResp) => {
-      if (mplmResp === 404) {
-        return res.status(404).send({
-          message: 'Record not found.',
-        })
-      }
-      res.status(200).send(translateResp(mplmResp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+
+    if (mplmResp === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.mapproviderlocationmapper.notFound'),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(mplmResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapproviderlocationmapper.internalServerError',
+      res
+    )
+  }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a record
     let mplm = {
       MapProviderId: req.body.MapProviderId,
@@ -191,18 +155,13 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    mapproviderlocationmapper
-      .create(mplm, username)
-      .then((mplmResp) => {
-        res.send(mplmResp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const mplmResp = await mapproviderlocationmapper.create(mplm, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(mplmResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.mapproviderlocationmapper.internalServerError',
+      res
+    )
   }
 }
