@@ -68,6 +68,9 @@
 			},
 			"mapprovider": {
 				"notFound": "messages.modules.mapprovider.notFound"
+			},
+			"mapproviderlocationmapper": {
+				"notFound": "messages.modules.mapproviderlocationmapper.notFound"
 			}
 		}
 	}

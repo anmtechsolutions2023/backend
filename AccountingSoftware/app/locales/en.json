@@ -63,6 +63,10 @@
       "mapprovider": {
         "notFound": "Map provider detail not found.",
         "internalServerError": "An error occurred while performing action on the map provider detail."
+      },
+      "mapproviderlocationmapper": {
+        "notFound": "Map provider location mapper not found.",
+        "internalServerError": "An error occurred while performing action on the map provider location mapper."
       }
     },
     "logger": {
