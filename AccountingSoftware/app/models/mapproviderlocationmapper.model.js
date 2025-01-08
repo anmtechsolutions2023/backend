@@ -1,193 +1,121 @@
 const { v4: uuidv4 } = require('uuid')
-const sql = require('./db.js')
-const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper')
 const moduleScripts = require('../../Scripts/modelscripts.js')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes.js')
+const getAllModels = require('../models/common/getAll.model')
+const getFindById = require('../models/common/findById.model')
+const deleteById = require('../models/common/deleteById.model')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
+const mysqlConnection = require('../utils/db.js')
 
-exports.delete = (id, tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.mapproviderlocationmapper.delete
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.mapproviderlocationmapper.db.delete,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:.' + err)
-      }
-
-      if (JSON.stringify(res.affectedRows)) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.mapproviderlocationmapper.db.delete,
-          logger.logType.debug,
-          `Deleted record Id: ${id}, affected Rows are: ${res.affectedRows} `
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.taxgrouptaxtypemapper.db.delete,
-          logger.logType.error,
-          ` No Record found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.mapproviderlocationmapper.delete,
+    moduleNames.mapproviderlocationmapper.db.delete
+  )
 }
 
-exports.getAll = (tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.mapproviderlocationmapper.fetchAll
-
-    sql.query(query, [tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.mapproviderlocationmapper.db.fetchAll,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  getAll.' + err)
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.mapproviderlocationmapper.db.fetchAll,
-        logger.logType.debug,
-        `Success`
-      )
-      resolve(res)
-    })
-  })
+exports.getAll = async (tenantId, username) => {
+  return await getAllModels.getAll(
+    tenantId,
+    username,
+    moduleScripts.mapproviderlocationmapper.fetchAll,
+    moduleNames.mapproviderlocationmapper.db.fetchAll
+  )
 }
 
-exports.update = (mplmReq, username) => {
-  return new Promise((resolve, reject) => {
+exports.update = async (mplmReq, username) => {
+  try {
     let query = moduleScripts.mapproviderlocationmapper.update
 
-    sql.query(
-      query,
-      [
-        mplmReq.MapProviderId,
-        mplmReq.LocationDetailId,
-        mplmReq.Active,
-        mplmReq.UpdatedOn,
-        mplmReq.UpdatedBy,
-        mplmReq.Id,
-        mplmReq.TenantId,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            mplmReq.TenantId,
-            username,
-            moduleNames.mapproviderlocationmapper.db.update,
-            logger.logType.error,
-            `Error for Id: ${mplmReq.Id}, Error code: ${err.code}, Error: ${err}`
-          )
-          return reject('DB Error, for operation:  update.' + err)
-        }
+    await mysqlConnection.query(query, [
+      mplmReq.MapProviderId,
+      mplmReq.LocationDetailId,
+      mplmReq.Active,
+      mplmReq.UpdatedOn,
+      mplmReq.UpdatedBy,
+      mplmReq.Id,
+      mplmReq.TenantId,
+    ])
 
-        logger.loggerHelper(
-          mplmReq.TenantId,
-          username,
-          moduleNames.mapproviderlocationmapper.db.update,
-          logger.logType.debug,
-          `Successfully updated UOM Id: ${mplmReq.Id}`
-        )
-        resolve(res)
-      }
+    logger.loggerHelper(
+      mplmReq.TenantId,
+      username,
+      moduleNames.mapproviderlocationmapper.db.update,
+      logger.logType.debug,
+      i18n.__('messages.logger.successUpdatedById', { id: mplmReq.Id })
     )
-  })
+
+    return statusCodes.HTTP_STATUS_OK
+  } catch (err) {
+    logger.loggerHelper(
+      mplmReq.TenantId,
+      username,
+      moduleNames.mapproviderlocationmapper.db.update,
+      logger.logType.error,
+      i18n.__('messages.logger.errorUpdatedById', {
+        id: mplmReq.Id,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
 
-exports.findById = (id, tenantId, username, callerModule) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.mapproviderlocationmapper.fetchById
-
-    sql.query(query, [tenantId, id], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.mapproviderlocationmapper.db.fetchById}`,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  findById.' + err)
-      }
-
-      if (res.length) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.mapproviderlocationmapper.db.fetchById}`,
-          logger.logType.debug,
-          `Record found for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.mapproviderlocationmapper.db.fetchById}`,
-          logger.logType.error,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.findById = async (id, tenantId, username, callerModule) => {
+  return await getFindById.findById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.mapproviderlocationmapper.fetchById,
+    `${callerModule}--${moduleNames.mapproviderlocationmapper.db.fetchById}`
+  )
 }
 
-exports.create = (mplmReq, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.mapproviderlocationmapper.create
-    let mplmId = uuidv4()
+exports.create = async (mplmReq, username) => {
+  try {
+    const query = moduleScripts.mapproviderlocationmapper.create
+    const mplmId = uuidv4()
 
-    sql.query(
-      query,
-      [
-        mplmId,
-        mplmReq.MapProviderId,
-        mplmReq.LocationDetailId,
-        mplmReq.TenantId,
-        mplmReq.Active,
-        mplmReq.CreatedOn,
-        mplmReq.CreatedBy,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            mplmReq.TenantId,
-            username,
-            moduleNames.mapproviderlocationmapper.db.create,
-            logger.logType.error,
-            `Error while creating record for ${mplmReq.MapProviderId}-${mplmReq.LocationDetailId}, Error Code: ${err.code} , Error: ${err}`
-          )
-          return reject(err.code)
-        }
+    await mysqlConnection.query(query, [
+      mplmId,
+      mplmReq.MapProviderId,
+      mplmReq.LocationDetailId,
+      mplmReq.TenantId,
+      mplmReq.Active,
+      mplmReq.CreatedOn,
+      mplmReq.CreatedBy,
+    ])
 
-        logger.loggerHelper(
-          mplmReq.TenantId,
-          username,
-          moduleNames.mapproviderlocationmapper.db.create,
-          logger.logType.debug,
-          `Successfully created with Id: ${mplmId}`
-        )
-        resolve(mplmId)
-      }
+    logger.loggerHelper(
+      mplmReq.TenantId,
+      username,
+      moduleNames.mapproviderlocationmapper.db.create,
+      logger.logType.debug,
+      i18n.__('messages.logger.successCreatedById', { id: mplmId })
     )
-  })
+
+    return mplmId
+  } catch (err) {
+    logger.loggerHelper(
+      mplmReq.TenantId,
+      username,
+      moduleNames.mapproviderlocationmapper.db.create,
+      logger.logType.error,
+      i18n.__('messages.logger.errorCreatedById', {
+        name: `${mplmReq.MapProviderId}-${mplmReq.LocationDetailId}`,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
