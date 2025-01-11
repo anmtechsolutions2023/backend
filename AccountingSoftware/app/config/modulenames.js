@@ -292,6 +292,8 @@ module.exports = {
       delete: 'DB_CostInfo_delete',
       update: 'DB_CostInfo_update',
       searchbyname: 'DB_ConstInfo_searchbyname',
+      searchbyparam: 'DB_ConstInfo_searchbyparam',
+      searchbytaxgroupname: 'DB_ConstInfo_searchbytaxgroupname',
     },
   },
   branchdetail: {

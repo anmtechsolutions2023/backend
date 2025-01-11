@@ -73,6 +73,12 @@
         "internalServerError": "An error occurred while performing action on the Tax group tax type mapper.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "costinfo": {
+        "notFound": "Cost info not found.",
+        "internalServerError": "An error occurred while performing action on Cost info.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {

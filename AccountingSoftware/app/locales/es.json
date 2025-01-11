@@ -75,6 +75,9 @@
 			"taxgrouptaxtypemapper": {
 				"notFound": "messages.modules.taxgrouptaxtypemapper.notFound",
 				"queryParamNotSupported": "messages.modules.taxgrouptaxtypemapper.queryParamNotSupported"
+			},
+			"costinfo": {
+				"notFound": "messages.modules.costinfo.notFound"
 			}
 		}
 	}
