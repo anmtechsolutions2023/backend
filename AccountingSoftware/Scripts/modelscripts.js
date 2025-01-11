@@ -364,7 +364,7 @@ module.exports = {
     tg.Name "TaxGroupName",
     tg.Active "TaxGroupActive"
     FROM costinfo as ci JOIN taxgroup as tg ON ci.TaxGroupId = tg.Id
-    WHERE ci.TenantId = ? AND ci.Id = ?`,
+    WHERE ci.Id = ? AND ci.TenantId = ?`,
     create:
       'INSERT INTO costinfo (Id, Amount, TaxGroupId, IsTaxIncluded, TenantId, Active, CreatedOn, CreatedBy) VALUES (?,?,?,?,?,?,?,?)',
     delete: 'DELETE FROM costinfo WHERE Id = ? and TenantId = ?',
