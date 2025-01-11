@@ -1,221 +1,171 @@
 const { v4: uuidv4 } = require('uuid')
-const sql = require('./db.js')
-const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper')
 const moduleScripts = require('../../Scripts/modelscripts.js')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes.js')
+const getAllModels = require('../models/common/getAll.model')
+const getFindById = require('../models/common/findById.model')
+const deleteById = require('../models/common/deleteById.model')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
+const mysqlConnection = require('../utils/db.js')
 
-exports.delete = (id, tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.delete
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.taxgrouptaxtypemapper.db.delete,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:.' + err)
-      }
-
-      if (JSON.stringify(res.affectedRows)) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.taxgrouptaxtypemapper.db.delete,
-          logger.logType.debug,
-          `Deleted record Id: ${id}, affected Rows are: ${res.affectedRows} `
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.taxgrouptaxtypemapper.db.delete,
-          logger.logType.error,
-          ` No Record found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.taxgrouptaxtypemapper.delete,
+    moduleNames.taxgrouptaxtypemapper.db.delete
+  )
 }
 
-exports.getAll = (tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.fetchAll
+exports.getAll = async (tenantId, username) => {
+  return await getAllModels.getAll(
+    tenantId,
+    username,
+    moduleScripts.taxgrouptaxtypemapper.fetchAll,
+    moduleNames.taxgrouptaxtypemapper.db.fetchAll
+  )
+}
 
-    sql.query(query, [tenantId], (err, res) => {
-      if (err) {
+exports.searchByParam = async (tenantId, username, queryParams) => {
+  try {
+    let query = null
+
+    switch (queryParams.QueryParamName) {
+      case 'TaxGroupName':
+        query = moduleScripts.taxgrouptaxtypemapper.searchbytaxgroupname
+        break
+      default: {
         logger.loggerHelper(
           tenantId,
           username,
-          moduleNames.taxgrouptaxtypemapper.db.fetchAll,
+          moduleNames.taxgrouptaxtypemapper.db.searchbytaxgroupname,
           logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  getAll.' + err)
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.taxgrouptaxtypemapper.db.fetchAll,
-        logger.logType.debug,
-        `Success`
-      )
-      resolve(res)
-    })
-  })
-}
-
-exports.searchByName = (tenantId, username, TaxGroupName) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.searchbyname
-
-    sql.query(query, [tenantId, TaxGroupName], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.taxgrouptaxtypemapper.db.searchbyname,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  searchbyname.' + err)
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.taxgrouptaxtypemapper.db.searchbyname,
-        logger.logType.debug,
-        `Success`
-      )
-      resolve(res)
-    })
-  })
-}
-
-exports.update = (tgttmReq, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.update
-
-    sql.query(
-      query,
-      [
-        tgttmReq.TaxGroupId,
-        tgttmReq.TaxTypeId,
-        tgttmReq.Active,
-        tgttmReq.UpdatedOn,
-        tgttmReq.UpdatedBy,
-        tgttmReq.Id,
-        tgttmReq.TenantId,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            tgttmReq.TenantId,
-            username,
-            moduleNames.taxgrouptaxtypemapper.db.update,
-            logger.logType.error,
-            `Error for Id: ${tgttmReq.Id}, Error code: ${err.code}, Error: ${err}`
+          i18n.__(
+            'messages.modules.taxgrouptaxtypemapper.queryParamNotSupported'
           )
-          return reject('DB Error, for operation:  update.' + err)
-        }
-
-        logger.loggerHelper(
-          tgttmReq.TenantId,
-          username,
-          moduleNames.taxgrouptaxtypemapper.db.update,
-          logger.logType.debug,
-          `Successfully updated Id: ${tgttmReq.Id}`
         )
-        resolve(res)
+        return statusCodes.HTTP_STATUS_BAD_REQUEST
       }
+    }
+
+    const [res] = await mysqlConnection.query(query, [
+      tenantId,
+      queryParams.QueryParamValue,
+    ])
+
+    logger.loggerHelper(
+      tenantId,
+      username,
+      moduleNames.taxgrouptaxtypemapper.db.searchbytaxgroupname,
+      logger.logType.debug,
+      i18n.__('messages.logger.recordFindByQueryParam')
     )
-  })
+    return res
+  } catch (err) {
+    logger.loggerHelper(
+      tenantId,
+      username,
+      moduleNames.taxgrouptaxtypemapper.db.searchbyparam,
+      logger.logType.error,
+      i18n.__('messages.logger.errorSearchParam', {
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
 
-exports.findById = (id, tenantId, username, callerModule) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.fetchById
+exports.update = async (tgttmReq, username) => {
+  try {
+    const query = moduleScripts.taxgrouptaxtypemapper.update
 
-    sql.query(query, [tenantId, id], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.taxgrouptaxtypemapper.db.fetchById}`,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  findById.' + err)
-      }
+    await mysqlConnection.query(query, [
+      tgttmReq.TaxGroupId,
+      tgttmReq.TaxTypeId,
+      tgttmReq.Active,
+      tgttmReq.UpdatedOn,
+      tgttmReq.UpdatedBy,
+      tgttmReq.Id,
+      tgttmReq.TenantId,
+    ])
 
-      if (res.length) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.taxgrouptaxtypemapper.db.fetchById}`,
-          logger.logType.debug,
-          `Record found for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.taxgrouptaxtypemapper.db.fetchById}`,
-          logger.logType.error,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+    logger.loggerHelper(
+      tgttmReq.TenantId,
+      username,
+      moduleNames.taxgrouptaxtypemapper.db.update,
+      logger.logType.debug,
+      i18n.__('messages.logger.successUpdatedById', { id: tgttmReq.Id })
+    )
+
+    return statusCodes.HTTP_STATUS_OK
+  } catch (err) {
+    logger.loggerHelper(
+      tgttmReq.TenantId,
+      username,
+      moduleNames.taxgrouptaxtypemapper.db.update,
+      logger.logType.error,
+      i18n.__('messages.logger.errorUpdatedById', {
+        id: tgttmReq.Id,
+        code: err.code,
+        message: err,
+      })
+    )
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
 
-exports.create = (tgttmReq, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.taxgrouptaxtypemapper.create
-    let tgttmId = uuidv4()
+exports.findById = async (id, tenantId, username, callerModule) => {
+  return await getFindById.findById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.taxgrouptaxtypemapper.fetchById,
+    `${callerModule}--${moduleNames.taxgrouptaxtypemapper.db.fetchById}`
+  )
+}
 
-    sql.query(
-      query,
-      [
-        tgttmId,
-        tgttmReq.TaxGroupId,
-        tgttmReq.TaxTypeId,
-        tgttmReq.TenantId,
-        tgttmReq.Active,
-        tgttmReq.CreatedOn,
-        tgttmReq.CreatedBy,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            tgttmReq.TenantId,
-            username,
-            moduleNames.taxgrouptaxtypemapper.db.create,
-            logger.logType.error,
-            `Error while creating record for ${tgttmReq.TaxGroupId}-${tgttmReq.TaxTypeId}, Error Code: ${err.code} , Error: ${err}`
-          )
-          return reject(err.code)
-        }
+exports.create = async (tgttmReq, username) => {
+  try {
+    const query = moduleScripts.taxgrouptaxtypemapper.create
+    const tgttmId = uuidv4()
 
-        logger.loggerHelper(
-          tgttmReq.TenantId,
-          username,
-          moduleNames.taxgrouptaxtypemapper.db.create,
-          logger.logType.debug,
-          `Successfully created with Id: ${tgttmId}`
-        )
-        resolve(tgttmId)
-      }
+    await mysqlConnection.query(query, [
+      tgttmId,
+      tgttmReq.TaxGroupId,
+      tgttmReq.TaxTypeId,
+      tgttmReq.TenantId,
+      tgttmReq.Active,
+      tgttmReq.CreatedOn,
+      tgttmReq.CreatedBy,
+    ])
+
+    logger.loggerHelper(
+      tgttmReq.TenantId,
+      username,
+      moduleNames.taxgrouptaxtypemapper.db.create,
+      logger.logType.debug,
+      i18n.__('messages.logger.successCreatedById', { id: tgttmId })
     )
-  })
+
+    return tgttmId
+  } catch (err) {
+    logger.loggerHelper(
+      tgttmReq.TenantId,
+      username,
+      moduleNames.taxgrouptaxtypemapper.db.create,
+      logger.logType.error,
+      i18n.__('messages.logger.errorCreatedById', {
+        name: `${tgttmReq.TaxGroupId}-${tgttmReq.TaxTypeId}`,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }

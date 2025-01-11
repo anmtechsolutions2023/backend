@@ -172,13 +172,13 @@ module.exports = {
         FROM taxgrouptaxtypemapper as tgttm 
         JOIN taxgroup as tg ON tgttm.TaxGroupId = tg.Id
         JOIN TaxTypes as tt ON tgttm.TaxTypeId = tt.Id
-        WHERE tgttm.TenantId = ? and tgttm.Id = ?`,
+        WHERE tgttm.Id = ? AND tgttm.TenantId = ?`,
     create:
       'insert into taxgrouptaxtypemapper (Id, TaxGroupId, TaxTypeId, TenantId, Active, CreatedOn, CreatedBy) values (?,?,?,?,?,?,?)',
     delete: 'DELETE FROM taxgrouptaxtypemapper WHERE Id = ? and TenantId = ?',
     update:
       'UPDATE taxgrouptaxtypemapper SET TaxGroupId = ?, TaxTypeId = ? , Active = ?, UpdatedOn = ?, UpdatedBy = ? WHERE Id = ? and TenantId = ?',
-    searchbyname: `Select
+    searchbytaxgroupname: `Select
         tgttm.*,
         tg.Id as "TaxGroupId",
         tg.Name as "TaxGroupName",

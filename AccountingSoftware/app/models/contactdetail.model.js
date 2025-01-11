@@ -43,7 +43,7 @@ exports.searchByParam = async (tenantId, username, queryParams) => {
         logger.loggerHelper(
           tenantId,
           username,
-          moduleNames.contactdetail.db.searchbyname,
+          moduleNames.contactdetail.db.searchbyparam,
           logger.logType.error,
           i18n.__('messages.modules.contactdetail.queryParamNotSupported')
         )
@@ -59,7 +59,7 @@ exports.searchByParam = async (tenantId, username, queryParams) => {
     logger.loggerHelper(
       tenantId,
       username,
-      moduleNames.contactdetail.db.searchbyname,
+      moduleNames.contactdetail.db.searchbyparam,
       logger.logType.debug,
       i18n.__('messages.logger.recordFindByQueryParam')
     )
@@ -69,13 +69,14 @@ exports.searchByParam = async (tenantId, username, queryParams) => {
     logger.loggerHelper(
       tenantId,
       username,
-      moduleNames.contactdetail.db.searchbyname,
+      moduleNames.contactdetail.db.searchbyparam,
       logger.logType.error,
       i18n.__('messages.logger.errorSearchParam', {
         code: err.code,
         message: err,
       })
     )
+
     throw handleDatabaseError.handleDatabaseError(err)
   }
 }
