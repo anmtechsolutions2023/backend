@@ -67,6 +67,12 @@
       "mapproviderlocationmapper": {
         "notFound": "Map provider location mapper not found.",
         "internalServerError": "An error occurred while performing action on the map provider location mapper."
+      },
+      "taxgrouptaxtypemapper": {
+        "notFound": "Tax group tax type mapper not found.",
+        "internalServerError": "An error occurred while performing action on the Tax group tax type mapper.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {

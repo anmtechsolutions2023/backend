@@ -1,36 +1,37 @@
 const taxgrouptaxtypemapper = require('../models/taxgrouptaxtypemapper.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
-const decodeToken = require('../utils/extracttoken')
 const queryParams = require('../utils/queyParams')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let tgttmFindById = await taxgrouptaxtypemapper.findById(
+    const tgttmFindById = await taxgrouptaxtypemapper.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.taxgrouptaxtypemapper.application.update
     )
 
-    if (tgttmFindById == '404') {
-      return res.status(404).send({
-        message: 'Record not found.',
+    if (tgttmFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.uom.notFound'),
       })
     }
 
-    let updatedtgttm = {
-      Id: tgttmFindById[0].TaxGroupTaxTypeMapperId,
+    const updatedtgttm = {
+      Id: tgttmFindById[0].Id,
       TaxGroupId: helper.isEmpty(req.body.TaxGroupId)
         ? tgttmFindById[0].TaxGroupId
         : req.body.TaxGroupId,
@@ -45,84 +46,107 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await taxgrouptaxtypemapper
-      .update(updatedtgttm, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        return res.status(500).send()
-      })
+    // Update record in database
+    return res
+      .status(await taxgrouptaxtypemapper.update(updatedtgttm, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.taxgrouptaxtypemapper.internalServerError',
+      res
+    )
   }
 }
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const tgtymFindById = await taxgrouptaxtypemapper.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.taxgrouptaxtypemapper.application.delete
+    )
 
-  let tgtymFindById = await taxgrouptaxtypemapper.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.taxgrouptaxtypemapper.application.delete
-  )
+    if (tgtymFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.taxgrouptaxtypemapper.notFound'),
+      })
+    }
 
-  if (tgtymFindById == '404') {
-    return res.status(404).send({
-      message: 'Record not found.',
-    })
+    await taxgrouptaxtypemapper.deleteById(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.taxgrouptaxtypemapper.internalServerError',
+      res
+    )
   }
-
-  taxgrouptaxtypemapper
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-/// This API is used to search Tax Group Detail by Group name
-exports.search = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.search = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const params = queryParams.getQueryParams(req.query)
+    const queryParamName = params['QueryParamName']
+    const queryParamValue = params['QueryParamValue']
 
-  var queryParamName = queryParams.getQueryParams(req.query)['Name']
-  if (queryParamName === undefined) {
-    return res.status(400).send({
-      message: 'query param not supported!',
-    })
+    if (helper.isEmpty(queryParamName) || helper.isEmpty(queryParamValue)) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__(
+          'messages.modules.taxgrouptaxtypemapper.queryParamMissing'
+        ),
+      })
+    }
+
+    const tgttmresp = await taxgrouptaxtypemapper.searchByParam(
+      tenantId,
+      username,
+      params
+    )
+
+    if (tgttmresp === statusCodes.HTTP_STATUS_BAD_REQUEST) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__(
+          'messages.modules.taxgrouptaxtypemapper.queryParamNotSupported'
+        ),
+      })
+    }
+
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(translateResponse(tgttmresp))
+  } catch (err) {
+    commonControllerErrorHandler(
+      err,
+      'messages.modules.taxgrouptaxtypemapper.internalServerError',
+      res
+    )
   }
-
-  taxgrouptaxtypemapper
-    .searchByName(tenantId, username, queryParamName)
-    .then((tgttmresp) => {
-      res.status(200).send(translateResponse(tgttmresp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.fetchAll = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAll = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  taxgrouptaxtypemapper
-    .getAll(tenantId, username)
-    .then((tgttmresp) => {
-      res.status(200).send(translateResponse(tgttmresp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(
+        translateResponse(
+          await taxgrouptaxtypemapper.getAll(tenantId, username)
+        )
+      )
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.taxgrouptaxtypemapper.internalServerError',
+      res
+    )
+  }
 }
 
 function translateResponse(tgttmresp) {
@@ -161,47 +185,46 @@ function translateResponse(tgttmresp) {
   return tgttmDetails
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  taxgrouptaxtypemapper
-    .findById(
+    const tgttmresp = await taxgrouptaxtypemapper.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.taxgrouptaxtypemapper.application.fetchById
     )
-    .then((tgttmresp) => {
-      if (tgttmresp === 404) {
-        return res.status(404).send({
-          message: 'Record not found.',
-        })
-      }
 
-      res.send(translateResponse(tgttmresp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    if (tgttmresp === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.taxgrouptaxtypemapper.notFound'),
+      })
+    }
+
+    res.status(statusCodes.HTTP_STATUS_OK).send(translateResponse(tgttmresp))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.taxgrouptaxtypemapper.internalServerError',
+      res
+    )
+  }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a Tax Group Tax Type Mapper
-    let tgttm = {
+    const tgttm = {
       TaxGroupId: req.body.TaxGroupId,
       TaxTypeId: req.body.TaxTypeId,
       Active: req.body.Active,
@@ -210,18 +233,14 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    taxgrouptaxtypemapper
-      .create(tgttm, username)
-      .then((tgttmResp) => {
-        res.send(tgttmResp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const tgttmResp = await taxgrouptaxtypemapper.create(tgttm, username)
+
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(tgttmResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.taxgrouptaxtypemapper.internalServerError',
+      res
+    )
   }
 }

@@ -71,6 +71,10 @@
 			},
 			"mapproviderlocationmapper": {
 				"notFound": "messages.modules.mapproviderlocationmapper.notFound"
+			},
+			"taxgrouptaxtypemapper": {
+				"notFound": "messages.modules.taxgrouptaxtypemapper.notFound",
+				"queryParamNotSupported": "messages.modules.taxgrouptaxtypemapper.queryParamNotSupported"
 			}
 		}
 	}

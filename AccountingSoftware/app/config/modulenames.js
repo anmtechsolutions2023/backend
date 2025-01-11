@@ -190,7 +190,8 @@ module.exports = {
       create: 'DB_TaxGroupTaxTypeMapper_create',
       delete: 'DB_TaxGroupTaxTypeMapper_delete',
       update: 'DB_TaxGroupTaxTypeMapper_update',
-      searchbyname: 'DB_TaxGroupTaxTypeMapper_searchbyname',
+      searchbyparam: 'DB_TaxGroupTaxTypeMapper_searchbyparam',
+      searchbytaxgroupname: 'DB_TaxGroupTaxTypeMapper_searchbytaxgroupname',
     },
   },
   mapprovider: {
@@ -256,7 +257,7 @@ module.exports = {
       create: 'DB_ContactDetail_create',
       delete: 'DB_ContactDetail_delete',
       update: 'DB_ContactDetail_update',
-      searchbyname: 'DB_ContactDetail_searchbyname',
+      searchbyparam: 'DB_ContactDetail_searchbyparam',
     },
   },
   addressdetail: {

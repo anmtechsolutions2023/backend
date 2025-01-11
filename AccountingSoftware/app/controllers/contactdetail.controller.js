@@ -104,7 +104,6 @@ exports.delete = async (req, res) => {
   }
 }
 
-/// This API is used to search Tax Group Detail by Group name
 exports.search = async (req, res) => {
   try {
     const { tenantId, username } = req
@@ -121,12 +120,6 @@ exports.search = async (req, res) => {
     }
 
     const cdResp = await contactdetail.searchByParam(tenantId, username, params)
-
-    if (cdResp === statusCodes.HTTP_STATUS_NOT_FOUND) {
-      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
-        message: i18n.__('messages.modules.contactdetail.notFound'),
-      })
-    }
 
     if (cdResp === statusCodes.HTTP_STATUS_BAD_REQUEST) {
       return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
