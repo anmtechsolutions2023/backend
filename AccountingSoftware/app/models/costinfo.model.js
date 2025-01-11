@@ -1,81 +1,38 @@
 const { v4: uuidv4 } = require('uuid')
-const sql = require('./db.js')
-const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper')
 const moduleScripts = require('../../Scripts/modelscripts.js')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes.js')
+const getAllModels = require('../models/common/getAll.model')
+const getFindById = require('../models/common/findById.model')
+const deleteById = require('../models/common/deleteById.model')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
+const mysqlConnection = require('../utils/db.js')
 
-exports.delete = (id, tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.costinfo.delete
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.costinfo.db.delete,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:.' + err)
-      }
-
-      if (JSON.stringify(res.affectedRows)) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.costinfo.db.delete,
-          logger.logType.debug,
-          `Deleted record Id: ${id}, affected Rows are: ${res.affectedRows} `
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.costinfo.db.delete,
-          logger.logType.error,
-          ` No Record found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.costinfo.delete,
+    moduleNames.costinfo.db.delete
+  )
 }
 
-exports.getAll = (tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.costinfo.fetchAll
-
-    sql.query(query, [tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.costinfo.db.fetchAll,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  getAll.' + err)
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.costinfo.db.fetchAll,
-        logger.logType.debug,
-        `Success`
-      )
-      resolve(res)
-    })
-  })
+exports.getAll = async (tenantId, username) => {
+  return await getAllModels.getAll(
+    tenantId,
+    username,
+    moduleScripts.costinfo.fetchAll,
+    moduleNames.costinfo.db.fetchAll
+  )
 }
 
-exports.searchByParam = (tenantId, username, queryParams) => {
-  let query = null
+exports.searchByParam = async (tenantId, username, queryParams) => {
+  try {
+    let query = null
 
-  return new Promise((resolve, reject) => {
     switch (queryParams.QueryParamName) {
       case 'TaxGroupName':
         query = moduleScripts.costinfo.searchbytaxgroupname
@@ -84,156 +41,133 @@ exports.searchByParam = (tenantId, username, queryParams) => {
         logger.loggerHelper(
           tenantId,
           username,
-          moduleNames.costinfo.db.searchbyname,
+          moduleNames.costinfo.db.searchbyparam,
           logger.logType.error,
-          `Not supported query param.`
+          i18n.__('messages.modules.costinfo.queryParamNotSupported')
         )
-        return reject(statuses.Statuses.BadRequest)
+        return statusCodes.HTTP_STATUS_BAD_REQUEST
       }
     }
 
-    sql.query(query, [tenantId, queryParams.QueryParamValue], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.costinfo.db.searchbyname,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  searchbyname.' + err)
-      }
+    const [res] = await mysqlConnection.query(query, [
+      tenantId,
+      queryParams.QueryParamValue,
+    ])
 
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.costinfo.db.searchbyname,
-        logger.logType.debug,
-        `Success`
-      )
-      resolve(res)
-    })
-  })
+    logger.loggerHelper(
+      tenantId,
+      username,
+      moduleNames.costinfo.db.searchbyname,
+      logger.logType.debug,
+      i18n.__('messages.logger.recordFindByQueryParam')
+    )
+
+    return res
+  } catch (err) {
+    logger.loggerHelper(
+      tenantId,
+      username,
+      moduleNames.costinfo.db.searchbyname,
+      logger.logType.error,
+      i18n.__('messages.logger.errorSearchParam', {
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
 
-exports.update = (updatedReq, username) => {
-  return new Promise((resolve, reject) => {
+exports.update = async (updatedReq, username) => {
+  try {
     let query = moduleScripts.costinfo.update
 
-    sql.query(
-      query,
-      [
-        updatedReq.Amount,
-        updatedReq.TaxGroupId,
-        updatedReq.IsTaxIncluded,
-        updatedReq.Active,
-        updatedReq.UpdatedOn,
-        updatedReq.UpdatedBy,
-        updatedReq.Id,
-        updatedReq.TenantId,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            updatedReq.TenantId,
-            username,
-            moduleNames.costinfo.db.update,
-            logger.logType.error,
-            `Error for Id: ${updatedReq.Id}, Error code: ${err.code}, Error: ${err}`
-          )
-          return reject('DB Error, for operation:  update.' + err)
-        }
+    await mysqlConnection.query(query, [
+      updatedReq.Amount,
+      updatedReq.TaxGroupId,
+      updatedReq.IsTaxIncluded,
+      updatedReq.Active,
+      updatedReq.UpdatedOn,
+      updatedReq.UpdatedBy,
+      updatedReq.Id,
+      updatedReq.TenantId,
+    ])
 
-        logger.loggerHelper(
-          updatedReq.TenantId,
-          username,
-          moduleNames.costinfo.db.update,
-          logger.logType.debug,
-          `Successfully updated Id: ${updatedReq.Id}`
-        )
-        resolve(res)
-      }
+    logger.loggerHelper(
+      updatedReq.TenantId,
+      username,
+      moduleNames.costinfo.db.update,
+      logger.logType.debug,
+      i18n.__('messages.logger.successUpdatedById', { id: updatedReq.Id })
     )
-  })
+
+    return statusCodes.HTTP_STATUS_OK
+  } catch (err) {
+    logger.loggerHelper(
+      updatedReq.TenantId,
+      username,
+      moduleNames.costinfo.db.update,
+      logger.logType.error,
+      i18n.__('messages.logger.errorUpdatedById', {
+        id: updatedReq.Id,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
 
-exports.findById = (id, tenantId, username, callerModule) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.costinfo.fetchById
-
-    sql.query(query, [tenantId, id], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.costinfo.db.fetchById}`,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB Error, for operation:  findById.' + err)
-      }
-
-      if (res.length) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.costinfo.db.fetchById}`,
-          logger.logType.debug,
-          `Record found for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.costinfo.db.fetchById}`,
-          logger.logType.error,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.findById = async (id, tenantId, username, callerModule) => {
+  return await getFindById.findById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.costinfo.fetchById,
+    `${callerModule}--${moduleNames.costinfo.db.fetchById}`
+  )
 }
 
-exports.create = (req, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.costinfo.create
-    let reqId = uuidv4()
+exports.create = async (req, username) => {
+  try {
+    const query = moduleScripts.costinfo.create
+    const reqId = uuidv4()
 
-    sql.query(
-      query,
-      [
-        reqId,
-        req.Amount,
-        req.TaxGroupId,
-        req.IsTaxIncluded,
-        req.TenantId,
-        req.Active,
-        req.CreatedOn,
-        req.CreatedBy,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            req.TenantId,
-            username,
-            moduleNames.costinfo.db.create,
-            logger.logType.error,
-            `Error while creating record for ${req.Amount}-${req.TaxGroupId}, Error Code: ${err.code} , Error: ${err}`
-          )
-          return reject(err.code)
-        }
+    await mysqlConnection.query(query, [
+      reqId,
+      req.Amount,
+      req.TaxGroupId,
+      req.IsTaxIncluded,
+      req.TenantId,
+      req.Active,
+      req.CreatedOn,
+      req.CreatedBy,
+    ])
 
-        logger.loggerHelper(
-          req.TenantId,
-          username,
-          moduleNames.costinfo.db.create,
-          logger.logType.debug,
-          `Successfully created with Id: ${reqId}`
-        )
-        resolve(reqId)
-      }
+    logger.loggerHelper(
+      req.TenantId,
+      username,
+      moduleNames.costinfo.db.create,
+      logger.logType.debug,
+      i18n.__('messages.logger.successCreatedById', { id: reqId })
     )
-  })
+
+    return reqId
+  } catch (err) {
+    logger.loggerHelper(
+      req.TenantId,
+      username,
+      moduleNames.costinfo.db.create,
+      logger.logType.error,
+      i18n.__('messages.logger.errorCreatedById', {
+        name: `${req.Amount}-${req.TaxGroupId}`,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }

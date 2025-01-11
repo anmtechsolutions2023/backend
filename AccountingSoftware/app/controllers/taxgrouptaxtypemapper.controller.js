@@ -26,7 +26,7 @@ exports.update = async (req, res) => {
 
     if (tgttmFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
       return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
-        message: i18n.__('messages.modules.uom.notFound'),
+        message: i18n.__('messages.modules.taxgrouptaxtypemapper.notFound'),
       })
     }
 
@@ -121,7 +121,7 @@ exports.search = async (req, res) => {
       .status(statusCodes.HTTP_STATUS_OK)
       .send(translateResponse(tgttmresp))
   } catch (err) {
-    commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.taxgrouptaxtypemapper.internalServerError',
       res

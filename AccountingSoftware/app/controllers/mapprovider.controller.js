@@ -1,6 +1,5 @@
 const mapProvider = require('../models/mapprovider.model')
 const helper = require('../utils/helper')
-const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
 const statusCodes = require('../config/statusCodes')
 const i18n = require('../utils/i18n')

@@ -68,7 +68,7 @@ exports.update = async (req, res) => {
       .status(await contactdetail.update(updatedcd, username))
       .send(i18n.__('messages.success.update'))
   } catch (err) {
-    commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactdetail.internalServerError',
       res
@@ -96,7 +96,7 @@ exports.delete = async (req, res) => {
     await contactdetail.deleteById(req.params.id, tenantId, username)
     return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
   } catch (err) {
-    commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactdetail.internalServerError',
       res
@@ -133,7 +133,7 @@ exports.search = async (req, res) => {
       .status(statusCodes.HTTP_STATUS_OK)
       .send(translateResponse(cdResp))
   } catch (err) {
-    commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactdetail.internalServerError',
       res
@@ -253,7 +253,7 @@ exports.create = async (req, res) => {
     const cdResp = await contactdetail.create(cd, username)
     return res.status(statusCodes.HTTP_STATUS_CREATED).send(cdResp)
   } catch (err) {
-    commonControllerErrorHandler(
+    return commonControllerErrorHandler.commonControllerErrorHandler(
       err,
       'messages.modules.contactdetail.internalServerError',
       res
