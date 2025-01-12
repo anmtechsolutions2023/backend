@@ -79,6 +79,10 @@
         "internalServerError": "An error occurred while performing action on Cost info.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "categorydetail": {
+        "notFound": "Category detail not found.",
+        "internalServerError": "An error occurred while performing action on the Category detail."
       }
     },
     "logger": {
