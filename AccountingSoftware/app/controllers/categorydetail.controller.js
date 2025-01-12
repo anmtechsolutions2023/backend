@@ -2,33 +2,35 @@ const categorydetail = require('../models/categorydetail.model')
 const helper = require('../utils/helper')
 const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.updateCategoryDetail = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let cdFindById = await categorydetail.findById(
+    const cdFindById = await categorydetail.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.categorydetail.application.update
     )
 
-    if (cdFindById == '404') {
-      return res.status(404).send({
-        message: 'CategoryDetail not found.',
+    if (cdFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.categorydetail.notFound'),
       })
     }
 
-    let updatedCategoryDetail = {
+    const updatedCategoryDetail = {
       Id: cdFindById[0].Id,
       Name: helper.isEmpty(req.body.Name) ? cdFindById[0].Name : req.body.Name,
       Active: helper.isEmpty(req.body.Active)
@@ -39,103 +41,103 @@ exports.updateCategoryDetail = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await categorydetail
-      .update(updatedCategoryDetail, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        return res.status(500).send()
-      })
+    // Update record in database
+    return res
+      .status(await categorydetail.update(updatedCategoryDetail, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.categorydetail.internalServerError',
+      res
+    )
   }
 }
 
 exports.deleteCategoryDetail = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const cdFindById = await categorydetail.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.categorydetail.application.delete
+    )
 
-  let cdFindById = await categorydetail.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.categorydetail.application.delete
-  )
+    if (cdFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.categorydetail.notFound'),
+      })
+    }
 
-  if (cdFindById == '404') {
-    return res.status(404).send({
-      message: 'CategoryDetail not found.',
-    })
+    await categorydetail.deleteById(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.categorydetail.internalServerError',
+      res
+    )
   }
-
-  categorydetail
-    .deleteCategoryDetail(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.fetchAllCategoryDetails = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAllCategoryDetails = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  categorydetail
-    .getAll(tenantId, username)
-    .then((cd) => {
-      res.send(cd)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(await categorydetail.getAll(tenantId, username))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.categorydetail.internalServerError',
+      res
+    )
+  }
 }
 
-exports.fetchCategoryDetailById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchCategoryDetailById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  categorydetail
-    .findById(
+    const cd = await categorydetail.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.categorydetail.application.fetchById
     )
-    .then((cd) => {
-      if (cd === 404) {
-        return res.status(404).send({
-          message: 'Category Detail not found.',
-        })
-      }
 
-      res.status(200).send(cd)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    if (cd === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.categorydetail.notFound'),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(cd)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.categorydetail.internalServerError',
+      res
+    )
+  }
 }
 
-exports.createCategoryDetail = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.createCategoryDetail = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a Category Detail
-    let cd = {
+    const cd = {
       Name: req.body.Name,
       Active: req.body.Active,
       TenantId: tenantId,
@@ -143,18 +145,13 @@ exports.createCategoryDetail = (req, res) => {
       CreatedBy: username,
     }
 
-    categorydetail
-      .create(cd, username)
-      .then((cdResp) => {
-        res.send(cdResp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409)
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const cdResp = await categorydetail.create(cd, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(cdResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.categorydetail.internalServerError',
+      res
+    )
   }
 }

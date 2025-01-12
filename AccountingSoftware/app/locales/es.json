@@ -78,6 +78,9 @@
 			},
 			"costinfo": {
 				"notFound": "messages.modules.costinfo.notFound"
+			},
+			"categorydetail": {
+				"notFound": "messages.modules.categorydetail.notFound"
 			}
 		}
 	}
