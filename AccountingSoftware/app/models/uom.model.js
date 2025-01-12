@@ -31,7 +31,7 @@ exports.getAll = async (tenantId, username) => {
 
 exports.update = async (uom, username) => {
   try {
-    let query = moduleScripts.uom.update
+    const query = moduleScripts.uom.update
 
     await mysqlConnection.query(query, [
       uom.UnitName,

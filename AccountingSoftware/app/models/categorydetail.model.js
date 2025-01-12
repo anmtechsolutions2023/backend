@@ -1,6 +1,4 @@
 const { v4: uuidv4 } = require('uuid')
-const sql = require('./db.js')
-const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper.js')
 const moduleNames = require('../config/modulenames')
 const moduleScripts = require('../../Scripts/modelscripts.js')

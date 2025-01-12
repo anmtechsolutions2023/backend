@@ -81,6 +81,9 @@
 			},
 			"categorydetail": {
 				"notFound": "messages.modules.categorydetail.notFound"
+			},
+			"transactiontypeconfig": {
+				"notFound": "messages.modules.transactiontypeconfig.notFound"
 			}
 		}
 	}
