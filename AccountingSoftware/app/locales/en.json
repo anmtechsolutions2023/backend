@@ -91,6 +91,10 @@
       "transactiontypes": {
         "notFound": "Transaction type not found.",
         "internalServerError": "An error occurred while performing action on the transaction type."
+      },
+      "organizationdetail": {
+        "notFound": "Organization detail not found.",
+        "internalServerError": "An error occurred while performing action on the organization detail."
       }
     },
     "logger": {

@@ -1,4 +1,4 @@
-const transactiontype = require('../models/transactiontype.model')``
+const transactiontype = require('../models/transactiontype.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
 const statusCodes = require('../config/statusCodes')
