@@ -88,6 +88,9 @@
 			"transactiontypes": {
 				"internalServerError": "messages.modules.transactiontypes.internalServerError",
 				"notFound": "messages.modules.transactiontypes.notFound"
+			},
+			"organizationdetail": {
+				"notFound": "messages.modules.organizationdetail.notFound"
 			}
 		}
 	}

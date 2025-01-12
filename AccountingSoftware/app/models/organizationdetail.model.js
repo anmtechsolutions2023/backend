@@ -1,183 +1,119 @@
 const { v4: uuidv4 } = require('uuid')
-const sql = require('./db.js')
-const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper.js')
 const moduleNames = require('../config/modulenames')
 const moduleScripts = require('../../Scripts/modelscripts.js')
+const statusCodes = require('../config/statusCodes.js')
+const getAllModels = require('../models/common/getAll.model')
+const getFindById = require('../models/common/findById.model')
+const deleteById = require('../models/common/deleteById.model')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
+const mysqlConnection = require('../utils/db.js')
 
-exports.delete = (id, tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.organizationdetail.delete
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.organizationdetail.db.delete,
-          logger.logType.error,
-          `Error occurred for Id: ${id}, Error Code: ${err.code} , Error: ${err} `
-        )
-        return reject(
-          'DB OrganizationDetail Error, for operation:  delete.' + err
-        )
-      }
-
-      if (JSON.stringify(res.affectedRows)) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.organizationdetail.db.delete,
-          logger.logType.debug,
-          `Record deleted for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.organizationdetail.db.delete,
-          logger.logType.error,
-          `No record found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.organizationdetail.delete,
+    moduleNames.organizationdetail.db.delete
+  )
 }
 
-exports.getAll = (tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.organizationdetail.fetchAll
-
-    sql.query(query, [tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.organizationdetail.db.fetchAll,
-          logger.logType.error,
-          `Error code: ${err.code}, Error occurred, Error: ${err}`
-        )
-        return reject(
-          'DB OrganizationDetail Error, for operation:  getAll.' + err
-        )
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.organizationdetail.db.fetchAll,
-        logger.logType.debug,
-        `Success`
-      )
-      resolve(res)
-    })
-  })
+exports.getAll = async (tenantId, username) => {
+  return await getAllModels.getAll(
+    tenantId,
+    username,
+    moduleScripts.organizationdetail.fetchAll,
+    moduleNames.organizationdetail.db.fetchAll
+  )
 }
 
-exports.update = (od, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.organizationdetail.update
+exports.update = async (od, username) => {
+  try {
+    const query = moduleScripts.organizationdetail.update
 
-    sql.query(
-      query,
-      [od.Name, od.Active, od.UpdatedOn, od.UpdatedBy, od.Id, od.TenantId],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            od.TenantId,
-            username,
-            moduleNames.organizationdetail.db.update,
-            logger.logType.error,
-            `Error Occurred for Id: ${od.Id}, Error code: ${err.code}, Error: ${err} `
-          )
-          return reject(err.code)
-        }
+    await mysqlConnection.query(query, [
+      od.Name,
+      od.Active,
+      od.UpdatedOn,
+      od.UpdatedBy,
+      od.Id,
+      od.TenantId,
+    ])
 
-        logger.loggerHelper(
-          od.TenantId,
-          username,
-          moduleNames.organizationdetail.db.update,
-          logger.logType.debug,
-          `Record updated for org name: ${od.Name} with Id: ${od.Id}`
-        )
-        resolve(res)
-      }
+    logger.loggerHelper(
+      od.TenantId,
+      username,
+      moduleNames.organizationdetail.db.update,
+      logger.logType.debug,
+      i18n.__('messages.logger.successUpdatedById', { id: od.Name })
     )
-  })
-}
 
-exports.findById = (id, tenantId, username, callerModule) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.organizationdetail.fetchById
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.organizationdetail.db.fetchById}`,
-          logger.logType.error,
-          `Error occurred for Id: ${id}, Error Code: ${err.code} Error: ${err} `
-        )
-        return reject(
-          'DB OrganizationDetail Error, for operation:  findById.' + err
-        )
-      }
-
-      if (res.length) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.organizationdetail.db.fetchById}`,
-          logger.logType.debug,
-          `Record found for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.organizationdetail.db.fetchById}`,
-          logger.logType.debug,
-          `Record not found for Id: ${id} `
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
-}
-
-exports.create = (od, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.organizationdetail.create
-    let odId = uuidv4()
-
-    sql.query(
-      query,
-      [odId, od.Name, od.Active, od.TenantId, od.CreatedOn, od.CreatedBy],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            od.TenantId,
-            username,
-            moduleNames.organizationdetail.db.create,
-            logger.logType.error,
-            `Error occurred for org name: ${od.Name}, Error Code: ${err.code}, Error: ${err}`
-          )
-          return reject(err.code)
-        }
-
-        logger.loggerHelper(
-          od.TenantId,
-          username,
-          moduleNames.organizationdetail.db.create,
-          logger.logType.debug,
-          `Record Created for org name: ${od.Name} with Id: ${odId}`
-        )
-        resolve(odId)
-      }
+    return statusCodes.HTTP_STATUS_OK
+  } catch (err) {
+    logger.loggerHelper(
+      od.TenantId,
+      username,
+      moduleNames.organizationdetail.db.update,
+      logger.logType.error,
+      i18n.__('messages.logger.errorUpdatedById', {
+        id: od.Id,
+        code: err.code,
+        message: err,
+      })
     )
-  })
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
+}
+
+exports.findById = async (id, tenantId, username, callerModule) => {
+  return await getFindById.findById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.organizationdetail.fetchById,
+    `${callerModule}--${moduleNames.organizationdetail.db.fetchById}`
+  )
+}
+
+exports.create = async (od, username) => {
+  try {
+    const query = moduleScripts.organizationdetail.create
+    const odId = uuidv4()
+
+    await mysqlConnection.query(query, [
+      odId,
+      od.Name,
+      od.Active,
+      od.TenantId,
+      od.CreatedOn,
+      od.CreatedBy,
+    ])
+
+    logger.loggerHelper(
+      od.TenantId,
+      username,
+      moduleNames.organizationdetail.db.create,
+      logger.logType.debug,
+      i18n.__('messages.logger.successCreatedById', { id: odId })
+    )
+
+    return odId
+  } catch (err) {
+    logger.loggerHelper(
+      od.TenantId,
+      username,
+      moduleNames.organizationdetail.db.create,
+      logger.logType.error,
+      i18n.__('messages.logger.errorCreatedById', {
+        name: od.Name,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
