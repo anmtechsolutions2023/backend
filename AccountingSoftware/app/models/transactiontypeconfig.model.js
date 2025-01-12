@@ -1,201 +1,123 @@
 const { v4: uuidv4 } = require('uuid')
-const sql = require('./db.js')
-const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper.js')
 const moduleNames = require('../config/modulenames')
 const moduleScripts = require('../../Scripts/modelscripts.js')
+const statusCodes = require('../config/statusCodes.js')
+const getAllModels = require('../models/common/getAll.model')
+const getFindById = require('../models/common/findById.model')
+const deleteById = require('../models/common/deleteById.model')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
+const mysqlConnection = require('../utils/db.js')
 
-exports.delete = (id, tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.transactiontypeconfig.delete
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.transactiontypeconfig.db.delete,
-          logger.logType.error,
-          `Error occurred while deleting record for Id: ${id}, Error code: ${err.code}, Error: ${err}`
-        )
-        return reject(
-          'DB TransactionTypeDetail Error, for operation:  delete.' + err
-        )
-      }
-
-      if (JSON.stringify(res.affectedRows)) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.transactiontypeconfig.db.delete,
-          logger.logType.debug,
-          `Record deleted for Id:${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.transactiontypeconfig.db.delete,
-          logger.logType.debug,
-          `No Record found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.transactiontypeconfig.delete,
+    moduleNames.transactiontypeconfig.db.delete
+  )
 }
 
-exports.getAll = (tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.transactiontypeconfig.fetchAll
-
-    sql.query(query, [tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.transactiontypeconfig.db.fetchAll,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject(
-          'DB TransactionTypeConfig Error, for operation:  getAll.' + err
-        )
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.transactiontypeconfig.db.fetchAll,
-        logger.logType.debug,
-        'Success'
-      )
-      resolve(res)
-    })
-  })
+exports.getAll = async (tenantId, username) => {
+  return await getAllModels.getAll(
+    tenantId,
+    username,
+    moduleScripts.transactiontypeconfig.fetchAll,
+    moduleNames.transactiontypeconfig.db.fetchAll
+  )
 }
 
-exports.update = (ttc, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.transactiontypeconfig.update
+exports.update = async (ttc, username) => {
+  try {
+    const query = moduleScripts.transactiontypeconfig.update
 
-    sql.query(
-      query,
-      [
-        ttc.StartCounterNo,
-        ttc.Prefix,
-        ttc.Format,
-        ttc.Active,
-        ttc.UpdatedOn,
-        ttc.UpdatedBy,
-        ttc.Id,
-        ttc.TenantId,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            ttc.TenantId,
-            username,
-            moduleNames.transactiontypeconfig.db.update,
-            logger.logType.error,
-            `Error occurred for Id: ${ttc.Id}, Error Code: ${err.code}, Error: ${err}`
-          )
-          return reject(err.code)
-        }
+    await mysqlConnection.query(query, [
+      ttc.StartCounterNo,
+      ttc.Prefix,
+      ttc.Format,
+      ttc.Active,
+      ttc.UpdatedOn,
+      ttc.UpdatedBy,
+      ttc.Id,
+      ttc.TenantId,
+    ])
 
-        logger.loggerHelper(
-          ttc.TenantId,
-          username,
-          moduleNames.transactiontypeconfig.db.update,
-          logger.logType.debug,
-          `Record updated for Id: ${ttc.Id}`
-        )
-        resolve(res)
-      }
+    logger.loggerHelper(
+      ttc.TenantId,
+      username,
+      moduleNames.transactiontypeconfig.db.update,
+      logger.logType.debug,
+      i18n.__('messages.logger.successUpdatedById', { id: ttc.Id })
     )
-  })
-}
 
-exports.findById = (id, tenantId, username, callerModule) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.transactiontypeconfig.fetchById
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.transactiontypeconfig.db.fetchById}`,
-          logger.logType.error,
-          `Error occurred for Id:${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject(
-          'DB TransactionTypeConfig Error, for operation:  findById.' + err
-        )
-      }
-
-      if (res.length) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.transactiontypeconfig.db.fetchById}`,
-          logger.logType.debug,
-          `Record found for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.transactiontypeconfig.db.fetchById}`,
-          logger.logType.debug,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
-}
-
-exports.create = (ttc, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.transactiontypeconfig.create
-    let ttcId = uuidv4()
-
-    sql.query(
-      query,
-      [
-        ttcId,
-        ttc.StartCounterNo,
-        ttc.Prefix,
-        ttc.Format,
-        ttc.Active,
-        ttc.TenantId,
-        ttc.CreatedOn,
-        ttc.CreatedBy,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            ttc.TenantId,
-            username,
-            moduleNames.transactiontypeconfig.db.create,
-            logger.logType.error,
-            `Error occurred for transaction type config counter: ${ttc.StartCounterNo}, Error Code: ${err.code}, Error: ${err}`
-          )
-          return reject(err.code)
-        }
-
-        logger.loggerHelper(
-          ttc.TenantId,
-          username,
-          moduleNames.transactiontypeconfig.db.create,
-          logger.logType.debug,
-          `Record created for Id: ${ttcId}`
-        )
-        resolve(ttcId)
-      }
+    return statusCodes.HTTP_STATUS_OK
+  } catch (err) {
+    logger.loggerHelper(
+      ttc.TenantId,
+      username,
+      moduleNames.transactiontypeconfig.db.update,
+      logger.logType.error,
+      i18n.__('messages.logger.errorUpdatedById', {
+        id: ttc.Id,
+        code: err.code,
+        message: err,
+      })
     )
-  })
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
+}
+
+exports.findById = async (id, tenantId, username, callerModule) => {
+  return await getFindById.findById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.transactiontypeconfig.fetchById,
+    `${callerModule}--${moduleNames.transactiontypeconfig.db.fetchById}`
+  )
+}
+
+exports.create = async (ttc, username) => {
+  try {
+    const query = moduleScripts.transactiontypeconfig.create
+    const ttcId = uuidv4()
+
+    await mysqlConnection.query(query, [
+      ttcId,
+      ttc.StartCounterNo,
+      ttc.Prefix,
+      ttc.Format,
+      ttc.Active,
+      ttc.TenantId,
+      ttc.CreatedOn,
+      ttc.CreatedBy,
+    ])
+
+    logger.loggerHelper(
+      ttc.TenantId,
+      username,
+      moduleNames.transactiontypeconfig.db.create,
+      logger.logType.debug,
+      i18n.__('messages.logger.successCreatedById', { id: ttcId })
+    )
+
+    return ttcId
+  } catch (err) {
+    logger.loggerHelper(
+      ttc.TenantId,
+      username,
+      moduleNames.transactiontypeconfig.db.create,
+      logger.logType.error,
+      i18n.__('messages.logger.errorCreatedById', {
+        name: ttc.StartCounterNo,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }

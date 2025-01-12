@@ -1,35 +1,35 @@
 const transactiontypeconfig = require('../models/transactiontypeconfig.model')
-const logger = require('../utils/loggerHelper')
 const helper = require('../utils/helper')
-const decodeToken = require('../utils/extracttoken')
 const moduleNames = require('../config/modulenames')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let ttcFindById = await transactiontypeconfig.findById(
+    const ttcFindById = await transactiontypeconfig.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.transactiontypeconfig.application.update
     )
 
-    if (ttcFindById == '404') {
-      return res.status(404).send({
-        message: 'TransactionTypeDetail not found.',
+    if (ttcFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.transactiontypeconfig.notFound'),
       })
     }
 
-    let updatedttc = {
+    const updatedttc = {
       Id: ttcFindById[0].Id,
       StartCounterNo: helper.isEmpty(req.body.StartCounterNo)
         ? ttcFindById[0].StartCounterNo
@@ -48,108 +48,102 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await transactiontypeconfig
-      .update(updatedttc, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        return res.sendStatus(500).send()
-      })
+    return res
+      .status(await transactiontypeconfig.update(updatedttc, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.transactiontypeconfig.internalServerError',
+      res
+    )
   }
 }
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const ttcFindById = await transactiontypeconfig.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.transactiontypeconfig.application.delete
+    )
 
-  let ttcFindById = await transactiontypeconfig.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.transactiontypeconfig.application.delete
-  )
+    if (ttcFindById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.transactiontypeconfig.notFound'),
+      })
+    }
 
-  if (ttcFindById == '404') {
-    return res.status(404).send({
-      message: 'TransactionTypeDetail not found.',
-    })
+    await transactiontypeconfig.deleteById(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.transactiontypeconfig.internalServerError',
+      res
+    )
   }
-
-  transactiontypeconfig
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.fetchAll = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAll = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  transactiontypeconfig
-    .getAll(tenantId, username)
-    .then((ttc) => {
-      res.send(ttc)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(await transactiontypeconfig.getAll(tenantId, username))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.transactiontypeconfig.internalServerError',
+      res
+    )
+  }
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  transactiontypeconfig
-    .findById(
+    const cd = await transactiontypeconfig.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.transactiontypeconfig.application.fetchById
     )
-    .then((cd) => {
-      if (cd == '404') {
-        return res.status(404).send({
-          message: 'Transaction Type Config not found.',
-        })
-      }
 
-      res.status(200).send(cd)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    if (cd === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.transactiontypeconfig.notFound'),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(cd)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.transactiontypeconfig.internalServerError',
+      res
+    )
+  }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a Transaction Type Config
-    let ttc = {
+    const ttc = {
       StartCounterNo: req.body.StartCounterNo,
       Prefix: req.body.Prefix,
       Format: req.body.Format,
@@ -159,18 +153,13 @@ exports.create = (req, res) => {
       CreatedBy: tenantId,
     }
 
-    transactiontypeconfig
-      .create(ttc, username)
-      .then((ttcResp) => {
-        res.send(ttcResp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const ttcResp = await transactiontypeconfig.create(ttc, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(ttcResp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.transactiontypeconfig.internalServerError',
+      res
+    )
   }
 }
