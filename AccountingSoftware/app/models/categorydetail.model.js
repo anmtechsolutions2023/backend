@@ -4,182 +4,118 @@ const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper.js')
 const moduleNames = require('../config/modulenames')
 const moduleScripts = require('../../Scripts/modelscripts.js')
+const statusCodes = require('../config/statusCodes.js')
+const getAllModels = require('../models/common/getAll.model')
+const getFindById = require('../models/common/findById.model')
+const deleteById = require('../models/common/deleteById.model')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
+const mysqlConnection = require('../utils/db.js')
 
-exports.deleteCategoryDetail = (id, tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.categorydetail.delete
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.categorydetail.db.delete,
-          logger.logType.error,
-          `Error occurred for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject(
-          'DB CategoryDetail Error, for operation:  deleteCategoryDetail.' + err
-        )
-      }
-
-      if (JSON.stringify(res.affectedRows)) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.categorydetail.db.delete,
-          logger.logType.debug,
-          `Deleted record for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.categorydetail.db.delete,
-          logger.logType.error,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.categorydetail.delete,
+    moduleNames.categorydetail.db.delete
+  )
 }
 
-exports.getAll = (tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.categorydetail.fetchAll
-
-    sql.query(query, [tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.categorydetail.db.fetchAll,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject('DB CategroryDetail Error, for operation:  getAll.' + err)
-      }
-
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.categorydetail.db.fetchAll,
-        logger.logType.debug,
-        'Success'
-      )
-      resolve(res)
-    })
-  })
+exports.getAll = async (tenantId, username) => {
+  return await getAllModels.getAll(
+    tenantId,
+    username,
+    moduleScripts.categorydetail.fetchAll,
+    moduleNames.categorydetail.db.fetchAll
+  )
 }
 
-exports.update = (cd, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.categorydetail.update
+exports.update = async (cd, username) => {
+  try {
+    const query = moduleScripts.categorydetail.update
 
-    sql.query(
-      query,
-      [cd.Name, cd.Active, cd.UpdatedOn, cd.UpdatedBy, cd.Id, cd.TenantId],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            cd.TenantId,
-            username,
-            moduleNames.categorydetail.db.update,
-            logger.logType.error,
-            `Error occurred for Id: ${cd.Id}, Error Code: ${err.code}, Error: ${err}`
-          )
-          return reject(
-            'DB CategoryDetail Error, for operation:  update.' + err
-          )
-        }
+    await mysqlConnection.query(query, [
+      cd.Name,
+      cd.Active,
+      cd.UpdatedOn,
+      cd.UpdatedBy,
+      cd.Id,
+      cd.TenantId,
+    ])
 
-        logger.loggerHelper(
-          cd.TenantId,
-          username,
-          moduleNames.categorydetail.db.update,
-          logger.logType.debug,
-          `Record updated for Id: ${cd.Id}`
-        )
-        resolve(res)
-      }
+    logger.loggerHelper(
+      cd.TenantId,
+      username,
+      moduleNames.categorydetail.db.update,
+      logger.logType.debug,
+      i18n.__('messages.logger.successUpdatedById', { id: cd.Id })
     )
-  })
-}
 
-exports.findById = (id, tenantId, username, callerModule) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.categorydetail.fetchById
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.categorydetail.db.fetchById}`,
-          logger.logType.error,
-          `Error for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject(
-          'DB CategoryDetail Error, for operation:  findById.' + err
-        )
-      }
-
-      if (res.length) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.categorydetail.db.fetchById}`,
-          logger.logType.debug,
-          `Record found for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.categorydetail.db.fetchById}`,
-          logger.logType.error,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
-}
-
-exports.create = (cd, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.categorydetail.create
-    let cdId = uuidv4()
-
-    sql.query(
-      query,
-      [cdId, cd.Name, cd.Active, cd.TenantId, cd.CreatedOn, cd.CreatedBy],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            cd.TenantId,
-            username,
-            moduleNames.categorydetail.db.create,
-            logger.logType.error,
-            `Error occurred for category name: ${cd.Name}, Error Code, ${err.code}, Error: ${err}`
-          )
-          return reject(
-            'DB CategoryDetail Error, for operation:  create.' + err
-          )
-        }
-
-        logger.loggerHelper(
-          cd.TenantId,
-          username,
-          moduleNames.categorydetail.db.create,
-          logger.logType.debug,
-          `Record created for category name ${cd.Name}`
-        )
-        resolve(cdId)
-      }
+    return statusCodes.HTTP_STATUS_OK
+  } catch (err) {
+    logger.loggerHelper(
+      cd.TenantId,
+      username,
+      moduleNames.categorydetail.db.update,
+      logger.logType.error,
+      i18n.__('messages.logger.errorUpdatedById', {
+        id: cd.Id,
+        code: err.code,
+        message: err,
+      })
     )
-  })
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
+}
+
+exports.findById = async (id, tenantId, username, callerModule) => {
+  return await getFindById.findById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.categorydetail.fetchById,
+    `${callerModule}--${moduleNames.categorydetail.db.fetchById}`
+  )
+}
+
+exports.create = async (cd, username) => {
+  try {
+    const query = moduleScripts.categorydetail.create
+    const cdId = uuidv4()
+
+    await mysqlConnection.query(query, [
+      cdId,
+      cd.Name,
+      cd.Active,
+      cd.TenantId,
+      cd.CreatedOn,
+      cd.CreatedBy,
+    ])
+
+    logger.loggerHelper(
+      cd.TenantId,
+      username,
+      moduleNames.categorydetail.db.create,
+      logger.logType.debug,
+      i18n.__('messages.logger.successCreatedById', { id: cd.Name })
+    )
+
+    return cdId
+  } catch (err) {
+    logger.loggerHelper(
+      cd.TenantId,
+      username,
+      moduleNames.categorydetail.db.create,
+      logger.logType.error,
+      i18n.__('messages.logger.errorCreatedById', {
+        name: cd.Name,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
