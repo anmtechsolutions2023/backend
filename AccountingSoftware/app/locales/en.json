@@ -83,6 +83,10 @@
       "categorydetail": {
         "notFound": "Category detail not found.",
         "internalServerError": "An error occurred while performing action on the Category detail."
+      },
+      "transactiontypeconfig": {
+        "notFound": "Transaction type config not found.",
+        "internalServerError": "An error occurred while performing action on the transaction type config."
       }
     },
     "logger": {
