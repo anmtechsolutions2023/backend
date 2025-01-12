@@ -87,6 +87,10 @@
       "transactiontypeconfig": {
         "notFound": "Transaction type config not found.",
         "internalServerError": "An error occurred while performing action on the transaction type config."
+      },
+      "transactiontypes": {
+        "notFound": "Transaction type not found.",
+        "internalServerError": "An error occurred while performing action on the transaction type."
       }
     },
     "logger": {
