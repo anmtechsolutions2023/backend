@@ -94,6 +94,9 @@
 			},
 			"branchdetail": {
 				"notFound": "messages.modules.branchdetail.notFound"
+			},
+			"branchusergroupmapper": {
+				"notFound": "messages.modules.branchusergroupmapper.notFound"
 			}
 		}
 	}
