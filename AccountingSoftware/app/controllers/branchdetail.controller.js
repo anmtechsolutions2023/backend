@@ -1,35 +1,36 @@
 const branchDetailModel = require('../models/branchdetail.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
-const decodeToken = require('../utils/extracttoken')
 const queryParams = require('../utils/queyParams')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let findById = await branchDetailModel.findById(
+    const findById = await branchDetailModel.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.branchdetail.application.update
     )
 
-    if (findById == '404') {
-      return res.status(404).send({
-        message: 'Record not found.',
+    if (findById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.branchdetail.notFound'),
       })
     }
 
-    let updatedReq = {
+    const updatedReq = {
       Id: findById[0].Id,
       OrganizationDetailId: helper.isEmpty(req.body.OrganizationDetailId)
         ? findById[0].OrganizationDetailId
@@ -65,92 +66,87 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await branchDetailModel
-      .update(updatedReq, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        return res.status(500).send()
-      })
+    return res
+      .status(await branchDetailModel.update(updatedReq, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.branchdetail.internalServerError',
+      res
+    )
   }
 }
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const findById = await branchDetailModel.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.branchdetail.application.delete
+    )
 
-  let findById = await branchDetailModel.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.branchdetail.application.delete
-  )
+    if (findById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.branchdetail.notFound'),
+      })
+    }
 
-  if (findById == '404') {
-    return res.status(404).send({
-      message: 'Record not found.',
-    })
+    await branchDetailModel.deleteById(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.branchdetail.internalServerError',
+      res
+    )
   }
-
-  branchDetailModel
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.search = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.search = async (req, res) => {
+  const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+  const params = queryParams.getQueryParams(req.query)
 
-  var params = queryParams.getQueryParams(req.query)
-
-  var queryParamName = params['QueryParamName']
-  var queryParamValue = params['QueryParamValue']
+  const queryParamName = params['QueryParamName']
+  const queryParamValue = params['QueryParamValue']
 
   if (helper.isEmpty(queryParamName) || helper.isEmpty(queryParamValue)) {
-    return res.status(400).send({
-      message: 'query param not supported!',
+    return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+      message: i18n.__('messages.modules.contactdetail.queryParamMissing'),
     })
   }
 
-  branchDetailModel
-    .searchByParam(tenantId, username, params)
-    .then((resp) => {
-      res.status(200).send(translateResponse(resp))
+  const resp = await branchDetailModel.searchByParam(tenantId, username, params)
+
+  if (resp === statusCodes.HTTP_STATUS_BAD_REQUEST) {
+    return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+      message: i18n.__('messages.modules.contactdetail.queryParamNotSupported'),
     })
-    .catch((errCode) => {
-      if (errCode === 400) {
-        return res.status(400).send({
-          message: 'query param not supported!',
-        })
-      }
-      res.sendStatus(500).send()
-    })
+  }
+
+  return res.status(statusCodes.HTTP_STATUS_OK).send(translateResponse(resp))
 }
 
-exports.fetchAll = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAll = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  branchDetailModel
-    .getAll(tenantId, username)
-    .then((resp) => {
-      res.status(200).send(translateResponse(resp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(
+        translateResponse(await branchDetailModel.getAll(tenantId, username))
+      )
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.branchdetail.internalServerError',
+      res
+    )
+  }
 }
 
 function translateResponse(respObj) {
@@ -230,47 +226,46 @@ function translateResponse(respObj) {
   return respDetail
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  branchDetailModel
-    .findById(
+    const resp = await branchDetailModel.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.branchdetail.application.fetchById
     )
-    .then((resp) => {
-      if (resp === 404) {
-        return res.status(404).send({
-          message: 'Record not found.',
-        })
-      }
 
-      res.send(translateResponse(resp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    if (resp === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.branchdetail.notFound'),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(translateResponse(resp))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.branchdetail.internalServerError',
+      res
+    )
+  }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a Record
-    let reqModel = {
+    const reqModel = {
       OrganizationDetailId: req.body.OrganizationDetailId,
       ContactDetailId: req.body.ContactDetailId,
       AddressDetailId: req.body.AddressDetailId,
@@ -289,18 +284,13 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    branchDetailModel
-      .create(reqModel, username)
-      .then((resp) => {
-        res.send(resp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const resp = await branchDetailModel.create(reqModel, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(resp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.branchdetail.internalServerError',
+      res
+    )
   }
 }

@@ -95,6 +95,12 @@
       "organizationdetail": {
         "notFound": "Organization detail not found.",
         "internalServerError": "An error occurred while performing action on the organization detail."
+      },
+      "branchdetail": {
+        "notFound": "Branch detail not found.",
+        "internalServerError": "An error occurred while performing action on the branch detail.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {

@@ -108,10 +108,10 @@ exports.search = async (req, res) => {
   try {
     const { tenantId, username } = req
 
-    var params = queryParams.getQueryParams(req.query)
+    const params = queryParams.getQueryParams(req.query)
 
-    var queryParamName = params['QueryParamName']
-    var queryParamValue = params['QueryParamValue']
+    const queryParamName = params['QueryParamName']
+    const queryParamValue = params['QueryParamValue']
 
     if (helper.isEmpty(queryParamName) || helper.isEmpty(queryParamValue)) {
       return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
