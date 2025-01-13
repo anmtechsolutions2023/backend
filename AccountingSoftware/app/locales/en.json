@@ -101,6 +101,12 @@
         "internalServerError": "An error occurred while performing action on the branch detail.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "branchusergroupmapper": {
+        "notFound": "Branch user group mapping not found.",
+        "internalServerError": "An error occurred while performing action on the branch user group mapping.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {
