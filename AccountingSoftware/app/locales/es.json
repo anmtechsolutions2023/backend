@@ -91,6 +91,9 @@
 			},
 			"organizationdetail": {
 				"notFound": "messages.modules.organizationdetail.notFound"
+			},
+			"branchdetail": {
+				"notFound": "messages.modules.branchdetail.notFound"
 			}
 		}
 	}

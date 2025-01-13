@@ -450,7 +450,7 @@ module.exports = {
     JOIN contactdetail as cd ON bd.ContactDetailId = cd.Id
     JOIN addressdetail as ad ON bd.AddressDetailId = ad.Id
     JOIN transactiontypeconfig as ttc ON bd.TransactionTypeConfigId = ttc.Id
-    WHERE bd.TenantId = ? AND bd.Id = ?`,
+    WHERE bd.Id = ? AND bd.TenantId = ? `,
     create: `INSERT INTO branchdetail (Id, OrganizationDetailId, ContactDetailId, AddressDetailId, TransactionTypeConfigId, BranchName, TINNo, GSTIN, PAN, CF1, CF2, CF3, CF4, TenantId, Active, CreatedOn, CreatedBy) 
       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     delete: 'DELETE FROM branchdetail WHERE Id = ? and TenantId = ?',
