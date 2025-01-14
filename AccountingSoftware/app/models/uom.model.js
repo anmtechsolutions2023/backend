@@ -1,5 +1,4 @@
 const { v4: uuidv4 } = require('uuid')
-const mysqlConnection = require('../utils/db.js')
 const logger = require('../utils/loggerHelper')
 const moduleScripts = require('../../Scripts/modelscripts.js')
 const moduleNames = require('../config/modulenames')
@@ -9,6 +8,7 @@ const getFindById = require('../models/common/findById.model')
 const deleteById = require('../models/common/deleteById.model')
 const handleDatabaseError = require('../common/errorhandle.common')
 const i18n = require('../utils/i18n')
+const mysqlConnection = require('../utils/db.js')
 
 exports.deleteById = async (id, tenantId, username) => {
   return await deleteById.deleteById(
