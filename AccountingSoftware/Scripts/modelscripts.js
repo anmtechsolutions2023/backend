@@ -512,7 +512,24 @@ module.exports = {
     bd.Active "BranchDetailActive"
     FROM branchusergroupmapper bugm JOIN branchdetail bd ON bugm.BranchDetailId = bd.Id
     WHERE bugm.TenantId = ?`,
-    fetchById: ' AND bugm.Id = ?',
+    fetchById: `SELECT
+    bugm.*,
+    bd.Id "BranchDetailId",
+    bd.OrganizationDetailId "BranchDetailOrganizationDetailId",
+    bd.ContactDetailId "BranchDetailContactDetailId",
+    bd.AddressDetailId "BranchDetailAddressDetailId",
+    bd.TransactionTypeConfigId "BranchDetailTransactionTypeConfigId",
+    bd.BranchName "BranchDetailBranchName",
+    bd.TINNo "BranchDetailTINNo",
+    bd.GSTIN "BrnachDetailGSTIN",
+    bd.PAN "BranchDetailPAN",
+    bd.CF1 "BranchDetailCF1",
+    bd.CF2 "BranchDetailCF2",
+    bd.CF3 "BranchDetailCF3",
+    bd.CF4 "BranchDetailCF4",
+    bd.Active "BranchDetailActive"
+    FROM branchusergroupmapper bugm JOIN branchdetail bd ON bugm.BranchDetailId = bd.Id
+    WHERE bugm.Id = ? AND bugm.TenantId = ?`,
     create:
       'INSERT INTO branchusergroupmapper (Id, BranchDetailId, UserGroupId, TenantId, Active, CreatedOn, CreatedBy) VALUES (?,?,?,?,?,?,?)',
     delete: 'DELETE FROM branchusergroupmapper WHERE Id = ? and TenantId = ?',
