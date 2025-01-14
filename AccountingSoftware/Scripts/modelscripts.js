@@ -572,7 +572,41 @@ module.exports = {
     JOIN mapproviderlocationmapper as mplm ON bd.MapProviderLocationMapperId = mplm.Id
     JOIN branchdetail as brd on bd.BranchDetailId = brd.Id
     WHERE bd.TenantId = ?`,
-    fetchById: ' AND bd.Id = ?',
+    fetchById: `
+    SELECT 
+    bd.*,
+    ci.Id "CostInfoId",
+    ci.Amount "CostInfoAmount",
+    ci.TaxGroupId "CostInfoTaxGroupId",
+    ci.IsTaxIncluded "CostInfoIsTaxIncluded",
+    ci.Active "CostInfoActive",
+    uom.Id "UOMId",
+    uom.UnitName "UOMUnitName",
+    uom.IsPrimary "UOMIsPrimary",
+    uom.Active "UOMActive",
+    mplm.Id "MapProviderLocationMapperId",
+    mplm.MapProviderId "MapProviderLocationMapperMapProviderId",
+    mplm.LocationDetailId "MapProviderLocationMapperLocationDetailId",
+    mplm.Active "MapProviderLocationMapperActive",
+    brd.Id "BranchDetailId",
+    brd.OrganizationDetailId "BranchDetailOrganizationDetailId",
+    brd.ContactDetailId "BranchDetailContactDetailId",
+    brd.AddressDetailId "BranchDetailAddressDetailId",
+    brd.TransactionTypeConfigId "BranchDetailTransactionTypeConfigId",
+    brd.BranchName "BranchDetailBranchName",
+    brd.TINNo "BranchDetailTINNo",
+    brd.GSTIN "BranchDetailGSTIN",
+    brd.PAN "BranchDetailPAN",
+    brd.CF1 "BranchDetailCF1",
+    brd.CF2 "BranchDetailCF2",
+    brd.CF3 "BranchDetailCF3",
+    brd.CF4 "BranchDetailCF4",
+    brd.Active "BranchDetailActive"
+    FROM batchdetail as bd JOIN costinfo as ci ON bd.CostInfoId = ci.Id
+    JOIN UOM as uom ON bd.UOMId = uom.Id
+    JOIN mapproviderlocationmapper as mplm ON bd.MapProviderLocationMapperId = mplm.Id
+    JOIN branchdetail as brd on bd.BranchDetailId = brd.Id
+    WHERE bd.Id = ? AND bd.TenantId = ?`,
     create: `INSERT INTO batchdetail (Id, BatchNo, Barcode, MfgDate, Expdate, PurchaseDate, IsNonReturnable, CostInfoId, UOMId, Quantity, MapProviderLocationMapperId, BranchDetailId, TenantId, Active, CreatedOn, CreatedBy)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     delete: 'DELETE FROM batchdetail WHERE Id = ? and TenantId = ?',

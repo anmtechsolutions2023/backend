@@ -1,103 +1,107 @@
 {
-	"messages": {
-		"errors": {
-			"database": {
-				"connectionRefused": "Servicio no disponible. Por favor, inténtelo de nuevo más tarde.",
-				"accessDenied": "Acceso denegado. Por favor, verifique sus credenciales.",
-				"databaseNotFound": "Base de datos no encontrada. Por favor, verifique su configuración.",
-				"duplicateEntry": "Entrada duplicada. El UOM ya existe."
-			},
-			"general": {
-				"internalServerError": "messages.errors.general.internalServerError"
-			},
-			"validation": {
-				"requiredField": "Field is required.",
-				"invalidFormat": "Invalid format.",
-				"emptyContent": "messages.errors.validation.emptyContent"
-			},
-			"authentication": {
-				"invalidCredentials": "Invalid username or password"
-			},
-			"resource": {
-				"notFound": "Resource not found."
-			}
-		},
-		"success": {
-			"fetchAll": "Successfully fetched all records.",
-			"create": "Record created successfully.",
-			"update": "ES Record updated successfully.",
-			"delete": "Record deleted successfully."
-		},
-		"logger": {
-			"success": "messages.logger.success",
-			"error": "messages.logger.error",
-			"errorFindById": "messages.logger.errorFindById",
-			"recordFindById": "messages.logger.recordFindById",
-			"successDeleteById": "messages.logger.successDeleteById",
-			"recordNotFindById": "messages.logger.recordNotFindById",
-			"errorCreatedById": "messages.logger.errorCreatedById",
-			"successUpdatedById": "messages.logger.successUpdatedById",
-			"errorUpdatedById": "messages.logger.errorUpdatedById"
-		},
-		"modules": {
-			"uom": {
-				"notFound": "messages.modules.uom.notFound"
-			},
-			"uomfactor": {
-				"notFound": "messages.modules.uomfactor.notFound"
-			},
-			"taxtype": {
-				"notFound": "messages.modules.taxtype.notFound"
-			},
-			"taxgroup": {
-				"notFound": "messages.modules.taxgroup.notFound"
-			},
-			"contactaddresstype": {
-				"notFound": "messages.modules.contactaddresstype.notFound"
-			},
-			"contactdetail": {
-				"notFound": "messages.modules.contactdetail.notFound",
-				"queryParamMissing": "messages.modules.contactdetail.queryParamMissing",
-				"queryParamNotSupported": "messages.modules.contactdetail.queryParamNotSupported"
-			},
-			"addressdetail": {
-				"notFound": "messages.modules.addressdetail.notFound"
-			},
-			"locationdetail": {
-				"notFound": "messages.modules.locationdetail.notFound"
-			},
-			"mapprovider": {
-				"notFound": "messages.modules.mapprovider.notFound"
-			},
-			"mapproviderlocationmapper": {
-				"notFound": "messages.modules.mapproviderlocationmapper.notFound"
-			},
-			"taxgrouptaxtypemapper": {
-				"notFound": "messages.modules.taxgrouptaxtypemapper.notFound",
-				"queryParamNotSupported": "messages.modules.taxgrouptaxtypemapper.queryParamNotSupported"
-			},
-			"costinfo": {
-				"notFound": "messages.modules.costinfo.notFound"
-			},
-			"categorydetail": {
-				"notFound": "messages.modules.categorydetail.notFound"
-			},
-			"transactiontypeconfig": {
-				"notFound": "messages.modules.transactiontypeconfig.notFound"
-			},
-			"transactiontypes": {
-				"internalServerError": "messages.modules.transactiontypes.internalServerError",
-				"notFound": "messages.modules.transactiontypes.notFound"
-			},
-			"organizationdetail": {
-				"notFound": "messages.modules.organizationdetail.notFound"
-			},
-			"branchdetail": {
-				"notFound": "messages.modules.branchdetail.notFound"
-			},
-			"branchusergroupmapper": {
-				"notFound": "messages.modules.branchusergroupmapper.notFound"
-			}
-		}
-	}
+  "messages": {
+    "errors": {
+      "database": {
+        "connectionRefused": "Servicio no disponible. Por favor, inténtelo de nuevo más tarde.",
+        "accessDenied": "Acceso denegado. Por favor, verifique sus credenciales.",
+        "databaseNotFound": "Base de datos no encontrada. Por favor, verifique su configuración.",
+        "duplicateEntry": "Entrada duplicada. El UOM ya existe."
+      },
+      "general": {
+        "internalServerError": "messages.errors.general.internalServerError"
+      },
+      "validation": {
+        "requiredField": "Field is required.",
+        "invalidFormat": "Invalid format.",
+        "emptyContent": "messages.errors.validation.emptyContent"
+      },
+      "authentication": {
+        "invalidCredentials": "Invalid username or password"
+      },
+      "resource": {
+        "notFound": "Resource not found."
+      }
+    },
+    "success": {
+      "fetchAll": "Successfully fetched all records.",
+      "create": "Record created successfully.",
+      "update": "ES Record updated successfully.",
+      "delete": "Record deleted successfully."
+    },
+    "logger": {
+      "success": "messages.logger.success",
+      "error": "messages.logger.error",
+      "errorFindById": "messages.logger.errorFindById",
+      "recordFindById": "messages.logger.recordFindById",
+      "successDeleteById": "messages.logger.successDeleteById",
+      "recordNotFindById": "messages.logger.recordNotFindById",
+      "errorCreatedById": "messages.logger.errorCreatedById",
+      "successUpdatedById": "messages.logger.successUpdatedById",
+      "errorUpdatedById": "messages.logger.errorUpdatedById"
+    },
+    "modules": {
+      "uom": {
+        "notFound": "messages.modules.uom.notFound"
+      },
+      "uomfactor": {
+        "notFound": "messages.modules.uomfactor.notFound"
+      },
+      "taxtype": {
+        "notFound": "messages.modules.taxtype.notFound"
+      },
+      "taxgroup": {
+        "notFound": "messages.modules.taxgroup.notFound"
+      },
+      "contactaddresstype": {
+        "notFound": "messages.modules.contactaddresstype.notFound"
+      },
+      "contactdetail": {
+        "notFound": "messages.modules.contactdetail.notFound",
+        "queryParamMissing": "messages.modules.contactdetail.queryParamMissing",
+        "queryParamNotSupported": "messages.modules.contactdetail.queryParamNotSupported"
+      },
+      "addressdetail": {
+        "notFound": "messages.modules.addressdetail.notFound"
+      },
+      "locationdetail": {
+        "notFound": "messages.modules.locationdetail.notFound"
+      },
+      "mapprovider": {
+        "notFound": "messages.modules.mapprovider.notFound"
+      },
+      "mapproviderlocationmapper": {
+        "notFound": "messages.modules.mapproviderlocationmapper.notFound"
+      },
+      "taxgrouptaxtypemapper": {
+        "notFound": "messages.modules.taxgrouptaxtypemapper.notFound",
+        "queryParamNotSupported": "messages.modules.taxgrouptaxtypemapper.queryParamNotSupported"
+      },
+      "costinfo": {
+        "notFound": "messages.modules.costinfo.notFound"
+      },
+      "categorydetail": {
+        "notFound": "messages.modules.categorydetail.notFound"
+      },
+      "transactiontypeconfig": {
+        "notFound": "messages.modules.transactiontypeconfig.notFound"
+      },
+      "transactiontypes": {
+        "internalServerError": "messages.modules.transactiontypes.internalServerError",
+        "notFound": "messages.modules.transactiontypes.notFound"
+      },
+      "organizationdetail": {
+        "notFound": "messages.modules.organizationdetail.notFound"
+      },
+      "branchdetail": {
+        "notFound": "messages.modules.branchdetail.notFound"
+      },
+      "branchusergroupmapper": {
+        "notFound": "messages.modules.branchusergroupmapper.notFound"
+      },
+      "batchdetail": {
+        "notFound": "messages.modules.batchdetail.notFound",
+        "queryParamNotSupported": "messages.modules.batchdetail.queryParamNotSupported"
+      }
+    }
+  }
 }
