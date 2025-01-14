@@ -3,33 +3,35 @@ const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
 const decodeToken = require('../utils/extracttoken')
 const queryParams = require('../utils/queyParams')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let findById = await itemdetailmodel.findById(
+    const findById = await itemdetailmodel.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.itemdetail.application.update
     )
 
-    if (findById == '404') {
-      return res.status(404).send({
-        message: 'Record not found.',
+    if (findById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.itemdetail.notFound'),
       })
     }
 
-    let updatedReq = {
+    const updatedReq = {
       Id: findById[0].Id,
       Type: helper.isEmpty(req.body.Type) ? findById[0].Type : req.body.Type,
       HSNCode: helper.isEmpty(req.body.HSNCode)
@@ -53,92 +55,125 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await itemdetailmodel
-      .update(updatedReq, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        return res.status(500).send()
-      })
+    return res
+      .status(await itemdetailmodel.update(updatedReq, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.itemdetail.internalServerError',
+      res
+    )
   }
 }
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const findById = await itemdetailmodel.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.itemdetail.application.delete
+    )
 
-  let findById = await itemdetailmodel.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.itemdetail.application.delete
-  )
+    if (findById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.itemdetail.notFound'),
+      })
+    }
 
-  if (findById == '404') {
-    return res.status(404).send({
-      message: 'Record not found.',
-    })
+    await itemdetailmodel.deleteById(req.params.id, tenantId, username)
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.itemdetail.internalServerError',
+      res
+    )
   }
-
-  itemdetailmodel
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.search = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+// exports.search = (req, res) => {
+//   var decodedToken = decodeToken.decodeToken(req)
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+//   let tenantId = decodedToken.tenantId
+//   let username = decodedToken.username
 
-  var params = queryParams.getQueryParams(req.query)
+//   var params = queryParams.getQueryParams(req.query)
 
-  var queryParamName = params['QueryParamName']
-  var queryParamValue = params['QueryParamValue']
+//   var queryParamName = params['QueryParamName']
+//   var queryParamValue = params['QueryParamValue']
 
-  if (helper.isEmpty(queryParamName) || helper.isEmpty(queryParamValue)) {
-    return res.status(400).send({
-      message: 'query param not supported!',
-    })
+//   if (helper.isEmpty(queryParamName) || helper.isEmpty(queryParamValue)) {
+//     return res.status(400).send({
+//       message: 'query param not supported!',
+//     })
+//   }
+
+//   itemdetailmodel
+//     .searchByParam(tenantId, username, params)
+//     .then((resp) => {
+//       res.status(200).send(translateResponse(resp))
+//     })
+//     .catch((errCode) => {
+//       if (errCode === 400) {
+//         return res.status(400).send({
+//           message: 'query param not supported!',
+//         })
+//       }
+//       res.sendStatus(500).send()
+//     })
+// }
+
+exports.search = async (req, res) => {
+  try {
+    const { tenantId, username } = req
+
+    const params = queryParams.getQueryParams(req.query)
+
+    const queryParamName = params['QueryParamName']
+    const queryParamValue = params['QueryParamValue']
+
+    if (helper.isEmpty(queryParamName) || helper.isEmpty(queryParamValue)) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.modules.contactdetail.queryParamMissing'),
+      })
+    }
+
+    const resp = await itemdetailmodel.searchByParam(tenantId, username, params)
+
+    if (resp === statusCodes.HTTP_STATUS_BAD_REQUEST) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.modules.itemdetail.queryParamNotSupported'),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(translateResponse(resp))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.itemdetail.internalServerError',
+      res
+    )
   }
-
-  itemdetailmodel
-    .searchByParam(tenantId, username, params)
-    .then((resp) => {
-      res.status(200).send(translateResponse(resp))
-    })
-    .catch((errCode) => {
-      if (errCode === 400) {
-        return res.status(400).send({
-          message: 'query param not supported!',
-        })
-      }
-      res.sendStatus(500).send()
-    })
 }
 
-exports.fetchAll = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAll = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  itemdetailmodel
-    .getAll(tenantId, username)
-    .then((resp) => {
-      res.status(200).send(translateResponse(resp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(translateResponse(await itemdetailmodel.getAll(tenantId, username)))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.itemdetail.internalServerError',
+      res
+    )
+  }
 }
 
 function translateResponse(respObj) {
@@ -190,47 +225,46 @@ function translateResponse(respObj) {
   return respDetail
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  itemdetailmodel
-    .findById(
+    const resp = await itemdetailmodel.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.itemdetail.application.fetchById
     )
-    .then((resp) => {
-      if (resp === 404) {
-        return res.status(404).send({
-          message: 'Record not found.',
-        })
-      }
 
-      res.send(translateResponse(resp))
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    if (resp === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.itemdetail.notFound'),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(translateResponse(resp))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.itemdetail.internalServerError',
+      res
+    )
+  }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a Record
-    let reqModel = {
+    const reqModel = {
       Type: req.body.Type,
       HSNCode: req.body.HSNCode,
       SKU: req.body.SKU,
@@ -243,18 +277,13 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    itemdetailmodel
-      .create(reqModel, username)
-      .then((resp) => {
-        res.send(resp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const resp = await itemdetailmodel.create(reqModel, username)
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(resp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.itemdetail.internalServerError',
+      res
+    )
   }
 }

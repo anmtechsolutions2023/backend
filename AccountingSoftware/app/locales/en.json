@@ -113,6 +113,12 @@
         "internalServerError": "An error occurred while performing action on the branch user group mapping.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "itemdetail": {
+        "notFound": "Item detail not found.",
+        "internalServerError": "An error occurred while performing action on the item detail.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {

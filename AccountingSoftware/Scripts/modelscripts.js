@@ -637,7 +637,28 @@ module.exports = {
     JOIN categorydetail as cd ON id.CategoryId = cd.Id
     WHERE id.TenantId = ?
     `,
-    fetchById: ' AND id.Id = ?',
+    fetchById: `
+    SELECT 
+    id.*,
+    bd.Id "BatchDetailId",
+    bd.BatchNo "BatchDetailBatchNo",
+    bd.Barcode "BatchDetailBarcode",
+    bd.MfgDate "BatchDetailMfgDate",
+    bd.Expdate "BatchDetailExpdate",
+    bd.PurchaseDate "BatchDetailPurchaseDate",
+    bd.IsNonReturnable "BatchDetailIsNonReturnable",
+    bd.CostInfoId "BatchDetailCostInfoId",
+    bd.UOMId "BatchDetailUOMId",
+    bd.Quantity "BatchDetailQuantity",
+    bd.MapProviderLocationMapperId "BatchDetailMapProviderLocationMapperId",
+    bd.BranchDetailId "BatchDetailBranchDetailId",
+    bd.Active "BatchDetailActive",
+    cd.Id "CategoryDetailId",
+    cd.Name "CategoryDetailName",
+    cd.Active "CategoryDetailActive"
+    FROM itemdetail as id JOIN batchdetail as bd ON id.BatchDetailId = bd.Id
+    JOIN categorydetail as cd ON id.CategoryId = cd.Id
+    WHERE id.Id = ? AND id.TenantId = ?`,
     create: `INSERT INTO itemdetail (Id, Type, HSNCode, SKU, BatchDetailId, CategoryId, Description, TenantId, Active, CreatedOn, CreatedBy) 
     VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
     delete: 'DELETE FROM itemdetail WHERE Id = ? and TenantId = ?',
