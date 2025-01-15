@@ -119,6 +119,10 @@
         "internalServerError": "An error occurred while performing action on the item detail.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "accounttypebase": {
+        "notFound": "Account type base not found.",
+        "internalServerError": "An error occurred while performing action on the account type base."
       }
     },
     "logger": {
