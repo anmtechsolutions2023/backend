@@ -105,6 +105,9 @@
 			"itemdetail": {
 				"notFound": "messages.modules.itemdetail.notFound",
 				"queryParamNotSupported": "messages.modules.itemdetail.queryParamNotSupported"
+			},
+			"accounttypebase": {
+				"notFound": "messages.modules.accounttypebase.notFound"
 			}
 		}
 	}

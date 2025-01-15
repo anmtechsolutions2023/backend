@@ -1,186 +1,119 @@
 const { v4: uuidv4 } = require('uuid')
-const sql = require('./db.js')
-const statuses = require('./statuses.js')
 const logger = require('../utils/loggerHelper')
 const moduleNames = require('../config/modulenames')
 const moduleScripts = require('../../Scripts/modelscripts.js')
+const statusCodes = require('../config/statusCodes.js')
+const getAllModels = require('../models/common/getAll.model')
+const getFindById = require('../models/common/findById.model')
+const deleteById = require('../models/common/deleteById.model')
+const handleDatabaseError = require('../common/errorhandle.common')
+const i18n = require('../utils/i18n')
+const mysqlConnection = require('../utils/db.js')
 
-exports.delete = (id, tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.accounttypebase.delete
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.accounttypebase.db.delete,
-          logger.logType.error,
-          `Error occurred for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject(
-          'DB AccountTypeBase Error, for operation:  delete AccountTypeBase.' +
-            err
-        )
-      }
-
-      if (JSON.stringify(res.affectedRows)) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.accounttypebase.db.delete,
-          logger.logType.debug,
-          `Record deleted for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.accounttypebase.db.delete,
-          logger.logType.error,
-          `No Record found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.deleteById = async (id, tenantId, username) => {
+  return await deleteById.deleteById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.accounttypebase.delete,
+    moduleNames.accounttypebase.db.delete
+  )
 }
 
-exports.getAll = (tenantId, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.accounttypebase.fetchAll
-
-    sql.query(query, [tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          moduleNames.accounttypebase.db.fetchAll,
-          logger.logType.error,
-          `Error Code: ${err.code}, Error Occurred, Error: ${err}`
-        )
-        return reject('DB AccountTypeBase Error, for operation:  getAll.' + err)
-      }
-      logger.loggerHelper(
-        tenantId,
-        username,
-        moduleNames.accounttypebase.db.fetchAll,
-        logger.logType.debug,
-        `Success`
-      )
-      resolve(res)
-    })
-  })
+exports.getAll = async (tenantId, username) => {
+  return await getAllModels.getAll(
+    tenantId,
+    username,
+    moduleScripts.accounttypebase.fetchAll,
+    moduleNames.accounttypebase.db.fetchAll
+  )
 }
 
-exports.findById = (id, tenantId, username, callerModule) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.accounttypebase.fetchById
-
-    sql.query(query, [id, tenantId], (err, res) => {
-      if (err) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.accounttypebase.db.fetchById}`,
-          logger.logType.error,
-          `Error occurred for Id: ${id}, Error Code: ${err.code}, Error: ${err}`
-        )
-        return reject(
-          'DB AccountTypeBase Error, for operation:  findById.' + err
-        )
-      }
-
-      if (res.length) {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.accounttypebase.db.fetchById}`,
-          logger.logType.debug,
-          `Record found for Id: ${id}`
-        )
-        resolve(res)
-      } else {
-        logger.loggerHelper(
-          tenantId,
-          username,
-          `${callerModule}--${moduleNames.accounttypebase.db.fetchById}`,
-          logger.logType.debug,
-          `Record not found for Id: ${id}`
-        )
-        resolve(statuses.Statuses.NotFound)
-      }
-    })
-  })
+exports.findById = async (id, tenantId, username, callerModule) => {
+  return await getFindById.findById(
+    id,
+    tenantId,
+    username,
+    moduleScripts.accounttypebase.fetchById,
+    `${callerModule}--${moduleNames.accounttypebase.db.fetchById}`
+  )
 }
 
-exports.update = (atb, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.accounttypebase.update
+exports.update = async (atb, username) => {
+  try {
+    const query = moduleScripts.accounttypebase.update
 
-    sql.query(
-      query,
-      [
-        atb.Name,
-        atb.Active,
-        atb.UpdatedOn,
-        atb.UpdatedBy,
-        atb.Id,
-        atb.TenantId,
-      ],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            atb.TenantId,
-            username,
-            moduleNames.accounttypebase.db.update,
-            logger.logType.error,
-            `Error occured for Id: ${atb.Id}, Error Code: ${err.code}, Error: ${err}`
-          )
-          return reject(err.code)
-        }
-        logger.loggerHelper(
-          atb.TenantId,
-          username,
-          moduleNames.accounttypebase.db.update,
-          logger.logType.debug,
-          `Record updated for Id: ${atb.Id}`
-        )
-        resolve(res)
-      }
+    await mysqlConnection.query(query, [
+      atb.Name,
+      atb.Active,
+      atb.UpdatedOn,
+      atb.UpdatedBy,
+      atb.Id,
+      atb.TenantId,
+    ])
+
+    logger.loggerHelper(
+      atb.TenantId,
+      username,
+      moduleNames.accounttypebase.db.update,
+      logger.logType.debug,
+      i18n.__('messages.logger.successUpdatedById', { id: atb.Id })
     )
-  })
+
+    return statusCodes.HTTP_STATUS_OK
+  } catch (err) {
+    logger.loggerHelper(
+      atb.TenantId,
+      username,
+      moduleNames.accounttypebase.db.update,
+      logger.logType.error,
+      i18n.__('messages.logger.errorUpdatedById', {
+        id: atb.Id,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
 
-exports.create = (atb, username) => {
-  return new Promise((resolve, reject) => {
-    let query = moduleScripts.accounttypebase.create
-    let atbId = uuidv4()
+exports.create = async (atb, username) => {
+  try {
+    const query = moduleScripts.accounttypebase.create
+    const atbId = uuidv4()
 
-    sql.query(
-      query,
-      [atbId, atb.Name, atb.Active, atb.TenantId, atb.CreatedOn, atb.CreatedBy],
-      (err, res) => {
-        if (err) {
-          logger.loggerHelper(
-            atb.TenantId,
-            username,
-            moduleNames.accounttypebase.db.create,
-            logger.logType.error,
-            `Error occurred for atb Name: ${atb.Name}, Error Code: ${err.code}, Error: ${err}`
-          )
-          return reject(err.code)
-        }
-        logger.loggerHelper(
-          atb.TenantId,
-          username,
-          moduleNames.accounttypebase.db.create,
-          logger.logType.debug,
-          `Record Created for atb Name: ${atb.Name}`
-        )
-        resolve(atbId)
-      }
+    await mysqlConnection.query(query, [
+      atbId,
+      atb.Name,
+      atb.Active,
+      atb.TenantId,
+      atb.CreatedOn,
+      atb.CreatedBy,
+    ])
+
+    logger.loggerHelper(
+      atb.TenantId,
+      username,
+      moduleNames.accounttypebase.db.create,
+      logger.logType.debug,
+      i18n.__('messages.logger.successCreatedById', { id: atb.Name })
     )
-  })
+
+    return atbId
+  } catch (err) {
+    logger.loggerHelper(
+      atb.TenantId,
+      username,
+      moduleNames.accounttypebase.db.create,
+      logger.logType.error,
+      i18n.__('messages.logger.errorCreatedById', {
+        name: atb.Name,
+        code: err.code,
+        message: err,
+      })
+    )
+
+    throw handleDatabaseError.handleDatabaseError(err)
+  }
 }
