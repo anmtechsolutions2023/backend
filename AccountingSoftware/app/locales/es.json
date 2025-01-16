@@ -108,6 +108,10 @@
 			},
 			"accounttypebase": {
 				"notFound": "messages.modules.accounttypebase.notFound"
+			},
+			"transactiontypebaseconversion": {
+				"notFound": "messages.modules.transactiontypebaseconversion.notFound",
+				"queryParamNotSupported": "messages.modules.transactiontypebaseconversion.queryParamNotSupported"
 			}
 		}
 	}
