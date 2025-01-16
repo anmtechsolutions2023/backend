@@ -724,7 +724,29 @@ module.exports = {
     FROM transactiondetaillog as tdl JOIN accounttypebase as atb ON tdl.AccountTypeBaseId = atb.Id
     JOIN branchdetail as bd ON tdl.BranchDetailId = bd.Id
     WHERE tdl.TenantId = ?`,
-    fetchById: ' AND tdl.Id = ?',
+    fetchById: `
+    SELECT 
+    tdl.*,
+    atb.Id "AccountTypeBaseId",
+    atb.Name "AccountTypeBaseName",
+    atb.Active "AccountTypeBaseActive",
+    bd.Id "BranchDetail.Id",
+    bd.OrganizationDetailId "BranchDetailOrganizationDetail",
+    bd.ContactDetailId "BranchDetailContactDetailId",
+    bd.AddressDetailId "BranchDetailAddressDetailId",
+    bd.TransactionTypeConfigId "BranchDetailTransactionTypeConfigId",
+    bd.BranchName "BranchDetailBranchName",
+    bd.TINNo "BranchDetailTINNo",
+    bd.GSTIN "BranchDetailGSTIN",
+    bd.PAN "BranchDetailPAN",
+    bd.CF1 "BranchDetailCF1",
+    bd.CF2 "BranchDetailCF2",
+    bd.CF3 "BranchDetailCF3",
+    bd.CF4 "BranchDetailCF4",
+    bd.Active "BranchDetailActive"
+    FROM transactiondetaillog as tdl JOIN accounttypebase as atb ON tdl.AccountTypeBaseId = atb.Id
+    JOIN branchdetail as bd ON tdl.BranchDetailId = bd.Id
+    WHERE tdl.Id = ? AND tdl.TenantId = ?`,
     create: `INSERT INTO transactiondetaillog (Id, AccountTypeBaseId, UserId, TransactionDateTime, Description, BranchDetailId, CF1, CF2, CF3, CF4, TenantId, Active, CreatedOn, CreatedBy) 
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     delete: 'DELETE FROM transactiondetaillog WHERE Id = ? and TenantId = ?',

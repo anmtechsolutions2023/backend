@@ -112,6 +112,10 @@
 			"transactiontypebaseconversion": {
 				"notFound": "messages.modules.transactiontypebaseconversion.notFound",
 				"queryParamNotSupported": "messages.modules.transactiontypebaseconversion.queryParamNotSupported"
+			},
+			"transactiondetaillog": {
+				"notFound": "messages.modules.transactiondetaillog.notFound",
+				"queryParamNotSupported": "messages.modules.transactiondetaillog.queryParamNotSupported"
 			}
 		}
 	}
