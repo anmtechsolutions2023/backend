@@ -116,6 +116,10 @@
 			"transactiondetaillog": {
 				"notFound": "messages.modules.transactiondetaillog.notFound",
 				"queryParamNotSupported": "messages.modules.transactiondetaillog.queryParamNotSupported"
+			},
+			"transactionitemdetail": {
+				"notFound": "messages.modules.transactionitemdetail.notFound",
+				"queryParamNotSupported": "messages.modules.transactionitemdetail.queryParamNotSupported"
 			}
 		}
 	}

@@ -135,6 +135,12 @@
         "internalServerError": "An error occurred while performing action on the transaction detail log.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "transactionitemdetail": {
+        "notFound": "Transaction item detail detail conversion not found.",
+        "internalServerError": "An error occurred while performing action on the transaction item detail detail.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {
