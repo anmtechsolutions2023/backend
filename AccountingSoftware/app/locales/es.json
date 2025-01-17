@@ -123,6 +123,10 @@
 			},
 			"transactiontypeconversionmapper": {
 				"notFound": "messages.modules.transactiontypeconversionmapper.notFound"
+			},
+			"paymentreceivedtype": {
+				"notFound": "messages.modules.paymentreceivedtype.notFound",
+				"queryParamNotSupported": "messages.modules.paymentreceivedtype.queryParamNotSupported"
 			}
 		}
 	}
