@@ -3,33 +3,35 @@ const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
 const decodeToken = require('../utils/extracttoken')
 const queryParams = require('../utils/queyParams')
+const statusCodes = require('../config/statusCodes')
+const i18n = require('../utils/i18n')
+const commonControllerErrorHandler = require('../common/errorhandle.common')
 
 exports.update = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
-    let findById = await paymentreceivedtypemodel.findById(
+    const findById = await paymentreceivedtypemodel.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.paymentreceivedtype.application.update
     )
 
-    if (findById == '404') {
-      return res.status(404).send({
-        message: 'Record not found.',
+    if (findById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.paymentreceivedtype.notFound'),
       })
     }
 
-    let updatedReq = {
+    const updatedReq = {
       Id: findById[0].Id,
       Type: helper.updateFieldValue(findById, req.body.Type),
       Active: helper.updateFieldValue(findById, req.body.Active),
@@ -38,132 +40,142 @@ exports.update = async (req, res) => {
       UpdatedBy: username,
     }
 
-    await paymentreceivedtypemodel
-      .update(updatedReq, username)
-      .then(() => {
-        return res.status(200).send()
-      })
-      .catch((err) => {
-        return res.status(500).send()
-      })
+    return res
+      .status(await paymentreceivedtypemodel.update(updatedReq, username))
+      .send(i18n.__('messages.success.update'))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.paymentreceivedtype.internalServerError',
+      res
+    )
   }
 }
 
 exports.delete = async (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const findById = await paymentreceivedtypemodel.findById(
+      req.params.id,
+      tenantId,
+      username,
+      moduleNames.paymentreceivedtype.application.delete
+    )
 
-  let findById = await paymentreceivedtypemodel.findById(
-    req.params.id,
-    tenantId,
-    username,
-    moduleNames.paymentreceivedtype.application.delete
-  )
+    if (findById === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.paymentreceivedtype.notFound'),
+      })
+    }
 
-  if (findById == '404') {
-    return res.status(404).send({
-      message: 'Record not found.',
-    })
+    await paymentreceivedtypemodel.deleteById(req.params.id, tenantId, username)
+
+    return res.status(statusCodes.HTTP_STATUS_NO_CONTENT).send()
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.paymentreceivedtype.internalServerError',
+      res
+    )
   }
-
-  paymentreceivedtypemodel
-    .delete(req.params.id, tenantId, username)
-    .then(() => {
-      res.status(204).send()
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
 }
 
-exports.search = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.search = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    const params = queryParams.getQueryParams(req.query)
 
-  var params = queryParams.getQueryParams(req.query)
+    const queryParamName = params['QueryParamName']
+    const queryParamValue = params['QueryParamValue']
 
-  var queryParamName = params['QueryParamName']
-  var queryParamValue = params['QueryParamValue']
+    if (helper.isEmpty(queryParamName) || helper.isEmpty(queryParamValue)) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__(
+          'messages.modules.paymentreceivedtype.queryParamMissing'
+        ),
+      })
+    }
 
-  if (helper.isEmpty(queryParamName) || helper.isEmpty(queryParamValue)) {
-    return res.status(400).send({
-      message: 'query param not supported!',
-    })
+    const resp = await paymentreceivedtypemodel.searchByParam(
+      tenantId,
+      username,
+      params
+    )
+
+    if (resp === statusCodes.HTTP_STATUS_BAD_REQUEST) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__(
+          'messages.modules.paymentreceivedtype.queryParamNotSupported'
+        ),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(resp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.paymentreceivedtype.internalServerError',
+      res
+    )
   }
-
-  paymentreceivedtypemodel
-    .searchByParam(tenantId, username, params)
-    .then((resp) => {
-      res.status(200).send(resp)
-    })
-    .catch((errCode) => {
-      if (errCode === 400) {
-        return res.status(400).send({
-          message: 'query param not supported!',
-        })
-      }
-      res.sendStatus(500).send()
-    })
 }
 
-exports.fetchAll = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchAll = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  paymentreceivedtypemodel
-    .getAll(tenantId, username)
-    .then((resp) => {
-      res.status(200).send(resp)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+    return res
+      .status(statusCodes.HTTP_STATUS_OK)
+      .send(await paymentreceivedtypemodel.getAll(tenantId, username))
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.paymentreceivedtype.internalServerError',
+      res
+    )
+  }
 }
 
-exports.fetchById = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.fetchById = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
-
-  paymentreceivedtypemodel
-    .findById(
+    const resp = await paymentreceivedtypemodel.findById(
       req.params.id,
       tenantId,
       username,
       moduleNames.paymentreceivedtype.application.fetchById
     )
-    .then((resp) => {
-      if (resp === 404) {
-        return res.status(404).send({
-          message: 'Record not found.',
-        })
-      }
-      res.send(resp)
-    })
-    .catch((err) => {
-      res.sendStatus(500).send()
-    })
+
+    if (resp === statusCodes.HTTP_STATUS_NOT_FOUND) {
+      return res.status(statusCodes.HTTP_STATUS_NOT_FOUND).send({
+        message: i18n.__('messages.modules.paymentreceivedtype.notFound'),
+      })
+    }
+
+    return res.status(statusCodes.HTTP_STATUS_OK).send(resp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.paymentreceivedtype.internalServerError',
+      res
+    )
+  }
 }
 
-exports.create = (req, res) => {
-  var decodedToken = decodeToken.decodeToken(req)
+exports.create = async (req, res) => {
+  try {
+    const { tenantId, username } = req
 
-  let tenantId = decodedToken.tenantId
-  let username = decodedToken.username
+    // Validate request
+    if (!Object.keys(req.body).length) {
+      return res.status(statusCodes.HTTP_STATUS_BAD_REQUEST).send({
+        message: i18n.__('messages.errors.validation.emptyContent'),
+      })
+    }
 
-  // Validate request
-  if (!Object.keys(req.body).length) {
-    res.status(400).send({
-      message: 'Content can not be empty!',
-    })
-  } else {
     // Create a Record
     let reqModel = {
       Type: req.body.Type,
@@ -173,18 +185,14 @@ exports.create = (req, res) => {
       CreatedBy: username,
     }
 
-    paymentreceivedtypemodel
-      .create(reqModel, username)
-      .then((resp) => {
-        res.send(resp)
-      })
-      .catch((err) => {
-        switch (err) {
-          case 'ER_DUP_ENTRY': {
-            return res.sendStatus(409).send()
-          }
-        }
-        res.sendStatus(500).send()
-      })
+    const resp = await paymentreceivedtypemodel.create(reqModel, username)
+
+    return res.status(statusCodes.HTTP_STATUS_CREATED).send(resp)
+  } catch (err) {
+    return commonControllerErrorHandler.commonControllerErrorHandler(
+      err,
+      'messages.modules.paymentreceivedtype.internalServerError',
+      res
+    )
   }
 }

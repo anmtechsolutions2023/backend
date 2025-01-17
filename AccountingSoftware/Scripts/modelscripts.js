@@ -868,7 +868,7 @@ module.exports = {
   },
   paymentreceivedtype: {
     fetchAll: `SELECT * FROM paymentreceivedtype WHERE TenantId = ?`,
-    fetchById: ' AND Id = ?',
+    fetchById: `SELECT * FROM paymentreceivedtype WHERE Id = ? AND TenantId = ?`,
     create: `INSERT INTO paymentreceivedtype (Id, Type, TenantId, Active, CreatedOn, CreatedBy) 
     VALUES (?,?,?,?,?,?)`,
     delete: 'DELETE FROM paymentreceivedtype WHERE Id = ? and TenantId = ?',
