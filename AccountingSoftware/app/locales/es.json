@@ -120,6 +120,9 @@
 			"transactionitemdetail": {
 				"notFound": "messages.modules.transactionitemdetail.notFound",
 				"queryParamNotSupported": "messages.modules.transactionitemdetail.queryParamNotSupported"
+			},
+			"transactiontypeconversionmapper": {
+				"notFound": "messages.modules.transactiontypeconversionmapper.notFound"
 			}
 		}
 	}

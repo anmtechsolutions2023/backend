@@ -141,6 +141,12 @@
         "internalServerError": "An error occurred while performing action on the transaction item detail detail.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "transactiontypeconversionmapper": {
+        "notFound": "Transaction type conversion mapper not found.",
+        "internalServerError": "An error occurred while performing action on the Transaction type conversion mapper.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {
