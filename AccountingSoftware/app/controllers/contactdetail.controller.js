@@ -17,7 +17,7 @@ exports.update = async (req, res) => {
       })
     }
 
-    let cdFindById = await contactdetail.findById(
+    const cdFindById = await contactdetail.findById(
       req.params.id,
       tenantId,
       username,
@@ -30,7 +30,7 @@ exports.update = async (req, res) => {
       })
     }
 
-    let updatedcd = {
+    const updatedcd = {
       Id: cdFindById[0].Id,
       FirstName: helper.isEmpty(req.body.FirstName)
         ? cdFindById[0].FirstName
@@ -80,7 +80,7 @@ exports.delete = async (req, res) => {
   try {
     const { tenantId, username } = req
 
-    let cdFindById = await contactdetail.findById(
+    const cdFindById = await contactdetail.findById(
       req.params.id,
       tenantId,
       username,
@@ -159,9 +159,9 @@ exports.fetchAll = async (req, res) => {
 }
 
 function translateResponse(cdResp) {
-  var contactDetailsResp = []
+  let contactDetailsResp = []
   cdResp.map((resp) => {
-    var contactDetailResp = {
+    let contactDetailResp = {
       Id: resp.Id,
       FirstName: resp.FirstName,
       LastName: resp.LastName,
@@ -180,7 +180,7 @@ function translateResponse(cdResp) {
       UpdatedBy: resp.UpdatedBy,
     }
 
-    var contactaddresstype = {
+    let contactaddresstype = {
       Id: resp.ContactAddressTypeId,
       Name: resp.ContactAddressName,
       Active: resp.ContactAddressActive,
@@ -233,7 +233,7 @@ exports.create = async (req, res) => {
     }
 
     // Create a record
-    let cd = {
+    const cd = {
       FirstName: req.body.FirstName,
       LastName: req.body.LastName,
       MobileNo: req.body.MobileNo,
