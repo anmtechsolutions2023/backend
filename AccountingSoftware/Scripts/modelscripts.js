@@ -834,7 +834,31 @@ module.exports = {
     JOIN transactiondetaillog as tdl ON ttcm.TransactionDetailLogId = tdl.Id
     JOIN transactiontypestatus as tts ON ttcm.TransactionTypeStatusId = tts.Id
     WHERE ttcm.TenantId = ?`,
-    fetchById: ' AND ttcm.Id = ?',
+    fetchById: `
+    SELECT 
+    ttcm.*,
+    ttbc.Id "TransactionTypeBaseCoversionId",
+    ttbc.FromTransactionTypeId "TransactionTypeBaseCoversionFromTransactionTypeId",
+    ttbc.ToTransactionTypeId "TransactionTypeBaseCoversionToTransactionTypeId",
+    ttbc.Active "TransactionTypeBaseCoversionActive",
+    tdl.Id "TransactionDetailLogId",
+    tdl.AccountTypeBaseId "TransactionDetailLogAccountTypeBaseId",
+    tdl.UserId "TransactionDetailLogUserId",
+    tdl.TransactionDateTime "TransactionDetailLogTransactionDateTime",
+    tdl.Description "TransactionDetailLogDescription",
+    tdl.BranchDetailId "TransactionDetailLogBranchDetailId",
+    tdl.CF1 "TransactionDetailLogCF1",
+    tdl.CF2 "TransactionDetailLogCF2",
+    tdl.CF3 "TransactionDetailLogCF3",
+    tdl.CF4 "TransactionDetailLogCF4",
+    tdl.Active "TransactionDetailLogActive",
+    tts.Id "TransactionTypeStatusId",
+    tts.Name "TransactionTypeStatusName",
+    tts.Active "TransactionTypeStatusActive"
+    FROM transactiontypeconversionmapper as ttcm JOIN transactiontypebaseconversion as ttbc ON ttcm.TransactionTypeBaseCoversionId = ttbc.Id
+    JOIN transactiondetaillog as tdl ON ttcm.TransactionDetailLogId = tdl.Id
+    JOIN transactiontypestatus as tts ON ttcm.TransactionTypeStatusId = tts.Id
+    WHERE ttcm.Id = ? AND ttcm.TenantId = ?`,
     create: `INSERT INTO transactiontypeconversionmapper (Id, TransactionTypeBaseCoversionId, TransactionDetailLogId, TransactionTypeStatusId, TenantId, Active, CreatedOn, CreatedBy)
     VALUES (?,?,?,?,?,?,?,?)`,
     delete:

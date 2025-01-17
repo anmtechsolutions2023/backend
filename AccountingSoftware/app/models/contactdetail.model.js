@@ -83,7 +83,7 @@ exports.searchByParam = async (tenantId, username, queryParams) => {
 
 exports.update = async (cdReq, username) => {
   try {
-    let query = moduleScripts.contactdetail.update
+    const query = moduleScripts.contactdetail.update
 
     await mysqlConnection.query(query, [
       cdReq.FirstName,
@@ -140,8 +140,8 @@ exports.findById = async (id, tenantId, username, callerModule) => {
 
 exports.create = async (cdReq, username) => {
   try {
-    let query = moduleScripts.contactdetail.create
-    let cdId = uuidv4()
+    const query = moduleScripts.contactdetail.create
+    const cdId = uuidv4()
 
     await mysqlConnection.query(query, [
       cdId,
