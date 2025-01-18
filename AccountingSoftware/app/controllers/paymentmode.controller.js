@@ -1,7 +1,6 @@
 const paymentmode = require('../models/paymentmode.model')
 const helper = require('../utils/helper')
 const moduleNames = require('../config/modulenames')
-const decodeToken = require('../utils/extracttoken')
 const queryParams = require('../utils/queyParams')
 const statusCodes = require('../config/statusCodes')
 const i18n = require('../utils/i18n')
