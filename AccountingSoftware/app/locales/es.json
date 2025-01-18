@@ -136,6 +136,10 @@
 			"paymentmodetransactiondetail": {
 				"notFound": "messages.modules.paymentmodetransactiondetail.notFound",
 				"queryParamNotSupported": "messages.modules.paymentmodetransactiondetail.queryParamNotSupported"
+			},
+			"paymentdetail": {
+				"notFound": "messages.modules.paymentdetail.notFound",
+				"queryParamNotSupported": "messages.modules.paymentdetail.queryParamNotSupported"
 			}
 		}
 	}
