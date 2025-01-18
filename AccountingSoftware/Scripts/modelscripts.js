@@ -877,7 +877,7 @@ module.exports = {
   },
   paymentmode: {
     fetchAll: `SELECT * FROM paymentmode WHERE TenantId = ?`,
-    fetchById: ' AND Id = ?',
+    fetchById: 'SELECT * FROM paymentmode WHERE Id = ? AND TenantId = ?',
     create: `INSERT INTO paymentmode (Id, Type, TenantId, Active, CreatedOn, CreatedBy) 
     VALUES (?,?,?,?,?,?)`,
     delete: 'DELETE FROM paymentmode WHERE Id = ? and TenantId = ?',
