@@ -127,6 +127,10 @@
 			"paymentreceivedtype": {
 				"notFound": "messages.modules.paymentreceivedtype.notFound",
 				"queryParamNotSupported": "messages.modules.paymentreceivedtype.queryParamNotSupported"
+			},
+			"paymentmode": {
+				"notFound": "messages.modules.paymentmode.notFound",
+				"queryParamNotSupported": "messages.modules.paymentmode.queryParamNotSupported"
 			}
 		}
 	}
