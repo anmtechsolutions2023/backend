@@ -37,7 +37,8 @@
 			"recordNotFindById": "messages.logger.recordNotFindById",
 			"errorCreatedById": "messages.logger.errorCreatedById",
 			"successUpdatedById": "messages.logger.successUpdatedById",
-			"errorUpdatedById": "messages.logger.errorUpdatedById"
+			"errorUpdatedById": "messages.logger.errorUpdatedById",
+			"recordFindByQueryParam": "messages.logger.recordFindByQueryParam"
 		},
 		"modules": {
 			"uom": {
@@ -131,6 +132,10 @@
 			"paymentmode": {
 				"notFound": "messages.modules.paymentmode.notFound",
 				"queryParamNotSupported": "messages.modules.paymentmode.queryParamNotSupported"
+			},
+			"paymentmodetransactiondetail": {
+				"notFound": "messages.modules.paymentmodetransactiondetail.notFound",
+				"queryParamNotSupported": "messages.modules.paymentmodetransactiondetail.queryParamNotSupported"
 			}
 		}
 	}

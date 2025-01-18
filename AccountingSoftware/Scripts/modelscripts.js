@@ -893,7 +893,14 @@ module.exports = {
     pm.Active "PaymentModeActive"
     FROM paymentmodetransactiondetail as pmtd JOIN paymentmode pm on pmtd.PaymentModeId = pm.Id
     WHERE pmtd.TenantId = ?`,
-    fetchById: ' AND pmtd.Id = ?',
+    fetchById: `
+    SELECT 
+    pmtd.*,
+    pm.Id "PaymentModeId",
+    pm.Type "PaymentModeType",
+    pm.Active "PaymentModeActive"
+    FROM paymentmodetransactiondetail as pmtd JOIN paymentmode pm on pmtd.PaymentModeId = pm.Id
+    WHERE pmtd.Id = ? AND pmtd.TenantId = ?`,
     create: `INSERT INTO paymentmodetransactiondetail (Id, PaymentModeId, RefNo, Comment, CF1, CF2, CF3, CF4, TenantId, Active, CreatedOn, CreatedBy) 
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
     delete:

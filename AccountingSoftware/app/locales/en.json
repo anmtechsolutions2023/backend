@@ -159,6 +159,12 @@
         "internalServerError": "An error occurred while performing action on the Payment mode.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "paymentmodetransactiondetail": {
+        "notFound": "Payment mode transaction detail not found.",
+        "internalServerError": "An error occurred while performing action on the Payment mode transaction detail.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {
