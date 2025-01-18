@@ -171,6 +171,12 @@
         "internalServerError": "An error occurred while performing action on the Payment detail.",
         "queryParamMissing": "Query parameter missing.",
         "queryParamNotSupported": "Query parameter not supported."
+      },
+      "paymentbreakup": {
+        "notFound": "Payment breakup not found.",
+        "internalServerError": "An error occurred while performing action on the Payment breakup.",
+        "queryParamMissing": "Query parameter missing.",
+        "queryParamNotSupported": "Query parameter not supported."
       }
     },
     "logger": {

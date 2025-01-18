@@ -140,6 +140,10 @@
 			"paymentdetail": {
 				"notFound": "messages.modules.paymentdetail.notFound",
 				"queryParamNotSupported": "messages.modules.paymentdetail.queryParamNotSupported"
+			},
+			"paymentbreakup": {
+				"notFound": "messages.modules.paymentbreakup.notFound",
+				"queryParamNotSupported": "messages.modules.paymentbreakup.queryParamNotSupported"
 			}
 		}
 	}
