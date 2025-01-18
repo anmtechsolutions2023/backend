@@ -986,7 +986,38 @@ module.exports = {
     JOIN paymentmodetransactiondetail pmtd ON pb.PaymentModeTransactionDetailId = pmtd.Id
     JOIN paymentreceivedtype prt ON pb.PaymentReceivedTypeId = prt.Id
     WHERE pb.TenantId = ?`,
-    fetchById: ' AND pb.Id = ?',
+    fetchById: `SELECT 
+    pb.*,
+    atb.Id "AccountTypeBaseId",
+    atb.Name "AccountTypeBaseName",
+    atb.Active "AccountTypeBaseActive",
+    pd.Id "PaymentDetailId",
+    pd.AccountTypeBaseId "PaymentDetailAccountTypeBaseId",
+    pd.TransactionDetailLogId "PaymentDetailTransactionDetailLogId",
+    pd.DiscountAmount "PaymentDetailDiscountAmount",
+    pd.RoundOff "PaymentDetailRoundOff",
+    pd.TotalAmount "PaymentDetailTotalAmount",
+    pd.TaxesAmount "PaymentDetailTaxesAmount",
+    pd.GrossAmount "PaymentDetailGrossAmount",
+    pd.UserId "PaymentDetailUserId",
+    pd.Active "PaymentDetailActive",
+    pmtd.Id "PaymentModeTransactionDetailId",
+    pmtd.PaymentModeId "PaymentModeTransactionDetailPaymentModeId",
+    pmtd.RefNo "PaymentModeTransactionDetailRefNo",
+    pmtd.Comment "PaymentModeTransactionDetailComment",
+    pmtd.CF1 "PaymentModeTransactionDetailCF1",
+    pmtd.CF2 "PaymentModeTransactionDetailCF2",
+    pmtd.CF3 "PaymentModeTransactionDetailCF3",
+    pmtd.CF4 "PaymentModeTransactionDetailCF1",
+    pmtd.Active "PaymentModeTransactionDetailActive",
+    prt.Id "PaymentReceivedId",
+    prt.Type "PaymentReceivedType",
+    prt.Active "PaymentReceivedActive"
+    FROM paymentbreakup pb JOIN accounttypebase atb ON pb.AccountTypeBaseId = atb.Id
+    JOIN paymentdetail pd ON pb.PaymentDetailId = pd.Id
+    JOIN paymentmodetransactiondetail pmtd ON pb.PaymentModeTransactionDetailId = pmtd.Id
+    JOIN paymentreceivedtype prt ON pb.PaymentReceivedTypeId = prt.Id
+    WHERE pb.Id = ? AND pb.TenantId = ?`,
     create: `INSERT INTO paymentbreakup (Id, AccountTypeBaseId, PaymentDetailId, PaymentModeTransactionDetailId, PaymentReceivedTypeId, UserId, Timestamp, TenantId, Active, CreatedOn, CreatedBy)
     VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
     delete: 'DELETE FROM paymentbreakup WHERE Id = ? and TenantId = ?',
