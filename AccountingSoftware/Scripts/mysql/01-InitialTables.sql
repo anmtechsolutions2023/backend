@@ -1,7 +1,7 @@
 -- Table Creation 
 
 -- TaxTypes table
-create table TaxTypes
+create table if not exists TaxTypes
 (
     Id varchar(50) not null,
     Name varchar(50) not null,
@@ -17,7 +17,7 @@ create table TaxTypes
 );
 
 -- UOM table
-create table UOM
+create table if not exists UOM
 (
     Id VARCHAR(50) not null,
     UnitName VARCHAR(50) not null,
@@ -34,7 +34,7 @@ create table UOM
 
 -- CategoryDetail table
 
-create table categorydetail
+create table if not exists categorydetail
 (
     Id VARCHAR(50) not null,
     Name varchar(50) not null,
@@ -46,11 +46,11 @@ create table categorydetail
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
     UNIQUE (Name, TenantId)
-)
+);
 
 -- TransactionTypeConfig table
 
-create table transactiontypeconfig
+create table if not exists transactiontypeconfig
 (
     Id VARCHAR(50) not null,
     StartCounterNo varchar(50) not null,
@@ -64,10 +64,10 @@ create table transactiontypeconfig
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
     UNIQUE (StartCounterNo, Prefix, Format, TenantId)
-)
+);
 
 -- Organization Detail table
-create table organizationdetail
+create table if not exists organizationdetail
 (
     Id varchar(50) not null,
     Name varchar(100) not null,
@@ -79,11 +79,11 @@ create table organizationdetail
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
     UNIQUE (Name, TenantId)
-)
+);
 
 -- UOMFactor table
 
-create table uomfactor
+create table if not exists uomfactor
 (
     Id varchar(50) not null,
     PrimaryUOMId VARCHAR(50) not null,
@@ -99,11 +99,11 @@ create table uomfactor
     FOREIGN KEY (PrimaryUOMId) REFERENCES UOM(Id),
     FOREIGN KEY (SecondaryUOMId) REFERENCES UOM(Id),
     UNIQUE (PrimaryUOMId, SecondaryUOMId, Factor, TenantId)
-)
+);
 
 -- TransactionType table
 
-create table transactiontype
+create table if not exists transactiontype
 (
     Id varchar(50) not null,
     Name varchar(50) not null,
@@ -117,12 +117,12 @@ create table transactiontype
     PRIMARY KEY (Id),
     UNIQUE (Name, TenantId),
     FOREIGN KEY (TransactionTypeConfigId) REFERENCES transactiontypeconfig(Id)
-)
+);
 
 
 -- AccountTypeBase table
 
-create table accounttypebase
+create table if not exists accounttypebase
 (
     Id varchar(50) not null,
     Name varchar(50) not null,
@@ -134,11 +134,11 @@ create table accounttypebase
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
     UNIQUE (Name, TenantId)
-)
+);
 
 -- TransactionTypeStatus table
 
-create table transactiontypestatus
+create table if not exists transactiontypestatus
 (
     Id varchar(50) not null,
     Name varchar(50) not null,
@@ -150,11 +150,11 @@ create table transactiontypestatus
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
     UNIQUE (Name, TenantId)
-)
+);
 
 -- ContactAddressType table
 
-create table contactaddresstype
+create table if not exists contactaddresstype
 (
     Id varchar(50) not null,
     Name varchar(50) not null,
@@ -166,11 +166,11 @@ create table contactaddresstype
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
     UNIQUE (Name, TenantId)
-)
+);
 
 -- TaxGroup table
 
-create table taxgroup
+create table if not exists taxgroup
 (
 	Id varchar(50) not null,
     Name varchar(50) not null,
@@ -182,10 +182,10 @@ create table taxgroup
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
     UNIQUE (Name, TenantId)
-)
+);
 
  -- Tax Group Tax Type Mapper table
-create table taxgrouptaxtypemapper
+create table if not exists taxgrouptaxtypemapper
 (
 	Id varchar(50) not null,
     TaxGroupId varchar(50) not null,
@@ -200,11 +200,11 @@ create table taxgrouptaxtypemapper
     UNIQUE (TaxGroupId, TaxTypeId, TenantId),
     FOREIGN KEY (TaxGroupId) REFERENCES taxgroup(Id),
     FOREIGN KEY (TaxTypeId) REFERENCES TaxTypes(Id)
-)
+);
 
 -- Map Provider table
 
-create table mapprovider
+create table if not exists mapprovider
 (
     Id varchar(50) not null,
     ProviderName varchar(50) not null,
@@ -216,11 +216,11 @@ create table mapprovider
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
     UNIQUE (ProviderName, TenantId)
-)
+);
 
 -- Location Detail table
 
-create table locationdetail
+create table if not exists locationdetail
 (
     Id varchar(50) not null,
     Lat varchar(50) not null,
@@ -237,10 +237,10 @@ create table locationdetail
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),
     UNIQUE (Lat, Lng, TenantId)
-)
+);
 
 -- Map Provider Location Mapper table
-create table mapproviderlocationmapper
+create table if not exists mapproviderlocationmapper
 (
 	Id varchar(50) not null,
     MapProviderId varchar(50) not null,
@@ -255,10 +255,10 @@ create table mapproviderlocationmapper
     UNIQUE (MapProviderId, LocationDetailId, TenantId),
     FOREIGN KEY (MapProviderId) REFERENCES mapprovider(Id),
     FOREIGN KEY (LocationDetailId) REFERENCES locationdetail(Id)
-)
+);
 
 -- Contact Detail table
-create table contactdetail
+create table if not exists contactdetail
 (
 	Id varchar(50) not null,
     FirstName varchar(50) not null,
@@ -279,10 +279,10 @@ create table contactdetail
     PRIMARY KEY (Id),
     UNIQUE (FirstName, LastName, ContactAddressTypeId, TenantId),
     FOREIGN KEY (ContactAddressTypeId) REFERENCES contactaddresstype(Id)
-) 
+);
 
 -- Address Detail table
-create table addressdetail
+create table if not exists addressdetail
 (
 	Id varchar(50) not null,
     AddressLine1 varchar(50),
@@ -303,10 +303,10 @@ create table addressdetail
     UNIQUE (AddressLine1, City, ContactAddressTypeId, TenantId),
     FOREIGN KEY (ContactAddressTypeId) REFERENCES contactaddresstype(Id),
     FOREIGN KEY (MapProviderLocationMapperId) REFERENCES mapproviderlocationmapper(Id)
-) 
+);
 
 -- Cost Info table
-create table costinfo
+create table if not exists costinfo
 (
 	Id varchar(50) not null,
     Amount varchar(50) not null,
@@ -321,11 +321,11 @@ create table costinfo
     PRIMARY KEY (Id),
     UNIQUE (Id, TenantId),
     FOREIGN KEY (TaxGroupId) REFERENCES taxgroup(Id)
-)
+);
 
 
 -- Branch Detail table
-create table branchdetail
+create table if not exists branchdetail
 (
 	Id varchar(50) not null,
     OrganizationDetailId varchar(50) not null,
@@ -352,10 +352,10 @@ create table branchdetail
     FOREIGN KEY (ContactDetailId) REFERENCES contactdetail(Id),
     FOREIGN KEY (AddressDetailId) REFERENCES addressdetail(Id),
     FOREIGN KEY (TransactionTypeConfigId) REFERENCES transactiontypeconfig(Id)
-)
+);
 
  -- Branch  Group Mapper table
-create table branchusergroupmapper
+create table if not exists branchusergroupmapper
 (
 	Id varchar(50) not null,
     BranchDetailId varchar(50) not null,
@@ -369,10 +369,10 @@ create table branchusergroupmapper
     PRIMARY KEY (Id),
     UNIQUE (BranchDetailId, UserGroupId, TenantId),
     FOREIGN KEY (BranchDetailId) REFERENCES branchdetail(Id)
-)
+);
 
 -- Batch Detail table
-create table batchdetail
+create table if not exists batchdetail
 (
 	Id varchar(50) not null,
     BatchNo varchar(50) not null,
@@ -398,10 +398,10 @@ create table batchdetail
     FOREIGN KEY (UOMId) REFERENCES UOM(Id),
     FOREIGN KEY (MapProviderLocationMapperId) REFERENCES mapproviderlocationmapper(Id),
     FOREIGN KEY (BranchDetailId) REFERENCES branchdetail(Id)
-)
+);
 
 -- Item Detail table
-create table itemdetail (
+create table if not exists itemdetail (
 	Id varchar(50) not null,
     Type varchar(50) not null,
     HSNCode varchar(50),
@@ -419,10 +419,10 @@ create table itemdetail (
     UNIQUE (Type, TenantId),
     FOREIGN KEY (BatchDetailId) REFERENCES batchdetail(Id),
     FOREIGN KEY (CategoryId) REFERENCES categorydetail(Id)
-)
+);
 
 -- Transaction Type Base Conversion  table
-create table transactiontypebaseconversion (
+create table if not exists transactiontypebaseconversion (
 	Id varchar(50) not null,   
     FromTransactionTypeId varchar(50) not null,
     ToTransactionTypeId varchar(50) not null,
@@ -436,10 +436,10 @@ create table transactiontypebaseconversion (
     UNIQUE (FromTransactionTypeId, ToTransactionTypeId, TenantId),
     FOREIGN KEY (FromTransactionTypeId) REFERENCES transactiontype(Id),
     FOREIGN KEY (ToTransactionTypeId) REFERENCES transactiontype(Id)
-)
+);
 
 -- Transaction Detail log table
-create table transactiondetaillog
+create table if not exists transactiondetaillog
 (
 	Id varchar(50) not null,    
     AccountTypeBaseId varchar(50) not null,
@@ -460,10 +460,10 @@ create table transactiondetaillog
     PRIMARY KEY (Id),    
     FOREIGN KEY (AccountTypeBaseId) REFERENCES accounttypebase(Id),
     FOREIGN KEY (BranchDetailId) REFERENCES branchdetail(Id)
-)
+);
 
 -- Transaction Item Detail table
-create table transactionitemdetail
+create table if not exists transactionitemdetail
   (
 	Id varchar(50) not null,    
     TransactionDetailLogId varchar(50) not null,
@@ -479,10 +479,10 @@ create table transactionitemdetail
     UNIQUE (TransactionDetailLogId, ItemId, TenantId),
     FOREIGN KEY (TransactionDetailLogId) REFERENCES transactiondetaillog(Id),
     FOREIGN KEY (ItemId) REFERENCES itemdetail(Id)
-  )
+  );
 
 -- Transaction Type Conversion Mapper table
-create table transactiontypeconversionmapper 
+create table if not exists transactiontypeconversionmapper 
 (
 	Id varchar(50) not null,    
     TransactionTypeBaseCoversionId varchar(50) not null,
@@ -499,10 +499,10 @@ create table transactiontypeconversionmapper
     FOREIGN KEY (TransactionTypeBaseCoversionId) REFERENCES transactiontypebaseconversion(Id),
     FOREIGN KEY (TransactionDetailLogId) REFERENCES transactiondetaillog(Id),
     FOREIGN KEY (TransactionTypeStatusId) REFERENCES transactiontypestatus(Id)
-)
+);
 
 -- Payment Received Type table
-create table paymentreceivedtype 
+create table if not exists paymentreceivedtype 
 (
 	Id varchar(50) not null,    
     Type varchar(50) not null,
@@ -514,10 +514,10 @@ create table paymentreceivedtype
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),    
     UNIQUE (Type, TenantId)
-)
+);
 
 -- Payment mode table
-create table paymentmode 
+create table if not exists paymentmode 
 (
 	Id varchar(50) not null,    
     Type varchar(50) not null,
@@ -529,10 +529,10 @@ create table paymentmode
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),    
     UNIQUE (Type, TenantId)
-)
+);
 
 -- Payment Mode Transaction Detail table
-create table paymentmodetransactiondetail
+create table if not exists paymentmodetransactiondetail
 (
 	Id varchar(50) not null,    
     PaymentModeId varchar(50) not null,
@@ -550,10 +550,10 @@ create table paymentmodetransactiondetail
     UpdatedBy varchar(50),
     PRIMARY KEY (Id),    
     FOREIGN KEY (PaymentModeId) REFERENCES paymentmode(Id)
-)
+);
 
 -- Payment Detail table
-create table paymentdetail 
+create table if not exists paymentdetail 
 (
 	Id varchar(50) not null,    
     AccountTypeBaseId varchar(50) not null,
@@ -573,10 +573,10 @@ create table paymentdetail
     PRIMARY KEY (Id),    
     FOREIGN KEY (AccountTypeBaseId) REFERENCES accounttypebase(Id),
     FOREIGN KEY (TransactionDetailLogId) REFERENCES transactiondetaillog(Id)
-)
+);
 
 -- Payment Breakup table
-create table paymentbreakup
+create table if not exists paymentbreakup
 (
 	Id varchar(50) not null,    
     AccountTypeBaseId varchar(50) not null,
@@ -596,4 +596,4 @@ create table paymentbreakup
     FOREIGN KEY (PaymentDetailId) REFERENCES paymentdetail(Id),
     FOREIGN KEY (PaymentModeTransactionDetailId) REFERENCES paymentmodetransactiondetail(Id),
     FOREIGN KEY (PaymentReceivedTypeId) REFERENCES paymentreceivedtype(Id)
-)
+);
